@@ -176,8 +176,11 @@ namespace XRMultiplayer
                 if (arguments[i] == k_MppmCloneProcess)
                 {
                     m_IsVirtualPlayer = true;
-                    inputModule.enableMouseInput = false;
-                    inputModule.enableTouchInput = false;
+                    if (inputModule != null)
+                    {
+                        inputModule.enableMouseInput = false;
+                        inputModule.enableTouchInput = false;
+                    }
                 }
                 if (arguments[i] == k_MppmEditorName && (i + 1) < arguments.Length)
                 {
@@ -197,7 +200,7 @@ namespace XRMultiplayer
         void OnApplicationFocus(bool focus)
         {
             // Check to make sure it's an MPPM Virtual Player.
-            if (focus && m_IsVirtualPlayer)
+            if (focus && m_IsVirtualPlayer && inputModule != null)
             {
                 inputModule.enableMouseInput = true;
                 inputModule.enableTouchInput = true;
