@@ -122,6 +122,7 @@ namespace XRMultiplayer
             m_LocalTransport.ConnectionData = m_DATransport.ConnectionData;
             m_LocalTransport.ConnectionData.ServerListenAddress = "0.0.0.0";
             NetworkManager.Singleton.NetworkConfig.NetworkTransport = m_LocalTransport;
+            NetworkManager.Singleton.NetworkConfig.NetworkTopology = NetworkTopologyTypes.ClientServer;
 
             Destroy(m_DATransport); // Destroy the Distributed Authority transport as it is no longer needed
         }
@@ -309,7 +310,7 @@ namespace XRMultiplayer
             SessionOptions options = new SessionOptions()
             {
                 Name = lobbyName,
-                MaxPlayers = maxPlayers,
+                MaxPlayers = XRINetworkGameManager.maxPlayers,
                 SessionProperties = new Dictionary<string, SessionProperty>
                 {
                     { k_BuildIdKeyIdentifier, new SessionProperty(Application.version) },

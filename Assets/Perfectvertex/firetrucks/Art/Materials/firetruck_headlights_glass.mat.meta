@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e2775f78da7b0e443be5ac93608f2b5d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 311904
+  packageName: Fire Trucks
+  packageVersion: 1.0
+  assetPath: Assets/Perfectvertex/firetrucks/Art/Materials/firetruck_headlights_glass.mat
+  uploadId: 738311

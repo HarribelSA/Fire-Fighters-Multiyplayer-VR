@@ -10,6 +10,8 @@ namespace FirefighterVR
     {
         public float FloorY, OriginY, BodyYaw, StandingHeight, AvatarScale, Speed;
         public byte LeftGrip, LeftTrigger, RightGrip, RightTrigger;
+        public bool Seated;
+        public Vector3 SeatPosition;
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref FloorY);serializer.SerializeValue(ref OriginY);
@@ -17,15 +19,17 @@ namespace FirefighterVR
             serializer.SerializeValue(ref AvatarScale);serializer.SerializeValue(ref Speed);
             serializer.SerializeValue(ref LeftGrip);serializer.SerializeValue(ref LeftTrigger);
             serializer.SerializeValue(ref RightGrip);serializer.SerializeValue(ref RightTrigger);
+            serializer.SerializeValue(ref Seated);serializer.SerializeValue(ref SeatPosition);
         }
         public bool IsValid => float.IsFinite(FloorY)&&float.IsFinite(OriginY)&&float.IsFinite(BodyYaw)
             &&float.IsFinite(StandingHeight)&&float.IsFinite(AvatarScale)&&float.IsFinite(Speed)
+            &&float.IsFinite(SeatPosition.x)&&float.IsFinite(SeatPosition.y)&&float.IsFinite(SeatPosition.z)
             &&StandingHeight>=.8f&&StandingHeight<=2.4f&&AvatarScale>=.5f&&AvatarScale<=1.5f&&Speed>=0&&Speed<=3.1f;
         public bool Changed(FirefighterAvatarState other) => Mathf.Abs(FloorY-other.FloorY)>.005f
             ||Mathf.Abs(OriginY-other.OriginY)>.005f||Mathf.Abs(Mathf.DeltaAngle(BodyYaw,other.BodyYaw))>1
             ||Mathf.Abs(StandingHeight-other.StandingHeight)>.005f||Mathf.Abs(AvatarScale-other.AvatarScale)>.005f
             ||Mathf.Abs(Speed-other.Speed)>.03f||(Speed==0)!=(other.Speed==0)
-            ||LeftGrip!=other.LeftGrip||LeftTrigger!=other.LeftTrigger||RightGrip!=other.RightGrip||RightTrigger!=other.RightTrigger;
+            ||LeftGrip!=other.LeftGrip||LeftTrigger!=other.LeftTrigger||RightGrip!=other.RightGrip||RightTrigger!=other.RightTrigger||Seated!=other.Seated||(SeatPosition-other.SeatPosition).sqrMagnitude>.0001f;
     }
 
     [DefaultExecutionOrder(250)]
@@ -139,28 +143,40 @@ namespace FirefighterVR
                 }
             }
             foreach(var id in removed){Release(bindings[id]);bindings.Remove(id);}
-            if(!localAvatar||!localAvatar.trackingReady||Time.unscaledTime<nextSend)return;
+            if(!localAvatar||Time.unscaledTime<nextSend)return;
+            bool postureChanged=!sentState||localAvatar.Seated!=lastState.Seated||
+                (localAvatar.SeatPosition-lastState.SeatPosition).sqrMagnitude>.0001f;
+            // Mode changes must not be gated on a live headset or a lost hand pose.
+            // A reliable heartbeat also repairs a missed initial posture on a late join.
+            bool postureHeartbeat=Time.unscaledTime-lastSend>=1;
+            if(!localAvatar.trackingReady&&!postureChanged&&!postureHeartbeat)return;
             var player=XRINetworkPlayer.LocalPlayer;
             if(!player||!player.IsOwner||!bindings.ContainsKey(player.OwnerClientId))return;
             nextSend=Time.unscaledTime+1/Mathf.Max(2,StateUpdatesPerSecond);
             var state=new FirefighterAvatarState
             {
                 FloorY=localAvatar.floorY,OriginY=localAvatar.trackingOriginY,
-                BodyYaw=localAvatar.placement.eulerAngles.y,StandingHeight=localAvatar.StandingHMDHeight,
+                BodyYaw=postureChanged?(localAvatar.Seated?localAvatar.SeatYaw:localAvatar.playerRoot.eulerAngles.y):localAvatar.placement.eulerAngles.y,StandingHeight=localAvatar.StandingHMDHeight,
                 AvatarScale=localAvatar.placement.localScale.y,Speed=localAvatar.movementSpeed>.08f?localAvatar.movementSpeed:0,
+                Seated=localAvatar.Seated,SeatPosition=localAvatar.SeatPosition,
                 LeftGrip=Quantize(localAvatar.leftGripValue),LeftTrigger=Quantize(localAvatar.leftTriggerValue),
                 RightGrip=Quantize(localAvatar.rightGripValue),RightTrigger=Quantize(localAvatar.rightTriggerValue)
             };
             if(!sentState||state.Changed(lastState)||Time.unscaledTime-lastSend>=1)
-            {PublishStateRpc(state);lastState=state;lastSend=Time.unscaledTime;sentState=true;}
+            {if(postureChanged||postureHeartbeat)PublishPostureRpc(state);else PublishStateRpc(state);lastState=state;lastSend=Time.unscaledTime;sentState=true;}
         }
         static byte Quantize(float value)=>(byte)Mathf.RoundToInt(Mathf.Clamp01(value)*255);
         [Rpc(SendTo.Everyone,InvokePermission=RpcInvokePermission.Everyone,Delivery=RpcDelivery.Unreliable)]
         void PublishStateRpc(FirefighterAvatarState state,RpcParams rpcParams=default)
+        {AcceptState(state,rpcParams.Receive.SenderClientId);}
+        [Rpc(SendTo.Everyone,InvokePermission=RpcInvokePermission.Everyone)]
+        void PublishPostureRpc(FirefighterAvatarState state,RpcParams rpcParams=default)
+        {AcceptState(state,rpcParams.Receive.SenderClientId);}
+        void AcceptState(FirefighterAvatarState state,ulong sender)
         {
             if(!state.IsValid)return;
-            if(!bindings.ContainsKey(rpcParams.Receive.SenderClientId))RefreshPlayers();
-            if(!bindings.TryGetValue(rpcParams.Receive.SenderClientId,out var binding))return;
+            if(!bindings.ContainsKey(sender))RefreshPlayers();
+            if(!bindings.TryGetValue(sender,out var binding))return;
             binding.state=state;binding.hasState=true;binding.receivedAt=Time.unscaledTime;
         }
         void Release(Binding binding)

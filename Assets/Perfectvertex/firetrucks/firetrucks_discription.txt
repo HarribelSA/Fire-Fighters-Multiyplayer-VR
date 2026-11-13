@@ -1,0 +1,68 @@
+This product includes fire truck, ladder truck and environment.
+
+
+Fire truck body - 82147 tris and 51040 verts.
+
+Ladder truck body - 85620 tris and 53511 verts.
+
+Both truck use the same wheels and interior
+
+Wheels - 15772 tris and 8712 verts.
+
+This model have separated steering wheel, lights glass, windows.
+
+All ladder parts are separated and ready for animation.
+
+Hood, doors, rear doors do not open.
+
+Model comes with shadowplane.
+
+No LODs.
+
+
+
+
+All screenshots from Unity, with Post Procecessing Package.
+
+11 materials for trucks
+
+ladderruck_body (4096x4096 BaseMap/MaskMapNormal/Mixed_AO)*
+
+firetruck_body (4096x4096 BaseMap/MaskMapNormal/Mixed_AO)
+
+firetruck_glass (Standart transparent material without maps)
+
+firetruck_headlights_glass (2048x2048 BaseMap/MaskMap/Normal)**
+
+firetruck_lights_glass (2048x2048 BaseMap/MaskMap/Normal)**
+
+van_mirrors (128x128 BaseMap/MaskMap/Normal)
+
+firetruck_parts (4096x4096 BaseMap/MaskMap/Normal/Mixed_AO)
+
+ladderruck_parts (4096x4096 BaseMap/MaskMap/Normal/Mixed_AO)
+
+firetruck_wheels (2048x2048 BaseMap/MaskMap/Normal/Mixed_AO)
+
+shadow_plane (1024x1024 BaseMap)
+
+
+** all transparent materials have one texture set
+
+Model comes with environment - floor, buildings, walls and containers.All models and prefabs are available with this product.
+
+Environment details
+
+container - 1 material (2048x2048 BaseMap/MaskMap/Normal) *
+
+floor - 1 material (2048x2048 BaseMap/MaskMap/Normal)
+
+wall - 1 material (2048x2048 BaseMap/MaskMap/Normal)
+
+store - 1 material (2048x2048 BaseMap/MaskMap/Normal)
+
+*** three different textures for containers - red, blue, yellow.
+
+32 maps for van
+
+15 maps for environment

@@ -112,3 +112,8 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Local project preservation; never required by a teammate's checkout
+/[Bb]ackups/
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta

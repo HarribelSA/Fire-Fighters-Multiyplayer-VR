@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 9fd1771cfa3a50743a5272cb17ca702f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 311904
+  packageName: Fire Trucks
+  packageVersion: 1.0
+  assetPath: Assets/Perfectvertex/firetrucks/Demo/Demo_Profiles/PostProcessingGO
+    Profile.asset
+  uploadId: 738311

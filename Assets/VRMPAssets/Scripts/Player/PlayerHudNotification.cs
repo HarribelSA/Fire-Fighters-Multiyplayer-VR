@@ -7,12 +7,15 @@ namespace XRMultiplayer
     /// <summary>
     /// This class controls the display of the Player HUD Notification aka the Toast.
     /// </summary>
+    [DefaultExecutionOrder(-150)]
     public class PlayerHudNotification : MonoBehaviour
     {
         /// <summary>
         /// The singleton instance of this class.
         /// </summary>
         public static PlayerHudNotification Instance;
+        public System.Func<string,bool> interceptText;
+        public System.Func<bool> stationaryMode;
 
         [Header("Display Options")]
         [SerializeField] bool m_LockPitch = true;
@@ -102,6 +105,7 @@ namespace XRMultiplayer
         /// </summary>
         public void ShowText(string textToShow, float displayTime = 3.0f)
         {
+            if(interceptText!=null&&interceptText(textToShow))return;
             m_DisplayTime = displayTime;
             m_Text.text = textToShow;
             m_LayoutGroupTransform.gameObject.SetActive(true);
@@ -112,6 +116,7 @@ namespace XRMultiplayer
         /// <inheritdoc/>
         private void LateUpdate()
         {
+            if(stationaryMode!=null&&stationaryMode()){m_LayoutGroupTransform.gameObject.SetActive(false);return;}
             m_Transform.position = m_Camera.transform.position;
 
             Quaternion lookRot = Quaternion.LookRotation(m_Camera.transform.forward);

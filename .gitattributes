@@ -169,3 +169,6 @@ Packages/packages-lock.json linguist-generated
 
 # Exceptions for .asset files such as lightning pre-baking
 LightingData.asset     binary
+
+# Preserve the original oversized bake using LFS, without broadening all .asset files
+"Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night/LightingData.asset" filter=lfs diff=lfs merge=lfs -text

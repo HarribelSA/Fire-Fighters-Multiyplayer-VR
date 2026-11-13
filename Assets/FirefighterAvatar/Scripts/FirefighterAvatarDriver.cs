@@ -19,6 +19,8 @@ namespace FirefighterVR
         public RigBuilder rigBuilder;
         public Transform placement, playerRoot;
         public Collider groundSurface;
+        // Optional station floors. Empty in the original lobby; remote avatars still use replicated FloorY.
+        public Collider[] walkableGroundSurfaces = Array.Empty<Collider>();
         public Transform headSource, leftSource, rightSource;
         public Transform headTarget, neckTarget, chestTarget, hipsTarget;
         public Transform leftTarget, rightTarget, leftHint, rightHint;
@@ -98,6 +100,11 @@ namespace FirefighterVR
         Vector3 leanOffset;
         bool crouchActive;
         public bool remoteTracking;
+        [NonSerialized] public bool Seated;
+        [NonSerialized] public Vector3 SeatPosition;
+        [NonSerialized] public float SeatYaw;
+        bool wasSeated;
+        float standingHeightBeforeSeat;
         FirefighterAvatarState remoteState;
         bool remoteStateReady;
         Vector3 postureEyeGap;
@@ -114,6 +121,7 @@ namespace FirefighterVR
         public float rightTriggerValue { get; private set; }
         Mesh soleMesh;
         readonly System.Collections.Generic.List<Vector3> soleVertices=new System.Collections.Generic.List<Vector3>();
+        readonly System.Collections.Generic.Dictionary<SkinnedMeshRenderer,float> soleMeasurements=new System.Collections.Generic.Dictionary<SkinnedMeshRenderer,float>();
         bool initialized;
         float scale=1, yaw, calibrationUntil, phase, suppressUntil, sampleTime, travelled;
         Vector3 previousRoot, sampleDisplacement, velocity;
@@ -158,7 +166,7 @@ namespace FirefighterVR
             (headSource.parent?headSource.parent.InverseTransformPoint(headSource.position).y:
             playerRoot.InverseTransformPoint(headSource.position).y);
         public void SetRemoteState(FirefighterAvatarState state)
-        {remoteState=state;remoteStateReady=true;StandingHMDHeight=state.StandingHeight;}
+        {remoteState=state;remoteStateReady=true;StandingHMDHeight=state.StandingHeight;Seated=state.Seated;SeatPosition=state.SeatPosition;SeatYaw=state.BodyYaw;}
         [ContextMenu("Calibrate standing HMD height")]
         public void CalibrateStandingHeight()
         {
@@ -199,8 +207,22 @@ namespace FirefighterVR
             foreach(var r in gloveRenderers)if(r)r.enabled=true;
             foreach(var r in originalLocalVisuals)if(r)r.enabled=false;
             float dt=Mathf.Min(Time.unscaledDeltaTime,.05f);
+            if(!remoteTracking&&Seated&&!wasSeated)standingHeightBeforeSeat=StandingHMDHeight;
+            if(!remoteTracking&&!Seated&&wasSeated){StandingHMDHeight=standingHeightBeforeSeat;standingHeightCalibrated=false;calibrationUntil=Time.unscaledTime+1;ResetMovement();}
+            wasSeated=Seated;
             floorY=remoteTracking?remoteState.FloorY:groundSurface.bounds.max.y;
-            if(!remoteTracking&&groundSurface.Raycast(new Ray(headSource.position+Vector3.up,Vector3.down),out var hit,20))floorY=hit.point.y;
+            if(!remoteTracking)
+            {
+                var ray=new Ray(headSource.position+Vector3.up*.1f,Vector3.down);
+                if(walkableGroundSurfaces.Length>0)
+                {
+                    float nearest=float.PositiveInfinity;
+                    foreach(var surface in walkableGroundSurfaces)
+                        if(surface&&surface.Raycast(ray,out var floorHit,20)&&floorHit.normal.y>.8f&&floorHit.distance<nearest)
+                        {nearest=floorHit.distance;floorY=floorHit.point.y;}
+                }
+                else if(groundSurface.Raycast(new Ray(headSource.position+Vector3.up,Vector3.down),out var hit,20))floorY=hit.point.y;
+            }
             if(!initialized)
             {
                 yaw=headSource.eulerAngles.y;calibrationUntil=Time.unscaledTime+(remoteTracking?0:2);
@@ -212,13 +234,14 @@ namespace FirefighterVR
             if(!remoteTracking&&!calibrationHasTrackedHeight&&headSource.localPosition.y>.2f)
             {calibrationHasTrackedHeight=true;calibrationUntil=Mathf.Max(calibrationUntil,Time.unscaledTime+1);}
             if(remoteTracking)scale=remoteState.AvatarScale;
-            else if(Time.unscaledTime<=calibrationUntil)
+            else if(!Seated&&Time.unscaledTime<=calibrationUntil)
                 scale=Mathf.Clamp((headSource.position.y-playerRoot.position.y)/(standingEye.y-standingSole),.75f,1.25f);
             // Calibrate once after tracking settles. A fixed 1.65 m default otherwise treats
             // shorter standing users as permanently crouched. Later height drops never recalibrate.
-            if(!remoteTracking&&!standingHeightCalibrated&&calibrationHasTrackedHeight&&Time.unscaledTime>calibrationUntil)
+            if(!remoteTracking&&!Seated&&!standingHeightCalibrated&&calibrationHasTrackedHeight&&Time.unscaledTime>calibrationUntil)
                 CalibrateStandingHeight();
             SampleMovement(dt);
+            if(Seated){movementSpeed=0;scale=remoteTracking?remoteState.AvatarScale:1;}
             placement.localScale=Vector3.one*scale;
             float headYaw=headSource.eulerAngles.y;
             float headTurn=Mathf.DeltaAngle(yaw,headYaw);
@@ -227,12 +250,15 @@ namespace FirefighterVR
             else if(Mathf.Abs(headTurn)>55)desiredYaw=headYaw-Mathf.Sign(headTurn)*35;
             else if(movementSpeed>.08f&&Mathf.Abs(Mathf.DeltaAngle(playerRoot.eulerAngles.y,headYaw))<45)desiredYaw=playerRoot.eulerAngles.y;
             yaw=Mathf.MoveTowardsAngle(yaw,desiredYaw,(remoteTracking?360:120)*dt);
+            if(Seated)yaw=SeatYaw;
             var rotation=Quaternion.Euler(0,yaw,0);
             var angles=HeadAngles(rotation);
             UpdatePosture(dt,rotation);
+            if(Seated){crouchAmount=0;spineBend=0;}
             var neckRotation=rotation*Quaternion.Euler(angles.x*.35f,angles.y*.4f,angles.z*.25f)*neckAxes;
             var anatomicalEyeOffset=rotation*standingNeck*scale+neckRotation*headBindPosition*scale+headSource.rotation*eyeOffset*scale;
             var position=new Vector3(headSource.position.x-anatomicalEyeOffset.x,floorY-standingSole*scale,headSource.position.z-anatomicalEyeOffset.z);
+            if(Seated)position=SeatPosition-rotation*new Vector3(standingHips.x,standingSole*scale,standingHips.z);
             placement.SetPositionAndRotation(position,rotation);
             headTarget.SetPositionAndRotation(headSource.position,headSource.rotation);
             chestTarget.rotation=rotation*Quaternion.Euler(spineBend,Mathf.Clamp(angles.y*.15f,-10,10),0)*chestAxes;
@@ -242,6 +268,7 @@ namespace FirefighterVR
             float arcForward=(Mathf.Sin(bend*.35f)*.15f+Mathf.Sin(bend*.7f)*.16f+Mathf.Sin(bend)*.26f)*scale;
             float arcDrop=((1-Mathf.Cos(bend*.35f))*.15f+(1-Mathf.Cos(bend*.7f))*.16f+(1-Mathf.Cos(bend))*.26f)*scale;
             hipsTarget.position+=Vector3.up*(-crouchAmount+arcDrop)-rotation*Vector3.forward*arcForward;
+            if(Seated)hipsTarget.position=SeatPosition+Vector3.up*.59f;
             leftTarget.SetPositionAndRotation(leftSource.TransformPoint(leftGripOffset),leftSource.rotation*Quaternion.Euler(leftWristEuler));
             rightTarget.SetPositionAndRotation(rightSource.TransformPoint(rightGripOffset),rightSource.rotation*Quaternion.Euler(rightWristEuler));
             leftHint.position=transform.TransformPoint(new Vector3(-.4f,1,-.28f));
@@ -267,7 +294,7 @@ namespace FirefighterVR
             }
             wasWalking=walking;
             SetFeet(dt);
-            if(walkBlend<.01f)FitPelvisToFeet();
+            if(walkBlend<.01f&&!Seated)FitPelvisToFeet();
             EvaluatePose(dt);
             for(int iteration=0;iteration<2;iteration++)
             {
@@ -289,7 +316,7 @@ namespace FirefighterVR
                     { leg.target.position+=Vector3.up*Mathf.Clamp(correction,-.08f,.08f);adjusted=true; }
                 }
                 if(!adjusted)break;
-                if(walkBlend<.01f)FitPelvisToFeet();
+                if(walkBlend<.01f&&!Seated)FitPelvisToFeet();
                 EvaluatePose();
             }
             soleHeight=MeasureSoles();
@@ -353,6 +380,7 @@ namespace FirefighterVR
             for(int i=0;i<legs.Length;i++)
             {
                 var leg=legs[i];var nominal=transform.TransformPoint(leg.restFoot)-leanOffset;nominal.y=floorY;
+                if(Seated)nominal=SeatPosition+placement.rotation*new Vector3(i==0?-.14f:.14f,0,.43f);
                 if(!leg.ready){leg.planted=nominal;leg.swinging=false;leg.ready=true;}
                 Vector3 sole=leg.planted;leg.lift=0;
                 if(walkBlend<.01f||walkPoses.Length<2)
@@ -384,6 +412,7 @@ namespace FirefighterVR
         {
             rigBuilder.Evaluate(deltaTime);
             foreach(var leg in legs)if(leg.toe)leg.toe.localRotation=Quaternion.Slerp(leg.toeRotation,leg.toe.localRotation,walkBlend);
+            soleMeasurements.Clear();
         }
         void FitPelvisToFeet()
         {
@@ -465,11 +494,12 @@ namespace FirefighterVR
         }
         float MeasureSole(SkinnedMeshRenderer shoe)
         {
+            if(soleMeasurements.TryGetValue(shoe,out float measured))return measured;
             if(!soleMesh)soleMesh=new Mesh{name="FirefighterSoleMeasurement"};
             shoe.BakeMesh(soleMesh);float min=float.PositiveInfinity;
             soleMesh.GetVertices(soleVertices);
             foreach(var v in soleVertices)min=Mathf.Min(min,shoe.transform.TransformPoint(v).y);
-            return min;
+            soleMeasurements[shoe]=min;return min;
         }
         float MeasureSoles(){float min=float.PositiveInfinity;foreach(var shoe in footwear)min=Mathf.Min(min,MeasureSole(shoe));return min;}
         void OnDisable()

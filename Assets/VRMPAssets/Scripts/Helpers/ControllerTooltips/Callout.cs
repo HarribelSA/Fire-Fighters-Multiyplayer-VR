@@ -61,7 +61,7 @@ namespace Unity.VRTemplate
 
         public void GazeHoverStart()
         {
-            if (!m_UseGazeCallout)
+            if (!isActiveAndEnabled || !m_UseGazeCallout)
             {
                 DisableCallout();
                 return;
@@ -77,14 +77,21 @@ namespace Unity.VRTemplate
 
         public void GazeHoverEnd()
         {
-            if (!m_UseGazeCallout)
+            if (!isActiveAndEnabled || !m_UseGazeCallout)
             {
                 DisableCallout();
                 return;
             }
 
             m_Gazing = false;
+            if (m_EndCo != null)
+                StopCoroutine(m_EndCo);
             m_EndCo = StartCoroutine(EndDelay());
+        }
+
+        void OnDisable()
+        {
+            DisableCallout();
         }
 
         IEnumerator StartDelay()
@@ -119,10 +126,13 @@ namespace Unity.VRTemplate
 
         void DisableCallout()
         {
+            m_Gazing = false;
             if (m_StartCo != null)
                 StopCoroutine(m_StartCo);
             if (m_EndCo != null)
                 StopCoroutine(m_EndCo);
+            m_StartCo = null;
+            m_EndCo = null;
             TurnOffStuff();
         }
     }

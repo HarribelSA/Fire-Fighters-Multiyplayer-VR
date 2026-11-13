@@ -141,6 +141,7 @@ namespace XRMultiplayer
         /// If the voice chat service is initialized.
         /// </summary>
         bool m_IsInitialized;
+        bool m_IsInitializing;
         const string k_DebugPrepend = "<color=#0CFAFA>[Voice Chat Manager]</color> ";
         ///<inheritdoc/>
         private void Awake()
@@ -191,20 +192,15 @@ namespace XRMultiplayer
 
         void ConnectionStateUpdated(XRINetworkGameManager.ConnectionState connectionState)
         {
-            if (!m_IsInitialized && connectionState == XRINetworkGameManager.ConnectionState.Authenticated)
+            // LocalOnly sessions do not initialize Vivox. Authentication can be
+            // broadcast from Awake before SessionManager.Start disables this component.
+            if (!isActiveAndEnabled || (TryGetComponent<SessionManager>(out var session) && session.sessionType == SessionType.LocalOnly))
+                return;
+            if (!m_IsInitialized && !m_IsInitializing && connectionState == XRINetworkGameManager.ConnectionState.Authenticated)
             {
                 Utils.Log($"{k_DebugPrepend}Initializing Voice Chat");
                 m_ConnectionStatus.Value = "Initializing Voice Service";
-                m_IsInitialized = true;
                 EnableVoiceChat();
-                if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
-                {
-                    StartCoroutine(ShowPermissionsAfterDelay());
-                }
-                else
-                {
-                    MicrophonePermissionGranted();
-                }
             }
         }
 
@@ -244,21 +240,34 @@ namespace XRMultiplayer
 
         async void EnableVoiceChat()
         {
+            m_IsInitializing = true;
             try
             {
                 await VivoxService.Instance.InitializeAsync();
+                if (this == null || !isActiveAndEnabled) return;
                 m_ConnectionStatus.Value = "Voice Service Initialized";
                 VivoxService.Instance.LoggedIn += LocalUserLoggedIn;
                 BindToParticipantEvents();
+                m_IsInitialized = true;
+                if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+                    StartCoroutine(ShowPermissionsAfterDelay());
+                else
+                    MicrophonePermissionGranted();
+                if (XRINetworkGameManager.Connected.Value) Login();
             }
             catch (System.Exception e)
             {
+                m_ConnectionStatus.Value = "Voice Service Initialization Failed";
 #if UNITY_EDITOR
                 EditorGUI.hyperLinkClicked += HyperlinkClicked;
                 Utils.Log($"{k_DebugPrepend}Vivox Initialization Failed. Please check the Vivox Service Window <a data=\"OpenVivoxSettings\"><b>Project Settings > Services > Vivox</b></a>\n\n{e}", 2);
 #else
                 Utils.Log($"{k_DebugPrepend}Vivox Initialization Failed.\n\n{e}", 2);
 #endif
+            }
+            finally
+            {
+                m_IsInitializing = false;
             }
         }
 

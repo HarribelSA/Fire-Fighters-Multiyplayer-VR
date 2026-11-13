@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8701902830279802955
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3880334508633449124}
+  - component: {fileID: 2601769388864677093}
+  - component: {fileID: 2942584163331675821}
+  - component: {fileID: 524716666941556466}
+  m_Layer: 0
+  m_Name: FireStationGarage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3880334508633449124
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8701902830279802955}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &2601769388864677093
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8701902830279802955}
+  m_Mesh: {fileID: 5192109326521770869, guid: a5140d23ec588534a8001cba502148f1, type: 3}
+--- !u!23 &2942584163331675821
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8701902830279802955}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 56d133ad955522a47b755243f6d533aa, type: 2}
+  - {fileID: 2100000, guid: a609ed1a5adadfd4db720cfd2f071463, type: 2}
+  - {fileID: 2100000, guid: f2802303d07a3a34d865bf299fbeb6c4, type: 2}
+  - {fileID: 2100000, guid: 7bb233d5fe4c7e549a993650c29de91a, type: 2}
+  - {fileID: 2100000, guid: c0ba660e10ab79648b84129cbef694e0, type: 2}
+  - {fileID: 2100000, guid: 590ade92e186d56469cf342bb797bd74, type: 2}
+  - {fileID: 2100000, guid: 703e63c2a53fbb441a3ccdea170437a1, type: 2}
+  - {fileID: 2100000, guid: 02150476f00812846a97183907965cb5, type: 2}
+  - {fileID: 2100000, guid: 8ef819f8192cbdc4c90b2acc88499d7e, type: 2}
+  - {fileID: 2100000, guid: 5f431ec66661c9248baa0e847ba6b282, type: 2}
+  - {fileID: 2100000, guid: 9d758d78c8ace13429ce67d474a2fbcd, type: 2}
+  - {fileID: 2100000, guid: c0d5f96db363ab741b7b7ad76296f454, type: 2}
+  - {fileID: 2100000, guid: aaf5801dcf185e34783c1eaace8a41cd, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!64 &524716666941556466
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8701902830279802955}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5192109326521770869, guid: a5140d23ec588534a8001cba502148f1, type: 3}
