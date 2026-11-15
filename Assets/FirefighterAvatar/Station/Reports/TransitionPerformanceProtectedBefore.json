@@ -1,0 +1,38 @@
+[
+  {
+    "path": "Assets/S1Test.unity",
+    "sha256": "A7511D3580E779E4B40DBE464DAF33DB59D09FF18F66D0754D5C9D8A09FD3C0B"
+  },
+  {
+    "path": "Assets/FireStation/Scenes/Sample.unity",
+    "sha256": "60645AFA9B5EB0ABF83CCC7928B4CBB4B294E839DDD44D4C189E203B3390DB40"
+  },
+  {
+    "path": "Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+    "sha256": "9E46528BD13258F5E16428336C99EBD551DC4A05BE2AABD53BB0FD12621725EA"
+  },
+  {
+    "path": "ProjectSettings/ProjectSettings.asset",
+    "sha256": "EBCAE80940FCF38BF29F5811F0B41183CC76E118C5FE6974B69195E163A87578"
+  },
+  {
+    "path": "ProjectSettings/EditorBuildSettings.asset",
+    "sha256": "4217F08F59A3183759C0505963D249185F2446665C9C049F29C23AF23C972AA7"
+  },
+  {
+    "path": "ProjectSettings/TagManager.asset",
+    "sha256": "C3CEB300BC5F80265B8F8B119A908C5DC150F152C9730F881E2AB44791496280"
+  },
+  {
+    "path": "Packages/manifest.json",
+    "sha256": "82B5134186DA4D88D303EFFE6907EA6C160625CAFDB038D37CAF4FD2C3B18ABE"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Station/StationLobbyState.cs",
+    "sha256": "427FE04B6BF6CF4CDEEF946A4615F1EF736DC46BB939D7532FFC56D817925105"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Prefabs/FirefighterNetworkVisual.prefab",
+    "sha256": "3207F08B1BB8AF9A0769FC9D644A77DFE1CC447BA62AF05D1A44BDF61F6AD108"
+  }
+]

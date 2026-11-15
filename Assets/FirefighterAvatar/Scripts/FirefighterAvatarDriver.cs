@@ -172,7 +172,7 @@ namespace FirefighterVR
         public float rightGripValue { get; private set; }
         public float rightTriggerValue { get; private set; }
         Mesh soleMesh;
-        readonly System.Collections.Generic.List<Vector3> soleVertices=new System.Collections.Generic.List<Vector3>();
+        readonly Dictionary<SkinnedMeshRenderer,AvatarSoleCache> solePoseCaches=new Dictionary<SkinnedMeshRenderer,AvatarSoleCache>();
         readonly System.Collections.Generic.Dictionary<SkinnedMeshRenderer,float> soleMeasurements=new System.Collections.Generic.Dictionary<SkinnedMeshRenderer,float>();
         bool initialized;
         float scale=1, yaw, calibrationUntil, phase, suppressUntil, sampleTime, travelled;
@@ -188,6 +188,7 @@ namespace FirefighterVR
 
         void OnEnable()
         {
+            foreach(var cached in solePoseCaches.Values)cached.Invalidate();
             initialized=false;poseEvaluated=false;movementSpeed=0;walkBlend=0;phase=0;wasWalking=false;
             standingHeightCalibrated=false;
             crouchAmount=0;spineBend=0;crouchActive=false;postureEyeGapReady=false;
@@ -342,7 +343,7 @@ namespace FirefighterVR
             if(rightVisualGrip.weight>0)rightTarget.SetPositionAndRotation(Vector3.Lerp(rightTarget.position,rightVisualGrip.position,rightVisualGrip.weight),Quaternion.Slerp(rightTarget.rotation,rightVisualGrip.rotation,rightVisualGrip.weight));
             leftHint.position=transform.TransformPoint(new Vector3(-.4f,1,-.28f));
             rightHint.position=transform.TransformPoint(new Vector3(.4f,1,-.28f));
-            if(!rigBuilder.graph.IsValid()&&!rigBuilder.Build())return;
+            if(!rigBuilder.graph.IsValid()){using var timing=FirefighterVR.Station.TransitionDiagnostics.Measure("avatar_rig_graph_build");if(!rigBuilder.Build())return;}
             rigBuilder.graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
             if(animator.runtimeAnimatorController&&!locomotionController.IsValid())
             {
@@ -577,9 +578,8 @@ namespace FirefighterVR
         {
             if(soleMeasurements.TryGetValue(shoe,out float measured))return measured;
             if(!soleMesh)soleMesh=new Mesh{name="FirefighterSoleMeasurement"};
-            shoe.BakeMesh(soleMesh);float min=float.PositiveInfinity;
-            soleMesh.GetVertices(soleVertices);
-            foreach(var v in soleVertices)min=Mathf.Min(min,shoe.transform.TransformPoint(v).y);
+            if(!solePoseCaches.TryGetValue(shoe,out var cached)){cached=new AvatarSoleCache(shoe);solePoseCaches.Add(shoe,cached);}
+            float min=cached.Measure(soleMesh);
             soleMeasurements[shoe]=min;return min;
         }
         float MeasureSoles(){float min=float.PositiveInfinity;foreach(var shoe in footwear)min=Mathf.Min(min,MeasureSole(shoe));return min;}

@@ -24,7 +24,7 @@ namespace FirefighterVR.Station
         readonly Dictionary<MeshCollider,(int[] ends,bool[] floors)> floorMaterials=new Dictionary<MeshCollider,(int[],bool[])>();
         static readonly Vector3[] supportOffsets={Vector3.zero,Vector3.right,Vector3.left,Vector3.forward,Vector3.back,new Vector3(.707f,0,.707f),new Vector3(-.707f,0,.707f),new Vector3(.707f,0,-.707f),new Vector3(-.707f,0,-.707f)};
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] static void ResetStatic()=>Instance=null;
-        void Awake(){Instance=this;if(FindFirstObjectByType<XROrigin>()&&inspectionCamera)inspectionCamera.SetActive(false);}
+        void Awake(){using var timing=TransitionDiagnostics.Measure("station_scene_awake");Instance=this;if(FindFirstObjectByType<XROrigin>()&&inspectionCamera)inspectionCamera.SetActive(false);}
         void OnDestroy(){if(Instance==this)Instance=null;}
         public Transform Spawn(StationRole role)=>role==StationRole.Driver?driverSpawn:role==StationRole.Assistant?assistantSpawn:null;
         public float CapsuleRadius(XROrigin rig)=>rig&&rig.TryGetComponent<CharacterController>(out var c)?Mathf.Max(.08f,c.radius*Mathf.Max(rig.Origin.transform.lossyScale.x,rig.Origin.transform.lossyScale.z)+destinationClearancePadding):.28f;

@@ -43,6 +43,7 @@ namespace FirefighterVR.Station
         public bool Process(IXRSelectInteractor interactor,IXRSelectInteractable interactable)=>Flow&&Flow.MissionSessionActive&&LocalRole==StationRole.Assistant&&Flow.MissionState.stage>=CrewMissionStage.EmergencyAlarm&&Flow.MissionState.stage<CrewMissionStage.Departure;
         void Awake()
         {
+            using var timing=TransitionDiagnostics.Measure("station_mission_view_awake");
             Instance=this;
             foreach(var audio in alarmAudio)if(audio){audio.Stop();audio.playOnAwake=false;}
             foreach(var animator in alarmAnimators)if(animator)animator.enabled=false;
@@ -51,6 +52,7 @@ namespace FirefighterVR.Station
         }
         void Start()
         {
+            using var timing=TransitionDiagnostics.Measure("station_mission_view_start");
             rig=Flow?Flow.localRig:SeatedDispatchLobby.Instance?SeatedDispatchLobby.Instance.rig:null;
             if(rig)teleport=rig.origin.GetComponentInChildren<TeleportationProvider>(true);
             foreach(var target in seatTargets)if(target&&teleport)target.teleportationProvider=teleport;
@@ -90,6 +92,7 @@ namespace FirefighterVR.Station
         {if(pending&&!busy){pending=false;StartCoroutine(EnterSeat(pendingKind));}}
         IEnumerator EnterSeat(StationSeatKind kind)
         {
+            TransitionDiagnostics.Begin("seat_"+kind);
             if(!rig)yield break;busy=true;rig.SeatTransition=true;
             var fade=StationViewFade.Instance;if(fade)yield return fade.Cover();
             var anchor=kind==StationSeatKind.DispatchChair?dispatchSeat:kind==StationSeatKind.DriverTruck?driverSeat:passengerSeat;

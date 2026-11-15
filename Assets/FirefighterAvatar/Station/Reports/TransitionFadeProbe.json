@@ -1,0 +1,6 @@
+{
+  "scope": "Editor camera fade; not Quest stereo or tracked mission readiness",
+  "completed": true,
+  "fadeOutToRenderedBlackMs": 1130.6078999996316,
+  "fadeInMs": 1322.6801000000705
+}

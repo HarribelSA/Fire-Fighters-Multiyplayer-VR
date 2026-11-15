@@ -38,6 +38,7 @@ namespace CityNightPresentation.Mission
         public static Quaternion SteeringRotation(Quaternion mounted,Vector3 shaft,float input,float range)=>mounted*Quaternion.AngleAxis(-Mathf.Clamp(input,-1,1)*range*.5f,shaft.normalized);
         void Awake()
         {
+            using var timing=FirefighterVR.Station.TransitionDiagnostics.Measure("vehicle_input_and_physics_awake");
             body=GetComponent<Rigidbody>();body.centerOfMass=new Vector3(0,.85f,-.55f);
             if(importedTuning)importedTuning.enabled=false;
             if(importedTuning){maximumKmh=importedTuning.maxSpeed;reverseKmh=importedTuning.maxReverseSpeed;axleTorque=importedTuning.motorPower;brakeTorque=importedTuning.brakePower;steeringAngle=importedTuning.maxSteeringAngle;steeringRate=importedTuning.steeringSpeed;}

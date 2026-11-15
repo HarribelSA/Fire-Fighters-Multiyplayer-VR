@@ -1,0 +1,128 @@
+{
+  "scope": "Warm Unity Editor offline load probe; not a validated XR/mission/network transition. Timings include editor overhead and retained assets. Shader GPU cost not isolated.",
+  "results": [
+    {
+      "scene": "Assets/FireStation/Scenes/Sample.unity",
+      "loadThroughActivationMs": 6086.7754999999306,
+      "sceneLoadedEventMs": 6071.1500999996133,
+      "payload90ObservedMs": 1319.6935999994821,
+      "activationTailMs": 4751.4565000001312,
+      "startObservationMs": 121.29069999991771,
+      "maxObservedFrameGapMs": 4767.0819000004485,
+      "allocatedDeltaBytes": 844461683,
+      "managedDeltaBytes": 1896448,
+      "gen0Collections": 0,
+      "controllerReady": true,
+      "xrOrigins": 1,
+      "activeHmdCameras": 1,
+      "cleanupBlockedWhileContentLoaded": true
+    },
+    {
+      "scene": "Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "loadThroughActivationMs": 9146.21410000018,
+      "sceneLoadedEventMs": 9109.8958000002312,
+      "payload90ObservedMs": 6636.0254000001078,
+      "activationTailMs": 2473.8704000001235,
+      "startObservationMs": 119.40169999979844,
+      "maxObservedFrameGapMs": 6635.863800000152,
+      "allocatedDeltaBytes": 1077868712,
+      "managedDeltaBytes": 1417216,
+      "gen0Collections": 0,
+      "controllerReady": true,
+      "xrOrigins": 1,
+      "activeHmdCameras": 1,
+      "cleanupBlockedWhileContentLoaded": true
+    }
+  ],
+  "samples": [
+    {
+      "route": "probe_final_after_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "begin",
+      "elapsedMs": 0.0686,
+      "stageMs": 0.0686,
+      "frame": 394,
+      "allocatedBytes": 1252122950
+    },
+    {
+      "route": "probe_final_after_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_scene_awake",
+      "elapsedMs": 6065.2791,
+      "stageMs": 0.7803,
+      "frame": 396,
+      "allocatedBytes": 2095901707
+    },
+    {
+      "route": "probe_final_after_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_awake",
+      "elapsedMs": 6067.5442,
+      "stageMs": 2.0425,
+      "frame": 396,
+      "allocatedBytes": 2095914271
+    },
+    {
+      "route": "probe_final_after_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "local_scene_activated:Sample",
+      "elapsedMs": 6071.3095,
+      "stageMs": 6071.2409,
+      "frame": 396,
+      "allocatedBytes": 2095933016
+    },
+    {
+      "route": "probe_final_after_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_start",
+      "elapsedMs": 6074.7897,
+      "stageMs": 1.4595,
+      "frame": 396,
+      "allocatedBytes": 2095504785
+    },
+    {
+      "route": "probe_final_after_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "complete",
+      "elapsedMs": 6210.7034,
+      "stageMs": 139.3939,
+      "frame": 397,
+      "allocatedBytes": 2096584633
+    },
+    {
+      "route": "probe_final_after_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "begin",
+      "elapsedMs": 0.0006,
+      "stageMs": 0.0006,
+      "frame": 397,
+      "allocatedBytes": 2096585827
+    },
+    {
+      "route": "probe_final_after_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "vehicle_input_and_physics_awake",
+      "elapsedMs": 8628.3349,
+      "stageMs": 10.1091,
+      "frame": 399,
+      "allocatedBytes": 2828967764
+    },
+    {
+      "route": "probe_final_after_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "local_scene_activated:demo_city_night",
+      "elapsedMs": 9109.8807,
+      "stageMs": 9109.8801,
+      "frame": 399,
+      "allocatedBytes": 3175525965
+    },
+    {
+      "route": "probe_final_after_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "traffic_paths_and_poses_initialize",
+      "elapsedMs": 9114.4108,
+      "stageMs": 3.5063,
+      "frame": 399,
+      "allocatedBytes": 3174090667
+    },
+    {
+      "route": "probe_final_after_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "complete",
+      "elapsedMs": 9271.2549,
+      "stageMs": 161.3742,
+      "frame": 400,
+      "allocatedBytes": 3174454539
+    }
+  ],
+  "retainedAllocatedBytes": 2841841391
+}

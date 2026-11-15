@@ -25,10 +25,13 @@ namespace FirefighterVR.Station
         public Renderer fadeRenderer;
         public GameObject[] sampleInstructionUI;
         public bool permanentlySeatedDriver=true;
+        public bool releaseUnusedAssetsOnReturn=true;
         public enum AssistantMovement { SmoothAndTeleport,Smooth,Teleport }
         public AssistantMovement assistantMovement=AssistantMovement.SmoothAndTeleport;
         StationRole previousProviderRole;
         bool providersWereFrozen=true;
+        StationPhase diagnosticPhase;
+        uint diagnosticCityEpoch;
         XRRayInteractor[] controllerTeleportRays;
         XRInteractorLineVisual[] controllerTeleportLines;
         public void SetAssistantMovement(int mode){if(LocalRole!=StationRole.Assistant)return;assistantMovement=(AssistantMovement)Mathf.Clamp(mode,0,2);PlayerPrefs.SetInt("Firefighter.AssistantMovement",(int)assistantMovement);}
@@ -84,10 +87,13 @@ namespace FirefighterVR.Station
         }
         void Update()
         {
+            TransitionDiagnostics.Tick();
             var flow=StationSessionFlow.Instance;
             bool connected=flow&&flow.IsSpawned;
             if(!connected)blackEpoch=0;
             var state=connected?flow.Lobby.Value:StationLobbyState.Initial;
+            if(connected&&state.Phase!=diagnosticPhase){diagnosticPhase=state.Phase;if(state.Phase==StationPhase.Fading)TransitionDiagnostics.Begin("multiplayer_station");TransitionDiagnostics.Mark("network_phase:"+state.Phase);}
+            if(connected&&flow.MissionState.stage==CrewMissionStage.CityTransition&&diagnosticCityEpoch!=flow.MissionState.epoch){diagnosticCityEpoch=flow.MissionState.epoch;TransitionDiagnostics.Begin("multiplayer_city");}
             LocalRole=flow&&flow.SoloMissionActive?flow.SoloHumanRole:connected?state.RoleOf(flow.NetworkManager.LocalClientId):SeatedDispatchLobby.Instance?SeatedDispatchLobby.Instance.SelectedProfile:StationRole.None;
             if(Time.unscaledTimeAsDouble>=nextInputCheck){nextInputCheck=Time.unscaledTimeAsDouble+.25;CheckInput();if(connected&&inputWasAvailable&&!InputAvailable&&state.IsReady(flow.NetworkManager.LocalClientId)&&state.Editable)flow.SetLocalReady(false);inputWasAvailable=InputAvailable;}
             if(connected&&state.Phase==StationPhase.AwaitingSpawn&&(!placed||placedEpoch!=state.Epoch)&&spawnRoutine==null)spawnRoutine=StartCoroutine(PlaceInStation(flow,state));
@@ -149,9 +155,11 @@ namespace FirefighterVR.Station
         System.Collections.IEnumerator PlaceInStation(StationSessionFlow flow,StationLobbyState state)
         {
             try {
+            TransitionDiagnostics.Mark("tracking_and_black_wait");
             yield return null;
             while(flow&&flow.IsSpawned&&flow.Lobby.Value.Phase==StationPhase.AwaitingSpawn&&(!StationSpawnPlacement.TrackingReady(origin)||(StationViewFade.Instance&&!StationViewFade.Instance.BlackRendered)))yield return null;
             if(!flow||!flow.IsSpawned||flow.Lobby.Value.Phase!=StationPhase.AwaitingSpawn||flow.Lobby.Value.Epoch!=state.Epoch)yield break;
+            TransitionDiagnostics.Mark("tracking_ready:station");
             var station=StationSceneSetup.Instance;if(!station)yield break;var anchor=station.Spawn(state.RoleOf(flow.NetworkManager.LocalClientId));if(!anchor)yield break;
             foreach(var entry in hiddenStationRoots)if(entry.Key)entry.Key.SetActive(entry.Value);hiddenStationRoots.Clear();
             if(!station.ValidDestination(anchor.position,origin,false)){InputStatus="Spawn clearance check failed. Select Play to retry after clearing the destination.";flow.ReportSpawnFailure(state.Epoch);yield break;}
@@ -172,7 +180,7 @@ namespace FirefighterVR.Station
                 bool aligned=driver?Vector3.Distance(origin.Camera.transform.position,StationSeatPlacement.EyeTarget(missionView.dispatchSeat,avatar))<.15f:StationSpawnPlacement.Aligned(origin,anchor);
                 if(!aligned){if(driver)missionView.PlaceDriverAtDispatch();else StationSpawnPlacement.Place(origin,anchor);stable=0;}else stable++;}
             if(!driver&&!station.ValidDestination(StationSpawnPlacement.GroundPosition(origin),origin,false)){flow.ReportSpawnFailure(state.Epoch);yield break;}
-            placed=true;placedEpoch=state.Epoch;Physics.SyncTransforms();flow.AcknowledgeSpawn(state.Epoch);
+            placed=true;placedEpoch=state.Epoch;Physics.SyncTransforms();TransitionDiagnostics.Mark("placement_verified:station");flow.AcknowledgeSpawn(state.Epoch);TransitionDiagnostics.Mark("local_spawn_ack_sent");
             } finally {spawnRoutine=null;}
         }
         public void RememberStationSpawn(Vector3 p){lastSafeGround=p;safeGroundKnown=true;DisableLobbyResetVolumes();}
@@ -237,10 +245,12 @@ namespace FirefighterVR.Station
             origin.transform.SetPositionAndRotation(lobbyPosition,lobbyRotation);if(cc)cc.enabled=enabled;
             hiddenStationRoots.Clear();returningToLobby=false;RestoreLobbyRig();if(SeatedDispatchLobby.Instance)SeatedDispatchLobby.Instance.ResetSeatPlacement();
             yield return null;
+            if(releaseUnusedAssetsOnReturn)yield return TransitionMemory.ReleaseAfterReturn();
             if(viewFade)yield return viewFade.Reveal();
         }
         void RestoreLobbyRig()
         {
+            diagnosticCityEpoch=0;diagnosticPhase=StationPhase.Waiting;
             placed=false;placedEpoch=0;cityBlackEpoch=0;StationSeated=SeatTransition=false;LocalRole=StationRole.None;SetFade(0);if(avatar)avatar.walkableGroundSurfaces=System.Array.Empty<Collider>();
             foreach(var p in originals)if(p.Key)p.Key.enabled=p.Value&&!InSeatedLobby;
             var resetter=origin?origin.GetComponent<XRMultiplayer.CharacterResetter>():null;if(resetter)resetter.enabled=!InSeatedLobby;

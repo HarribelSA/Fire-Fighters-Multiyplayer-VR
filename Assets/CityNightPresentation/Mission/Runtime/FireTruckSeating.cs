@@ -30,6 +30,7 @@ namespace CityNightPresentation.Mission
         void ActivatePresentation()
         {
             if(presentationActivated)return;presentationActivated=true;
+            using var timing=TransitionDiagnostics.Measure("city_presentation_hide_retained_scenes");
             // The existing station is retained additively; hide only its static scene instances locally.
             var station=UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/FireStation/Scenes/Sample.unity");
             if(station.IsValid()&&station.isLoaded)foreach(var g in station.GetRootGameObjects())
@@ -73,7 +74,7 @@ namespace CityNightPresentation.Mission
             if(avatar){avatar.Seated=true;avatar.SeatPosition=seat.position;avatar.SeatYaw=seat.eulerAngles.y;}
             var flow=StationSessionFlow.Instance;
             if(flow&&flow.MissionSessionActive&&flow.MissionState.stage==CrewMissionStage.CityTransition&&seatAcknowledged!=flow.MissionState.epoch&&StationSpawnPlacement.TrackingReady(origin)&&Vector3.Distance(origin.Camera.transform.position,StationSeatPlacement.EyeTarget(seat,avatar))<.15f)
-            {seatAcknowledged=flow.MissionState.epoch;flow.AcknowledgeCitySeat(seatAcknowledged);}
+            {seatAcknowledged=flow.MissionState.epoch;TransitionDiagnostics.Mark("local_city_tracking_and_seat_verified");flow.AcknowledgeCitySeat(seatAcknowledged);}
         }
         void FollowSeat()
         {

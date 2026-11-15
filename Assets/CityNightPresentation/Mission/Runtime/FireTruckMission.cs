@@ -88,7 +88,7 @@ namespace CityNightPresentation.Mission
         public bool SirenActive=>UseNetworkState?Siren.Value:offlineSiren;
         public bool HasArrived=>UseNetworkState?Arrived.Value:offlineArrived;
         public float TotalSeconds=>(UseNetworkState?Elapsed.Value+Penalties.Value:offlineElapsed+offlinePenalties);
-        void Awake(){if(traffic)traffic.localSimulation=!NetworkManagerIsListening;}
+        void Awake(){if(traffic)traffic.localSimulation=false;}
         public override void OnNetworkSpawn(){if(HasAuthority&&NetworkManager.DistributedAuthorityMode)NetworkObject.SetOwnershipStatus(NetworkObject.OwnershipStatus.SessionOwner,true);if(traffic)traffic.localSimulation=Authority;}
         public void SubmitDriverInput(Vector4 value)
         {
@@ -120,7 +120,7 @@ namespace CityNightPresentation.Mission
         {
             if(!traffic)return;
             if(NetworkManagerIsListening&&!IsSpawned&&!(StationSessionFlow.Instance&&StationSessionFlow.Instance.SoloMissionActive)){traffic.localSimulation=false;return;}
-            traffic.localSimulation=Authority;
+            traffic.localSimulation=Authority&&CrewReady;
             if(Authority&&!wasEvaluationAuthority&&UseNetworkState)evaluation=Evaluation.Value;wasEvaluationAuthority=Authority;
             var flow=StationSessionFlow.Instance;if(Authority&&CrewReady&&flow&&flow.DrivingMissionReady)started=true;
             if(!Authority)

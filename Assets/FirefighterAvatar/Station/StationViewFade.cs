@@ -48,11 +48,13 @@ namespace FirefighterVR.Station
         public void HoldManual(bool hold) => ManualHold = hold;
         public IEnumerator Cover()
         {
+            TransitionDiagnostics.Mark("fade_out_requested");
             ManualHold = true;
             while (!BlackRendered) yield return null;
         }
         public IEnumerator Reveal()
         {
+            TransitionDiagnostics.Mark("fade_in_requested");
             ManualHold = false;
             while (Alpha > .001f) yield return null;
         }
@@ -76,7 +78,10 @@ namespace FirefighterVR.Station
             float duration = scene ? (cover ? sceneFadeOut : sceneFadeIn) : (teleporting ? teleportFadeOut : sceneFadeIn);
             // Remember the shorter reveal after a teleport while retaining scene reveal timing.
             if (!cover && lastTeleport) duration = teleportFadeIn;
-            Alpha = Mathf.MoveTowards(Alpha, cover ? 1 : 0, Time.unscaledDeltaTime / Mathf.Max(.01f, duration));
+            float previousAlpha=Alpha;
+            // A single loading hitch must not skip the whole comfortable reveal in one frame.
+            Alpha = Mathf.MoveTowards(Alpha, cover ? 1 : 0, Mathf.Min(Time.unscaledDeltaTime,.05f) / Mathf.Max(.01f, duration));
+            if(!cover&&previousAlpha>0&&Alpha==0){TransitionDiagnostics.Mark("fade_in_complete");TransitionDiagnostics.End();}
             if (cover) lastTeleport = !scene;
             if (Alpha < .999f) BlackRendered = false;
             Apply();
@@ -95,7 +100,7 @@ namespace FirefighterVR.Station
             block.SetColor("_BaseColor", new Color(0, 0, 0, Alpha)); overlay.SetPropertyBlock(block);
         }
         void CameraRendered(ScriptableRenderContext context, Camera camera)
-        { if (origin && camera == origin.Camera && Alpha >= .999f) BlackRendered = true; }
+        { if (origin && camera == origin.Camera && Alpha >= .999f){if(!BlackRendered)TransitionDiagnostics.Mark("black_frame_rendered");BlackRendered = true;} }
         void OnDestroy()
         {
             RenderPipelineManager.endCameraRendering -= CameraRendered;

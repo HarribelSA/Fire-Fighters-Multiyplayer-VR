@@ -111,6 +111,7 @@ namespace FirefighterVR.StationBot
         }
         IEnumerator EnterStation()
         {
+            TransitionDiagnostics.Begin("solo_station");
             busy = true; Status = "PREPARING STATION…";
             returnRequested = false;
             var fade = StationViewFade.Instance;
@@ -123,9 +124,10 @@ namespace FirefighterVR.StationBot
             ownsStation = !stationScene.isLoaded;
             if (ownsStation)
             {
+                TransitionDiagnostics.Mark("local_load_requested:station");
                 var load = SceneManager.LoadSceneAsync(StationPath, LoadSceneMode.Additive);
                 if (load == null) { Fail("STATION LOAD FAILED"); fade.HoldManual(false); yield break; }
-                yield return load; stationScene = SceneManager.GetSceneByPath(StationPath);
+                yield return TransitionDiagnostics.WaitForLoad(load); stationScene = SceneManager.GetSceneByPath(StationPath);
             }
             if (!Available || !Armed) { yield return AbortLoad("SECOND PLAYER CONNECTED · USE NORMAL READY"); yield break; }
             var station = FindSetup(stationScene);
@@ -163,6 +165,7 @@ namespace FirefighterVR.StationBot
             SceneManager.MoveGameObjectToScene(Bot.gameObject, stationScene);
             Bot.name = "StationBot_" + StationBotRoles.Opposite(HumanRole);
             Bot.Initialize(station, lobby.rig.origin.transform, lobby.rig.origin.Camera.transform, HumanRole);
+            TransitionDiagnostics.Mark("human_placement_and_bot_initialized");
             if(Bot.Role==StationRole.Driver)Bot.Seat(missionView.dispatchSeat);
             IsStationTest = true; Armed = false; Status = "STATION TEST ACTIVE";
             if(!flow||!flow.BeginSoloMission(this))Status="SOLO MISSION BLOCKED · CHECK STATION REFERENCES";
@@ -219,6 +222,7 @@ namespace FirefighterVR.StationBot
             lobby.ResetSeatPlacement();
             if (ownsStation && stationScene.isLoaded) yield return SceneManager.UnloadSceneAsync(stationScene);
             yield return null; // Let the existing lobby alignment run before revealing.
+            if(lobby.rig.releaseUnusedAssetsOnReturn)yield return TransitionMemory.ReleaseAfterReturn();
             if (fade) yield return fade.Reveal();
             ownsStation = false; Armed = false; busy = false; returnRequested = false; Status = "PLAY WITH BOT";
         }

@@ -125,6 +125,7 @@ namespace FirefighterVR.Station
                 {state.Phase=StationPhase.AwaitingSpawn;state.Arrivals=0;state.Deadline=SharedTime+20;Lobby.Value=state;return;}
                 state.Phase=StationPhase.Loading;state.Deadline=SharedTime+125;Lobby.Value=state;
                 if(issuedEpoch==state.Epoch)return;issuedEpoch=state.Epoch;
+                TransitionDiagnostics.Mark("network_load_requested:station");
                 var result=NetworkManager.SceneManager.LoadScene(stationSceneName,LoadSceneMode.Additive);
                 if(result!=SceneEventProgressStatus.Started)Block("Station load could not start: "+result);
             }
@@ -133,12 +134,14 @@ namespace FirefighterVR.Station
             {
                 // Extend the existing authority-owned scene flow; keep both original rigs and avatars.
                 cityLoadIssued=true;DrivingTransition.Value=true;cityLoadDeadline=SharedTime+125;
+                TransitionDiagnostics.Mark("network_load_requested:city");
                 var load=NetworkManager.SceneManager.LoadScene(CitySceneName,LoadSceneMode.Additive);
                 if(load!=SceneEventProgressStatus.Started){DrivingTransition.Value=false;SpawnRetryAvailable.Value=false;Block("City loading failed: "+load+". Reconnect to retry.");}
             }
         }
         void LoadCompleted(string scene,LoadSceneMode mode,List<ulong> completed,List<ulong> timedOut)
         {
+            TransitionDiagnostics.Mark("network_load_completed:"+scene);
             if(Authority&&scene==CitySceneName&&DrivingTransition.Value)
             {
                 cityLoadComplete=true;
@@ -151,7 +154,7 @@ namespace FirefighterVR.Station
             if(timedOut.Count!=0||!completed.Contains(state.Driver)||!completed.Contains(state.Assistant)||NetworkManager.ConnectedClientsIds.Count!=2){Block("Station loading was incomplete; gameplay remains locked.");return;}
             SpawnRetryAvailable.Value=true;state.Phase=StationPhase.AwaitingSpawn;state.Arrivals=0;state.Deadline=SharedTime+20;Lobby.Value=state;
         }
-        void Block(string reason){DrivingTransition.Value=false;SharedFailure.Value=reason;var state=Lobby.Value;state.Phase=StationPhase.Blocked;state.Arrivals=0;state.Deadline=0;Lobby.Value=state;Debug.LogWarning(reason,this);}
+        void Block(string reason){TransitionDiagnostics.Cancel("network_transition_blocked");DrivingTransition.Value=false;SharedFailure.Value=reason;var state=Lobby.Value;state.Phase=StationPhase.Blocked;state.Arrivals=0;state.Deadline=0;Lobby.Value=state;Debug.LogWarning(reason,this);}
         public void HideLobbyEnvironment()
         {foreach(var g in lobbyOnlyRoots)if(g)g.SetActive(false);}
         public void RestoreLobbyEnvironment()

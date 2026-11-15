@@ -124,14 +124,16 @@ namespace FirefighterVR.Station
         }
         IEnumerator LoadSoloCity()
         {
+            TransitionDiagnostics.Begin("solo_city");
             var fade=StationViewFade.Instance;if(!fade){soloFailure="Existing local fade missing";yield break;}
             localRig.SeatTransition=true;yield return fade.Cover();
             if(!SoloMissionActive)yield break;
             var existing=SceneManager.GetSceneByName(CitySceneName);
             if(existing.isLoaded){soloFailure="City already loaded outside Solo mission";localRig.SeatTransition=false;yield return fade.Reveal();yield break;}
+            TransitionDiagnostics.Mark("local_load_requested:city");
             var load=SceneManager.LoadSceneAsync(CitySceneName,LoadSceneMode.Additive);
             if(load==null){soloFailure="Existing city load failed";localRig.SeatTransition=false;yield return fade.Reveal();yield break;}
-            yield return load;
+            yield return TransitionDiagnostics.WaitForLoad(load);
             if(!SoloMissionActive||!soloSession||!soloSession.Bot){var abandoned=SceneManager.GetSceneByName(CitySceneName);if(abandoned.isLoaded)yield return SceneManager.UnloadSceneAsync(abandoned);localRig.SeatTransition=false;yield return fade.Reveal();yield break;}
             SoloCityLoaded=true;
             var city=SceneManager.GetSceneByName(CitySceneName);FireTruckMission mission=null;
@@ -140,12 +142,13 @@ namespace FirefighterVR.Station
             soloCityMission=mission;
             var bot=soloSession.Bot;bot.transform.SetParent(null,true);SceneManager.MoveGameObjectToScene(bot.gameObject,city);bot.gameObject.SetActive(true);bot.Seat(SoloBotDriverActive?mission.driverSeat:mission.passengerSeat);
             var s=soloMission;s.citySeats|=(byte)(SoloBotDriverActive?1:2);PublishCrew(s);
+            TransitionDiagnostics.Mark("bot_city_seat_verified");
             if(SoloBotDriverActive){var adapter=mission.GetComponent<FireTruckBotDriver>();if(!adapter)adapter=mission.gameObject.AddComponent<FireTruckBotDriver>();adapter.mission=mission;adapter.emergency=mission.GetComponent<FireTruckEmergency>();}
             double deadline=Time.unscaledTimeAsDouble+125;
             while(SoloMissionActive&&Time.unscaledTimeAsDouble<deadline&&(soloMission.citySeats!=3||!mission.controller||!mission.controller.Initialized||!mission.route||mission.route.waypoints.Length<2))yield return null;
             if(!SoloMissionActive){localRig.SeatTransition=false;yield return fade.Reveal();yield break;}
             if(soloMission.citySeats!=3||!mission.controller||!mission.controller.Initialized||!mission.route){soloFailure="City crew/controller readiness timed out";localRig.SeatTransition=false;yield return fade.Reveal();yield break;}
-            s=soloMission;s.stage=CrewMissionStage.DrivingMission;PublishCrew(s);localRig.SeatTransition=false;yield return fade.Reveal();
+            TransitionDiagnostics.Mark("crew_seats_and_controller_ready");s=soloMission;s.stage=CrewMissionStage.DrivingMission;PublishCrew(s);localRig.SeatTransition=false;yield return fade.Reveal();
         }
         void TickSoloDriver(StationMissionView view)
         {

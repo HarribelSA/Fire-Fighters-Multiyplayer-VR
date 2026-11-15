@@ -39,12 +39,15 @@ namespace CityNightPresentation
         float accumulator;
         Camera viewer;
         float nextCameraCheck;
+        readonly System.Collections.Generic.HashSet<CityTrafficPath> initializingPaths=new System.Collections.Generic.HashSet<CityTrafficPath>();
         public void Initialize()
         {
+            initializingPaths.Clear();
+            using var timing=FirefighterVR.Station.TransitionDiagnostics.Measure("traffic_paths_and_poses_initialize");
             foreach (var v in vehicles)
             {
                 if (!v.path || !v.body) continue;
-                v.path.Initialize(); v.speed = 0; v.reserved = null; v.visualDistance = v.distance;
+                if(initializingPaths.Add(v.path))v.path.Initialize(); v.speed = 0; v.reserved = null; v.visualDistance = v.distance;
                 v.obstacleFree = float.PositiveInfinity; v.nextObstacleQuery = 0;
                 v.remoteInitialized=false;
                 ApplyPose(v,v.distance);

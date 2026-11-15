@@ -1,0 +1,35 @@
+{
+  "savedUtc": "2026-11-15T16:33:00.6343490Z",
+  "scene": "Assets/S1Test.unity",
+  "origins": 1,
+  "activeHmdCameras": 1,
+  "playing": false,
+  "compiling": false,
+  "importing": false,
+  "newFiles": [
+    {
+      "path": "Assets/FirefighterAvatar/Scripts/AvatarSoleCache.cs",
+      "bytes": 2195
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/TransitionDiagnostics.cs",
+      "bytes": 3263
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/TransitionMemory.cs",
+      "bytes": 1324
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/Editor/TransitionPerformanceProbe.cs",
+      "bytes": 5628
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/Editor/TransitionPerformanceVerification.cs",
+      "bytes": 3486
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/Reports/TransitionPerformanceReport.md",
+      "bytes": 10606
+    }
+  ]
+}
