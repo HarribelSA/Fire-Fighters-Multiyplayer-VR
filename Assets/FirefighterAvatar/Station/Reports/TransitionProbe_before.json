@@ -1,0 +1,120 @@
+{
+  "scope": "Warm Unity Editor offline load probe; not a validated XR/mission/network transition. Timings include editor overhead and retained assets. Shader GPU cost not isolated.",
+  "results": [
+    {
+      "scene": "Assets/FireStation/Scenes/Sample.unity",
+      "loadThroughActivationMs": 8095.8505999997215,
+      "sceneLoadedEventMs": 8077.2973999996793,
+      "payload90ObservedMs": 1806.2764999999672,
+      "activationTailMs": 6271.0208999997121,
+      "startObservationMs": 69.188500000109343,
+      "maxObservedFrameGapMs": 5044.797799999742,
+      "allocatedDeltaBytes": 843637228,
+      "controllerReady": true,
+      "xrOrigins": 1
+    },
+    {
+      "scene": "Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "loadThroughActivationMs": 9831.14740000019,
+      "sceneLoadedEventMs": 9787.0145000001685,
+      "payload90ObservedMs": 6713.0922000001192,
+      "activationTailMs": 3073.9223000000493,
+      "startObservationMs": 193.51310000001831,
+      "maxObservedFrameGapMs": 6712.1978000000126,
+      "allocatedDeltaBytes": 1082167856,
+      "controllerReady": true,
+      "xrOrigins": 1
+    }
+  ],
+  "samples": [
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "begin",
+      "elapsedMs": 0.1215,
+      "stageMs": 0.1215,
+      "frame": 40,
+      "allocatedBytes": 1244911543
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_scene_awake",
+      "elapsedMs": 8065.9425,
+      "stageMs": 1.1404,
+      "frame": 50,
+      "allocatedBytes": 2087853786
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_awake",
+      "elapsedMs": 8069.7275,
+      "stageMs": 3.4001,
+      "frame": 50,
+      "allocatedBytes": 2087866350
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "local_scene_activated:Sample",
+      "elapsedMs": 8077.4236,
+      "stageMs": 8077.3021,
+      "frame": 50,
+      "allocatedBytes": 2087885087
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_start",
+      "elapsedMs": 8080.5361,
+      "stageMs": 1.3513,
+      "frame": 50,
+      "allocatedBytes": 2087456967
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "complete",
+      "elapsedMs": 8166.8634,
+      "stageMs": 89.4398,
+      "frame": 51,
+      "allocatedBytes": 2088545378
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "begin",
+      "elapsedMs": 0.0004,
+      "stageMs": 0.0004,
+      "frame": 51,
+      "allocatedBytes": 2088559682
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "vehicle_input_and_physics_awake",
+      "elapsedMs": 9385.175,
+      "stageMs": 8.3929,
+      "frame": 56,
+      "allocatedBytes": 2825201965
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "local_scene_activated:demo_city_night",
+      "elapsedMs": 9786.9992,
+      "stageMs": 9786.9988,
+      "frame": 56,
+      "allocatedBytes": 3171812803
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "traffic_paths_and_poses_initialize",
+      "elapsedMs": 9789.664,
+      "stageMs": 1.8141,
+      "frame": 56,
+      "allocatedBytes": 3170377481
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "complete",
+      "elapsedMs": 10033.144,
+      "stageMs": 246.1448,
+      "frame": 57,
+      "allocatedBytes": 3170727538
+    }
+  ],
+  "retainedAllocatedBytes": 2838109271
+}

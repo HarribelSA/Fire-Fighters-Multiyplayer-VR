@@ -1,0 +1,296 @@
+{
+  "scope": "Warm Unity Editor offline load probe; not a validated XR/mission/network transition. Timings include editor overhead and retained assets. Shader GPU cost not isolated.",
+  "results": [
+    {
+      "scene": "Assets/FireStation/Scenes/Sample.unity",
+      "loadThroughActivationMs": 87.30020000029981,
+      "sceneLoadedEventMs": 85.707200000342709,
+      "payload90ObservedMs": 34.829100000024482,
+      "activationTailMs": 50.878100000318227,
+      "startObservationMs": 186.91369999987728,
+      "maxObservedFrameGapMs": 52.471100000275328,
+      "allocatedDeltaBytes": 5035548,
+      "controllerReady": true,
+      "xrOrigins": 1
+    },
+    {
+      "scene": "Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "loadThroughActivationMs": 595.44460000006438,
+      "sceneLoadedEventMs": 592.5188999999591,
+      "payload90ObservedMs": 117.84739999984595,
+      "activationTailMs": 474.67150000011316,
+      "startObservationMs": 13.980499999888707,
+      "maxObservedFrameGapMs": 477.59720000021844,
+      "allocatedDeltaBytes": 368095545,
+      "controllerReady": true,
+      "xrOrigins": 1
+    }
+  ],
+  "samples": [
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "begin",
+      "elapsedMs": 0.1215,
+      "stageMs": 0.1215,
+      "frame": 40,
+      "allocatedBytes": 1244911543
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_scene_awake",
+      "elapsedMs": 8065.9425,
+      "stageMs": 1.1404,
+      "frame": 50,
+      "allocatedBytes": 2087853786
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_awake",
+      "elapsedMs": 8069.7275,
+      "stageMs": 3.4001,
+      "frame": 50,
+      "allocatedBytes": 2087866350
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "local_scene_activated:Sample",
+      "elapsedMs": 8077.4236,
+      "stageMs": 8077.3021,
+      "frame": 50,
+      "allocatedBytes": 2087885087
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_start",
+      "elapsedMs": 8080.5361,
+      "stageMs": 1.3513,
+      "frame": 50,
+      "allocatedBytes": 2087456967
+    },
+    {
+      "route": "probe_before_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "complete",
+      "elapsedMs": 8166.8634,
+      "stageMs": 89.4398,
+      "frame": 51,
+      "allocatedBytes": 2088545378
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "begin",
+      "elapsedMs": 0.0004,
+      "stageMs": 0.0004,
+      "frame": 51,
+      "allocatedBytes": 2088559682
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "vehicle_input_and_physics_awake",
+      "elapsedMs": 9385.175,
+      "stageMs": 8.3929,
+      "frame": 56,
+      "allocatedBytes": 2825201965
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "local_scene_activated:demo_city_night",
+      "elapsedMs": 9786.9992,
+      "stageMs": 9786.9988,
+      "frame": 56,
+      "allocatedBytes": 3171812803
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "traffic_paths_and_poses_initialize",
+      "elapsedMs": 9789.664,
+      "stageMs": 1.8141,
+      "frame": 56,
+      "allocatedBytes": 3170377481
+    },
+    {
+      "route": "probe_before_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "complete",
+      "elapsedMs": 10033.144,
+      "stageMs": 246.1448,
+      "frame": 57,
+      "allocatedBytes": 3170727538
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "begin",
+      "elapsedMs": 0.0018,
+      "stageMs": 0.0018,
+      "frame": 748,
+      "allocatedBytes": 2838326651
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_scene_awake",
+      "elapsedMs": 89.3938,
+      "stageMs": 1.0085,
+      "frame": 750,
+      "allocatedBytes": 2843885088
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_awake",
+      "elapsedMs": 90.044,
+      "stageMs": 0.6039,
+      "frame": 750,
+      "allocatedBytes": 2843897668
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "local_scene_activated:Sample",
+      "elapsedMs": 92.9154,
+      "stageMs": 92.9136,
+      "frame": 750,
+      "allocatedBytes": 2843788809
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_start",
+      "elapsedMs": 93.5495,
+      "stageMs": 0.4143,
+      "frame": 750,
+      "allocatedBytes": 2843360570
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "complete",
+      "elapsedMs": 264.5506,
+      "stageMs": 171.6352,
+      "frame": 751,
+      "allocatedBytes": 2843621428
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "begin",
+      "elapsedMs": 0.0002,
+      "stageMs": 0.0002,
+      "frame": 751,
+      "allocatedBytes": 2843621428
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "vehicle_input_and_physics_awake",
+      "elapsedMs": 466.2151,
+      "stageMs": 0.1936,
+      "frame": 753,
+      "allocatedBytes": 2862984646
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "local_scene_activated:demo_city_night",
+      "elapsedMs": 639.5563,
+      "stageMs": 639.5561,
+      "frame": 753,
+      "allocatedBytes": 3209300061
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "traffic_paths_and_poses_initialize",
+      "elapsedMs": 639.8023,
+      "stageMs": 0.0233,
+      "frame": 753,
+      "allocatedBytes": 3207864747
+    },
+    {
+      "route": "probe_low_priority_trial_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "complete",
+      "elapsedMs": 663.8116,
+      "stageMs": 24.2553,
+      "frame": 754,
+      "allocatedBytes": 3208126263
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "begin",
+      "elapsedMs": 0.0015,
+      "stageMs": 0.0015,
+      "frame": 1072,
+      "allocatedBytes": 2878250578
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_scene_awake",
+      "elapsedMs": 82.6193,
+      "stageMs": 0.7825,
+      "frame": 1074,
+      "allocatedBytes": 2883621855
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_awake",
+      "elapsedMs": 83.2119,
+      "stageMs": 0.5613,
+      "frame": 1074,
+      "allocatedBytes": 2883634483
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "local_scene_activated:Sample",
+      "elapsedMs": 85.7118,
+      "stageMs": 85.7103,
+      "frame": 1074,
+      "allocatedBytes": 2883525624
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "station_mission_view_start",
+      "elapsedMs": 86.3266,
+      "stageMs": 0.4006,
+      "frame": 1074,
+      "allocatedBytes": 2883097496
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/FireStation/Scenes/Sample.unity",
+      "stage": "complete",
+      "elapsedMs": 275.0625,
+      "stageMs": 189.3507,
+      "frame": 1075,
+      "allocatedBytes": 2883306962
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "begin",
+      "elapsedMs": 0.0003,
+      "stageMs": 0.0003,
+      "frame": 1075,
+      "allocatedBytes": 2883306962
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "vehicle_input_and_physics_awake",
+      "elapsedMs": 458.6147,
+      "stageMs": 0.1788,
+      "frame": 1077,
+      "allocatedBytes": 2906511825
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "local_scene_activated:demo_city_night",
+      "elapsedMs": 592.5059,
+      "stageMs": 592.5056,
+      "frame": 1077,
+      "allocatedBytes": 3252827941
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "traffic_paths_and_poses_initialize",
+      "elapsedMs": 592.7915,
+      "stageMs": 0.0508,
+      "frame": 1077,
+      "allocatedBytes": 3251393401
+    },
+    {
+      "route": "probe_warm_normal_control_Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "stage": "complete",
+      "elapsedMs": 610.8078,
+      "stageMs": 18.3019,
+      "frame": 1078,
+      "allocatedBytes": 3251402507
+    }
+  ],
+  "retainedAllocatedBytes": 2918245541
+}
