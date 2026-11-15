@@ -1,0 +1,17 @@
+{
+  "scene": "S1Test read-only preview",
+  "originCount": 1,
+  "localRigBound": true,
+  "originBound": true,
+  "headCameraBound": true,
+  "headCameraTag": "MainCamera",
+  "leftControllerBound": true,
+  "rightControllerBound": true,
+  "modalityBound": true,
+  "avatarBound": true,
+  "avatarCoordinatorUsesSameLocalAvatar": true,
+  "networkAvatarPrefabBound": true,
+  "fadeBound": true,
+  "sceneNotSaved": true,
+  "hardwareTested": false
+}

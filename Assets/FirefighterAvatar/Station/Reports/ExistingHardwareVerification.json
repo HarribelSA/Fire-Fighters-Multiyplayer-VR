@@ -1,0 +1,63 @@
+{
+  "scope": "Focused Edit Mode bindings, original-animation sampling and pure mission-state checks; no physical XR or live multiplayer",
+  "upperSelectsOpen": true,
+  "lowerSelectsClose": true,
+  "nonButtonRejected": true,
+  "originalFrameMesh": "Assets/FireStation/Meshes/RollupDoor.fbx",
+  "adapterCount": 1,
+  "duplicatePanel": false,
+  "xrColliderBindings": 2,
+  "solidHitRegions": true,
+  "material": "Assets/FirefighterAvatar/Station/Materials/OriginalGarageArrowPanel.mat",
+  "emissionEnabled": true,
+  "alarmAudio": 6,
+  "originalAnimators": 18,
+  "originalRedLights": 6,
+  "sampledLightPeak": 3.0,
+  "sampledLightOff": 0.0,
+  "lightsOff": true,
+  "emissionOff": true,
+  "stages": [
+    {
+      "stage": "None",
+      "alarm": false
+    },
+    {
+      "stage": "Exploration",
+      "alarm": false
+    },
+    {
+      "stage": "EmergencyAlarm",
+      "alarm": true
+    },
+    {
+      "stage": "DispatchReview",
+      "alarm": true
+    },
+    {
+      "stage": "MissionAccepted",
+      "alarm": false
+    },
+    {
+      "stage": "DriverInTruck",
+      "alarm": false
+    },
+    {
+      "stage": "Departure",
+      "alarm": false
+    },
+    {
+      "stage": "CityTransition",
+      "alarm": false
+    },
+    {
+      "stage": "DrivingMission",
+      "alarm": false
+    }
+  ],
+  "boardingRequiresFullOpening": true,
+  "missingScripts": 0,
+  "missingMaterials": 0,
+  "remaining": "Physical controller/hand button selection, both-peer audio/light/door synchronization and complete boarding/city transition are unverified",
+  "lensEmissionEnabled": true
+}

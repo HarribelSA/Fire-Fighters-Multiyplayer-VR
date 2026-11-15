@@ -1,0 +1,30 @@
+{
+  "layout": {
+    "offroadPoints": [],
+    "missingScripts": 0,
+    "missingMaterials": [],
+    "exclusiveSignalPhases": true,
+    "waypointCount": 81,
+    "routeMeters": 597.8933,
+    "trafficPathLengths": [
+      {
+        "name": "LaneLoop_LeftTurns",
+        "Length": 510.460236
+      },
+      {
+        "name": "LaneLoop_RightTurns",
+        "Length": 457.252838
+      }
+    ],
+    "totalMeshInstanceTriangles": 388895,
+    "lightmaps": 12,
+    "baking": false,
+    "compiling": false,
+    "updating": false
+  },
+  "preliminarySweptFootprints": 329,
+  "cornersOutsideAsphalt": [],
+  "staticOverheadHits": 0,
+  "truckDimensions": "10 x 2.6 x 4 m; actual truck not validated",
+  "cameraRuntime": "No active player camera in this scene; Quest stereo rendered-triangle budget unverified"
+}

@@ -1,0 +1,45 @@
+{
+  "scope": "Edit Mode preview scenes and isolated station physics; no Play Mode or connected XR/network session",
+  "utc": "2026-11-14T15:28:14.604406Z",
+  "results": [
+    {
+      "test": "Separate controls and existing selection reader",
+      "passed": true,
+      "originalReadyUntouched": true
+    },
+    {
+      "test": "Hands/G29 human Driver → bot Assistant",
+      "passed": true,
+      "botRole": "Assistant",
+      "travelledMeters": 3.13634753,
+      "stoppingDistance": 1.708216,
+      "states": [
+        "Walk",
+        "Idle",
+        "TurnLeft"
+      ],
+      "clearance": true,
+      "drivingActive": false
+    },
+    {
+      "test": "Controllers human Assistant → bot Driver",
+      "passed": true,
+      "botRole": "Driver",
+      "travelledMeters": 3.21812248,
+      "stoppingDistance": 1.70834684,
+      "states": [
+        "Walk",
+        "Idle",
+        "TurnLeft"
+      ],
+      "clearance": true,
+      "drivingActive": false
+    },
+    {
+      "test": "Two real players suppress bot; original Ready/countdown state logic preserved",
+      "passed": true
+    }
+  ],
+  "hardwareValidation": "Not performed: headset/G29 and two-device network session required",
+  "windowsPowerAction": "None"
+}

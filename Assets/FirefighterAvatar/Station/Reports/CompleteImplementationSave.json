@@ -1,0 +1,32 @@
+{
+  "savedUtc": "2026-11-14T22:36:23.4895373Z",
+  "compiling": false,
+  "importing": false,
+  "baking": false,
+  "building": false,
+  "playing": false,
+  "scenes": [
+    {
+      "path": "Assets/S1Test.unity",
+      "isLoaded": true,
+      "isDirty": false
+    }
+  ],
+  "targetFiles": [
+    {
+      "path": "Assets/S1Test.unity",
+      "exists": true,
+      "bytes": 1227831
+    },
+    {
+      "path": "Assets/FireStation/Scenes/Sample.unity",
+      "exists": true,
+      "bytes": 2108502
+    },
+    {
+      "path": "Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+      "exists": true,
+      "bytes": 9847517
+    }
+  ]
+}

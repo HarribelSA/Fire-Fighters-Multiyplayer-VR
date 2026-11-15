@@ -1,0 +1,97 @@
+[
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/link.xml",
+    "bytes": 300,
+    "sha256": "33CA1934E69F2D5517BD30F2CCEF41C081E1A3A9F5CE3387589FA05491EFBF0A"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/StationBotFollower.cs",
+    "bytes": 3554,
+    "sha256": "D5266491E0D82122D63B70F9698739B646442F9AE77D2A26926A241863E2A969"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/StationBotLocomotion.controller",
+    "bytes": 4590,
+    "sha256": "54EEF3ED6E70B3C79E38076E237DC9DAA6BC71BF3E6178E694BDFD61C0276AC4"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/StationBotNavigator.cs",
+    "bytes": 5600,
+    "sha256": "307035953E7DD88BEA49C036F31944D345DAFFE6078DDECEBDDFE5B77FBEEC96"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/StationBotRelaxedIdle.anim",
+    "bytes": 461515,
+    "sha256": "B6852D71A983D7E484879070695134BC0450C4E8541F494C88FBF554582C0D33"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/StationBotRoles.cs",
+    "bytes": 1268,
+    "sha256": "F96B3D05B2FB72CD803A0C965A2DC377ADDBB95585F92D3AECC70D2630262438"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/StationFirefighterBot.prefab",
+    "bytes": 134251,
+    "sha256": "6CC7D463E18ED1ECC4E1FB0C3C0ABC53DF8802F3E1DEFB5471AC03633D753C5E"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/StationSoloBotTest.cs",
+    "bytes": 13676,
+    "sha256": "7923AA1584A1FCA62991968206EA4B00CC095701C3DFAC5411F711B57E92C539"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Editor/StationBotInstaller.cs",
+    "bytes": 9081,
+    "sha256": "AECD7E8ED04A5F68F9ADD64B1D6950629DCDC46758159EE68D47765D0D78E75F"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Editor/StationBotVerification.cs",
+    "bytes": 10167,
+    "sha256": "E1A7D67F51D53C8B250B7C68EB20AA10D7E6992089178523DDB9230B7E4D3234"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Reports/FinalSaveVerification.json",
+    "bytes": 388,
+    "sha256": "BB8F8A68E54B4CF60D817C9D8AFB7BC0983D10D0968B206F43D491CA1A2C8FF6"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Reports/LobbyBlocksBefore.json",
+    "bytes": 137230,
+    "sha256": "5F16968B1CC16FC56C0953D68EFD01B8C0179B3EF2B93853225320A4831C31E8"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Reports/LobbySerializationComparison.json",
+    "bytes": 318,
+    "sha256": "E3A7F8D546EB3396173B69251737262DA76270D7246498916FF2A6E64E7FFBBC"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Reports/ProtectedFilesBefore.json",
+    "bytes": 1278,
+    "sha256": "D7A86AF63E205D77C798341D98FAB4A6158EDD6B7BCBE4162EB35C0FFBAC1758"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Reports/ProtectionVerification.json",
+    "bytes": 1291,
+    "sha256": "4DD6B3F7206A4F937DBE672F3BA3B381E7A0DBBF05333937E163B7017DA8FDE4"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Reports/StationBotAppearance.png",
+    "bytes": 745062,
+    "sha256": "FC82444A908A683DB729C971B152C85054F59EAA8D849FEB81D124D1F1277A7E"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Reports/StationBotCompletionReport.md",
+    "bytes": 9805,
+    "sha256": "D49F44128E89C552058BD3AEC02F019081485032A19186814BDAB522D16CAFFA"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Reports/StationBotVerification.json",
+    "bytes": 1315,
+    "sha256": "FECAE36965F9CF96760D931C796C8C2E042D1DD667B500D9DC5D1E861BD6BE79"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/StationBot/Reports/StationBotWalk.png",
+    "bytes": 558266,
+    "sha256": "D591C2DDEF4D212F9E3E97DD7D26C4AC973779CDF1238369488ED2C624C6560B"
+  }
+]

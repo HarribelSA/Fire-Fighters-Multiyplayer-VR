@@ -1,0 +1,451 @@
+{
+  "status": "RENDERED TRIANGLE BUDGET UNVERIFIED. Analytical visibility estimates only, not GPU rendering measurements.",
+  "method": "Driver eye in relocated actual truck, 100-degree FOV, 1000m far plane, six head directions at eight route anchors; configured decoration culling. Adds both complete avatar prefabs plus 1000 triangles per eye for arrows/UI. Does not measure extra passes, stereo implementation, overdraw or runtime generated avatar interiors.",
+  "activeMeshInstanceInventory": 483940,
+  "uniqueActiveMeshInventory": 236443,
+  "avatarPrefabTriangleInventory": 55251,
+  "peakEstimatedCombinedMono": 360242,
+  "peakEstimatedTwoEyeGeometry": 720484,
+  "actualModelClearance": {
+    "width": 3.34,
+    "length": 9.62,
+    "cornerSamples": 1316,
+    "cornersOutsideAsphalt": 0,
+    "actualTruckRouteDrive": "Not driven with hardware"
+  },
+  "editorMemoryBytes": 3060756807,
+  "samples": [
+    {
+      "view": "Spawn",
+      "headYaw": -90.0,
+      "estimatedCityAndTruckMono": 106163,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 217665,
+      "estimatedTwoEyeGeometry": 435330
+    },
+    {
+      "view": "Spawn",
+      "headYaw": -45.0,
+      "estimatedCityAndTruckMono": 129732,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 241234,
+      "estimatedTwoEyeGeometry": 482468
+    },
+    {
+      "view": "Spawn",
+      "headYaw": 0.0,
+      "estimatedCityAndTruckMono": 181059,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 292561,
+      "estimatedTwoEyeGeometry": 585122
+    },
+    {
+      "view": "Spawn",
+      "headYaw": 45.0,
+      "estimatedCityAndTruckMono": 211579,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 323081,
+      "estimatedTwoEyeGeometry": 646162
+    },
+    {
+      "view": "Spawn",
+      "headYaw": 90.0,
+      "estimatedCityAndTruckMono": 187692,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 299194,
+      "estimatedTwoEyeGeometry": 598388
+    },
+    {
+      "view": "Spawn",
+      "headYaw": 180.0,
+      "estimatedCityAndTruckMono": 190687,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 302189,
+      "estimatedTwoEyeGeometry": 604378
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": -90.0,
+      "estimatedCityAndTruckMono": 101943,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 213445,
+      "estimatedTwoEyeGeometry": 426890
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": -45.0,
+      "estimatedCityAndTruckMono": 112732,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 224234,
+      "estimatedTwoEyeGeometry": 448468
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": 0.0,
+      "estimatedCityAndTruckMono": 139262,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 250764,
+      "estimatedTwoEyeGeometry": 501528
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": 45.0,
+      "estimatedCityAndTruckMono": 185626,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 297128,
+      "estimatedTwoEyeGeometry": 594256
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": 90.0,
+      "estimatedCityAndTruckMono": 198384,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 309886,
+      "estimatedTwoEyeGeometry": 619772
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": 180.0,
+      "estimatedCityAndTruckMono": 228456,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 339958,
+      "estimatedTwoEyeGeometry": 679916
+    },
+    {
+      "view": "Signal1",
+      "headYaw": -90.0,
+      "estimatedCityAndTruckMono": 97970,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 209472,
+      "estimatedTwoEyeGeometry": 418944
+    },
+    {
+      "view": "Signal1",
+      "headYaw": -45.0,
+      "estimatedCityAndTruckMono": 106388,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 217890,
+      "estimatedTwoEyeGeometry": 435780
+    },
+    {
+      "view": "Signal1",
+      "headYaw": 0.0,
+      "estimatedCityAndTruckMono": 119228,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 230730,
+      "estimatedTwoEyeGeometry": 461460
+    },
+    {
+      "view": "Signal1",
+      "headYaw": 45.0,
+      "estimatedCityAndTruckMono": 151028,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 262530,
+      "estimatedTwoEyeGeometry": 525060
+    },
+    {
+      "view": "Signal1",
+      "headYaw": 90.0,
+      "estimatedCityAndTruckMono": 186827,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 298329,
+      "estimatedTwoEyeGeometry": 596658
+    },
+    {
+      "view": "Signal1",
+      "headYaw": 180.0,
+      "estimatedCityAndTruckMono": 248740,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 360242,
+      "estimatedTwoEyeGeometry": 720484
+    },
+    {
+      "view": "Signal2",
+      "headYaw": -90.0,
+      "estimatedCityAndTruckMono": 118940,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 230442,
+      "estimatedTwoEyeGeometry": 460884
+    },
+    {
+      "view": "Signal2",
+      "headYaw": -45.0,
+      "estimatedCityAndTruckMono": 139177,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 250679,
+      "estimatedTwoEyeGeometry": 501358
+    },
+    {
+      "view": "Signal2",
+      "headYaw": 0.0,
+      "estimatedCityAndTruckMono": 153257,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 264759,
+      "estimatedTwoEyeGeometry": 529518
+    },
+    {
+      "view": "Signal2",
+      "headYaw": 45.0,
+      "estimatedCityAndTruckMono": 218017,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 329519,
+      "estimatedTwoEyeGeometry": 659038
+    },
+    {
+      "view": "Signal2",
+      "headYaw": 90.0,
+      "estimatedCityAndTruckMono": 245511,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 357013,
+      "estimatedTwoEyeGeometry": 714026
+    },
+    {
+      "view": "Signal2",
+      "headYaw": 180.0,
+      "estimatedCityAndTruckMono": 134544,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 246046,
+      "estimatedTwoEyeGeometry": 492092
+    },
+    {
+      "view": "Signal3",
+      "headYaw": -90.0,
+      "estimatedCityAndTruckMono": 145153,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 256655,
+      "estimatedTwoEyeGeometry": 513310
+    },
+    {
+      "view": "Signal3",
+      "headYaw": -45.0,
+      "estimatedCityAndTruckMono": 174927,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 286429,
+      "estimatedTwoEyeGeometry": 572858
+    },
+    {
+      "view": "Signal3",
+      "headYaw": 0.0,
+      "estimatedCityAndTruckMono": 201059,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 312561,
+      "estimatedTwoEyeGeometry": 625122
+    },
+    {
+      "view": "Signal3",
+      "headYaw": 45.0,
+      "estimatedCityAndTruckMono": 181088,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 292590,
+      "estimatedTwoEyeGeometry": 585180
+    },
+    {
+      "view": "Signal3",
+      "headYaw": 90.0,
+      "estimatedCityAndTruckMono": 144628,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 256130,
+      "estimatedTwoEyeGeometry": 512260
+    },
+    {
+      "view": "Signal3",
+      "headYaw": 180.0,
+      "estimatedCityAndTruckMono": 174325,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 285827,
+      "estimatedTwoEyeGeometry": 571654
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": -90.0,
+      "estimatedCityAndTruckMono": 170621,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 282123,
+      "estimatedTwoEyeGeometry": 564246
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": -45.0,
+      "estimatedCityAndTruckMono": 157919,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 269421,
+      "estimatedTwoEyeGeometry": 538842
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": 0.0,
+      "estimatedCityAndTruckMono": 119429,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 230931,
+      "estimatedTwoEyeGeometry": 461862
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": 45.0,
+      "estimatedCityAndTruckMono": 152353,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 263855,
+      "estimatedTwoEyeGeometry": 527710
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": 90.0,
+      "estimatedCityAndTruckMono": 196612,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 308114,
+      "estimatedTwoEyeGeometry": 616228
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": 180.0,
+      "estimatedCityAndTruckMono": 189518,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 301020,
+      "estimatedTwoEyeGeometry": 602040
+    },
+    {
+      "view": "Arrival",
+      "headYaw": -90.0,
+      "estimatedCityAndTruckMono": 183598,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 295100,
+      "estimatedTwoEyeGeometry": 590200
+    },
+    {
+      "view": "Arrival",
+      "headYaw": -45.0,
+      "estimatedCityAndTruckMono": 172846,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 284348,
+      "estimatedTwoEyeGeometry": 568696
+    },
+    {
+      "view": "Arrival",
+      "headYaw": 0.0,
+      "estimatedCityAndTruckMono": 147292,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 258794,
+      "estimatedTwoEyeGeometry": 517588
+    },
+    {
+      "view": "Arrival",
+      "headYaw": 45.0,
+      "estimatedCityAndTruckMono": 133278,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 244780,
+      "estimatedTwoEyeGeometry": 489560
+    },
+    {
+      "view": "Arrival",
+      "headYaw": 90.0,
+      "estimatedCityAndTruckMono": 102871,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 214373,
+      "estimatedTwoEyeGeometry": 428746
+    },
+    {
+      "view": "Arrival",
+      "headYaw": 180.0,
+      "estimatedCityAndTruckMono": 219405,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 330907,
+      "estimatedTwoEyeGeometry": 661814
+    },
+    {
+      "view": "DenseDistrict",
+      "headYaw": -90.0,
+      "estimatedCityAndTruckMono": 144974,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 256476,
+      "estimatedTwoEyeGeometry": 512952
+    },
+    {
+      "view": "DenseDistrict",
+      "headYaw": -45.0,
+      "estimatedCityAndTruckMono": 171043,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 282545,
+      "estimatedTwoEyeGeometry": 565090
+    },
+    {
+      "view": "DenseDistrict",
+      "headYaw": 0.0,
+      "estimatedCityAndTruckMono": 197249,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 308751,
+      "estimatedTwoEyeGeometry": 617502
+    },
+    {
+      "view": "DenseDistrict",
+      "headYaw": 45.0,
+      "estimatedCityAndTruckMono": 176173,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 287675,
+      "estimatedTwoEyeGeometry": 575350
+    },
+    {
+      "view": "DenseDistrict",
+      "headYaw": 90.0,
+      "estimatedCityAndTruckMono": 147374,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 258876,
+      "estimatedTwoEyeGeometry": 517752
+    },
+    {
+      "view": "DenseDistrict",
+      "headYaw": 180.0,
+      "estimatedCityAndTruckMono": 179467,
+      "conservativeTwoAvatarGeometry": 110502,
+      "uiAndArrowAllowance": 1000,
+      "estimatedCombinedMono": 290969,
+      "estimatedTwoEyeGeometry": 581938
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+<linker>
+  <!-- Read-only adapter to the existing private lobby selection; keep its metadata on Quest. -->
+  <assembly fullname="Assembly-CSharp">
+    <type fullname="FirefighterVR.Station.SeatedDispatchLobby" preserve="nothing">
+      <field name="preference" />
+    </type>
+  </assembly>
+</linker>

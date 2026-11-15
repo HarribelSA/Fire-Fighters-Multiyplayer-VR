@@ -1,0 +1,8 @@
+{
+  "test": "Isolated civilian agent logic, not a live truck encounter",
+  "pullAsideOffset": 3.3,
+  "stoppedSpeed": 0.0,
+  "pulledAsideAndStopped": true,
+  "footprintOnAsphalt": true,
+  "normalDrivingResumed": true
+}

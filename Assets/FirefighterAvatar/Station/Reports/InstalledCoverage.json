@@ -1,0 +1,25 @@
+{
+  "player1": "(1.500, 0.005, 3.500)",
+  "player2": "(3.500, 0.005, 3.500)",
+  "bot": "(2.500, 0.005, 1.900)",
+  "areas": 4,
+  "safeSamples": 417,
+  "levels": [
+    {
+      "height": 0.0,
+      "samples": 131
+    },
+    {
+      "height": 3.35,
+      "samples": 8
+    },
+    {
+      "height": 6.4,
+      "samples": 247
+    },
+    {
+      "height": 11.0,
+      "samples": 31
+    }
+  ]
+}

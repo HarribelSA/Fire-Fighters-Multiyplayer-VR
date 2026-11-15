@@ -1,0 +1,58 @@
+{
+  "changedExistingLobbyBlocks": [
+    {
+      "type": "1660057539",
+      "id": "9223372036854775807"
+    }
+  ],
+  "windowsPowerAction": "None",
+  "addedLobbyBlocks": [
+    {
+      "type": "1",
+      "id": "881442864"
+    },
+    {
+      "type": "114",
+      "id": "881442865"
+    },
+    {
+      "type": "4",
+      "id": "881442866"
+    }
+  ],
+  "removedLobbyBlocks": [],
+  "protectedFiles": [
+    {
+      "path": "Assets/FirefighterAvatar/Station/StationSessionFlow.cs",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/StationLocalRig.cs",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/StationLobbyState.cs",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/SeatedDispatchLobby.cs",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Prefabs/FirefighterNetworkVisual.prefab",
+      "unchanged": true
+    },
+    {
+      "path": "ProjectSettings/ProjectSettings.asset",
+      "unchanged": true
+    },
+    {
+      "path": "ProjectSettings/EditorBuildSettings.asset",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FireStation/Scenes/Sample.unity",
+      "unchanged": true
+    }
+  ]
+}

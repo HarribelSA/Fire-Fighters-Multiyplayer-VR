@@ -1,0 +1,15 @@
+{
+  "savedUtc": "2026-11-14T18:38:01.8983988Z",
+  "scene": "Assets/S1Test.unity",
+  "dirty": false,
+  "sceneCount": 1,
+  "compileFailed": false,
+  "compiling": false,
+  "updating": false,
+  "playing": false,
+  "baking": false,
+  "building": false,
+  "dispatchSeconds": 60.0,
+  "pointActivationHold": 0.08,
+  "destinationGrace": 0.35
+}

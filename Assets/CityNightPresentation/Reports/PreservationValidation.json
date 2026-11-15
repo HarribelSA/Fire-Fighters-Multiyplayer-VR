@@ -1,0 +1,21 @@
+{
+  "organizedRoadDetails": 30,
+  "originalRenderers": 2769,
+  "preservedOriginalTransforms": 2769,
+  "preservedOriginalLightmapAssignments": 2769,
+  "pipelineUnchanged": true,
+  "missingScripts": 0,
+  "missingMaterials": 0,
+  "missingPrefabAssets": 0,
+  "shaderErrors": [],
+  "roots": [
+    "ENVIRONMENT_OBJECTS",
+    "STATIC_MODELS",
+    "ROAD_NETWORK",
+    "TRAFFIC_SYSTEM",
+    "CITY_LIGHTING",
+    "CITY_PROPS",
+    "FIREFIGHTER_DRIVING_ROUTE",
+    "CITY_OPTIMIZATION"
+  ]
+}

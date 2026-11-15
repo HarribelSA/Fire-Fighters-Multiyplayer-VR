@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Experimental.Animations;
 using UnityEngine.InputSystem;
 using UnityEngine.Playables;
+using UnityEngine.XR.Hands;
 using UnityEngine.Rendering;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Movement;
@@ -73,6 +75,56 @@ namespace FirefighterVR
             [NonSerialized] public float lift;
         }
         public Finger[] fingers = Array.Empty<Finger>();
+        sealed class TrackedFinger
+        {public Finger finger;public XRHandSkeletonDriver driver;public Transform source,wrist,targetHand;public Quaternion axes,lastLocal;public bool hasPose;public XRHandJointID joint;}
+        public bool HandTrackingProfile {get;set;}
+        struct VisualGrip {public Vector3 position;public Quaternion rotation;public float weight;}
+        VisualGrip leftVisualGrip,rightVisualGrip;
+        public Transform VisualGripReference {get;set;}
+        float nextGripReferenceSearch;
+        public void GetVisualGrip(bool left,out Vector3 position,out Quaternion rotation,out byte weight)
+        {var g=left?leftVisualGrip:rightVisualGrip;position=VisualGripReference?VisualGripReference.InverseTransformPoint(g.position):g.position;rotation=VisualGripReference?Quaternion.Inverse(VisualGripReference.rotation)*g.rotation:g.rotation;weight=(byte)Mathf.RoundToInt(g.weight*255);}
+        public void SetVisualGrip(bool left,Vector3 position,Quaternion rotation,float weight)
+        {var value=new VisualGrip{position=position,rotation=rotation,weight=Mathf.Clamp01(weight)};if(left)leftVisualGrip=value;else rightVisualGrip=value;}
+        readonly List<TrackedFinger> trackedFingers=new List<TrackedFinger>();
+        readonly List<XRHandSubsystem> trackedHandSystems=new List<XRHandSubsystem>();
+        XRHandSubsystem trackedHands;
+        public void BindTrackedFingerSources(XRHandSkeletonDriver[] left,XRHandSkeletonDriver[] right)
+        {
+            trackedFingers.Clear();BindFingerSide(left,true);BindFingerSide(right,false);
+        }
+        void BindFingerSide(XRHandSkeletonDriver[] drivers,bool left)
+        {
+            foreach(var driver in drivers)
+            {
+                Transform wrist=null;foreach(var j in driver.jointTransformReferences)if(j.xrHandJointID==XRHandJointID.Wrist)wrist=j.jointTransform;
+                if(!wrist)continue;
+                foreach(var f in fingers)
+                {
+                    if(f.left!=left||!f.bone)continue;
+                    string group=f.thumb?"Thumb":f.index?"Index":f.bone.name.Contains("Middle")?"Middle":f.bone.name.Contains("Ring")?"Ring":"Little";
+                    string segment=f.thumb?(f.joint==0?"Metacarpal":f.joint==1?"Proximal":"Distal"):(f.joint==0?"Proximal":f.joint==1?"Intermediate":"Distal");
+                    if(!Enum.TryParse(group+segment,out XRHandJointID id))continue;
+                    Transform source=null;foreach(var j in driver.jointTransformReferences)if(j.xrHandJointID==id)source=j.jointTransform;
+                    Transform hand=f.bone.parent;while(hand&&!hand.name.EndsWith("Hand",StringComparison.Ordinal))hand=hand.parent;
+                    if(!source||!hand)continue;
+                    var rest=Quaternion.Inverse(wrist.rotation)*source.rotation;
+                    trackedFingers.Add(new TrackedFinger{finger=f,driver=driver,source=source,wrist=wrist,targetHand=hand,joint=id,axes=Quaternion.Inverse(rest)*(Quaternion.Inverse(hand.rotation)*f.bone.rotation)});
+                }
+            }
+        }
+        bool ApplyTrackedFinger(Finger finger)
+        {
+            if(remoteTracking||!HandTrackingProfile||trackedFingers.Count==0)return false;
+            foreach(var b in trackedFingers)if(b.finger==finger)
+            {
+                var hand=trackedHands!=null?(finger.left?trackedHands.leftHand:trackedHands.rightHand):default;
+                if(trackedHands==null||!hand.isTracked||!hand.GetJoint(XRHandJointID.Wrist).TryGetPose(out var wrist)||!hand.GetJoint(b.joint).TryGetPose(out var joint))
+                {if(!HandTrackingProfile)return false;finger.bone.localRotation=b.hasPose?b.lastLocal:finger.openRotation;return true;}
+                finger.bone.rotation=b.targetHand.rotation*Quaternion.Inverse(wrist.rotation)*joint.rotation*b.axes;b.lastLocal=finger.bone.localRotation;b.hasPose=true;return true;
+            }
+            return false;
+        }
         public Leg[] legs = Array.Empty<Leg>();
         [Serializable] public struct WalkPose
         {
@@ -166,7 +218,19 @@ namespace FirefighterVR
             (headSource.parent?headSource.parent.InverseTransformPoint(headSource.position).y:
             playerRoot.InverseTransformPoint(headSource.position).y);
         public void SetRemoteState(FirefighterAvatarState state)
-        {remoteState=state;remoteStateReady=true;StandingHMDHeight=state.StandingHeight;Seated=state.Seated;SeatPosition=state.SeatPosition;SeatYaw=state.BodyYaw;}
+        {
+            remoteState=state;remoteStateReady=true;StandingHMDHeight=state.StandingHeight;Seated=state.Seated;SeatPosition=state.SeatPosition;SeatYaw=state.BodyYaw;
+            if(state.GripVehicleSpace&&(state.LeftVisualWeight>0||state.RightVisualWeight>0)&&!VisualGripReference&&Time.unscaledTime>=nextGripReferenceSearch)
+            {nextGripReferenceSearch=Time.unscaledTime+1;var truck=FindFirstObjectByType<CityNightPresentation.Mission.FireTruckMission>();if(truck)VisualGripReference=truck.transform;}
+            ApplyRemoteVisualGrips();
+        }
+        void ApplyRemoteVisualGrips()
+        {
+            var state=remoteState;
+            bool ready=!state.GripVehicleSpace||VisualGripReference;
+            SetVisualGrip(true,state.GripVehicleSpace&&VisualGripReference?VisualGripReference.TransformPoint(state.LeftVisualPosition):state.LeftVisualPosition,state.GripVehicleSpace&&VisualGripReference?VisualGripReference.rotation*state.LeftVisualRotation:state.LeftVisualRotation,ready?state.LeftVisualWeight/255f:0);
+            SetVisualGrip(false,state.GripVehicleSpace&&VisualGripReference?VisualGripReference.TransformPoint(state.RightVisualPosition):state.RightVisualPosition,state.GripVehicleSpace&&VisualGripReference?VisualGripReference.rotation*state.RightVisualRotation:state.RightVisualRotation,ready?state.RightVisualWeight/255f:0);
+        }
         [ContextMenu("Calibrate standing HMD height")]
         public void CalibrateStandingHeight()
         {
@@ -223,6 +287,8 @@ namespace FirefighterVR
                 }
                 else if(groundSurface.Raycast(new Ray(headSource.position+Vector3.up,Vector3.down),out var hit,20))floorY=hit.point.y;
             }
+            // A seated body belongs to its chair, never the floor under an escaped HMD.
+            if(Seated)floorY=SeatPosition.y;
             if(!initialized)
             {
                 yaw=headSource.eulerAngles.y;calibrationUntil=Time.unscaledTime+(remoteTracking?0:2);
@@ -271,6 +337,9 @@ namespace FirefighterVR
             if(Seated)hipsTarget.position=SeatPosition+Vector3.up*.59f;
             leftTarget.SetPositionAndRotation(leftSource.TransformPoint(leftGripOffset),leftSource.rotation*Quaternion.Euler(leftWristEuler));
             rightTarget.SetPositionAndRotation(rightSource.TransformPoint(rightGripOffset),rightSource.rotation*Quaternion.Euler(rightWristEuler));
+            if(remoteTracking&&remoteStateReady)ApplyRemoteVisualGrips();
+            if(leftVisualGrip.weight>0)leftTarget.SetPositionAndRotation(Vector3.Lerp(leftTarget.position,leftVisualGrip.position,leftVisualGrip.weight),Quaternion.Slerp(leftTarget.rotation,leftVisualGrip.rotation,leftVisualGrip.weight));
+            if(rightVisualGrip.weight>0)rightTarget.SetPositionAndRotation(Vector3.Lerp(rightTarget.position,rightVisualGrip.position,rightVisualGrip.weight),Quaternion.Slerp(rightTarget.rotation,rightVisualGrip.rotation,rightVisualGrip.weight));
             leftHint.position=transform.TransformPoint(new Vector3(-.4f,1,-.28f));
             rightHint.position=transform.TransformPoint(new Vector3(.4f,1,-.28f));
             if(!rigBuilder.graph.IsValid()&&!rigBuilder.Build())return;
@@ -282,7 +351,7 @@ namespace FirefighterVR
                 output.SetSourcePlayable(locomotionController);output.SetAnimationStreamSource(AnimationStreamSource.DefaultValues);output.SetSortingOrder(0);
             }
             bool walking=movementSpeed>.08f;
-            walkBlend=Mathf.MoveTowards(walkBlend,walking?1:0,dt/.2f);
+            walkBlend=Seated?0:Mathf.MoveTowards(walkBlend,walking?1:0,dt/.2f);
             float playback=Mathf.Max(.05f,movementSpeed/(walkCycleDistance*scale))*WalkAnimationSpeed;
             if(locomotionController.IsValid())
             {
@@ -354,7 +423,8 @@ namespace FirefighterVR
         {
             if(firstPersonMask)firstPersonMask.localPosition=firstPersonMaskBaseLocalPosition+Vector3.forward*FirstPersonMaskDistance;
             float height=TrackingHeight();
-            float deficit=Mathf.Max(0,StandingHMDHeight-height);
+            float deficit=Seated?0:Mathf.Max(0,StandingHMDHeight-height);
+            if(Seated){crouchActive=false;crouchAmount=0;spineBend=0;}
             if(crouchActive){if(deficit<CrouchStartThreshold-.025f)crouchActive=false;}
             else if(deficit>CrouchStartThreshold)crouchActive=true;
             float onset=Mathf.SmoothStep(0,1,Mathf.InverseLerp(CrouchStartThreshold,CrouchStartThreshold+.1f,deficit));
@@ -385,7 +455,7 @@ namespace FirefighterVR
                 Vector3 sole=leg.planted;leg.lift=0;
                 if(walkBlend<.01f||walkPoses.Length<2)
                 {
-                    leg.planted=Vector3.Lerp(leg.planted,nominal,1-Mathf.Exp(-dt/.12f));sole=leg.planted;leg.swinging=false;
+                    leg.planted=Seated?nominal:Vector3.Lerp(leg.planted,nominal,1-Mathf.Exp(-dt/.12f));sole=leg.planted;leg.swinging=false;
                 }
                 else
                 {
@@ -448,16 +518,21 @@ namespace FirefighterVR
             neck.localRotation=Quaternion.Inverse(neck.parent.rotation)*neckWorld;
             var headWorld=placement.rotation*Quaternion.Euler(pitch,turn,roll)*headAxes;
             head.localRotation=Quaternion.Inverse(head.parent.rotation)*headWorld;
+            // Seated root stays at the chair. Let the existing neck/head pose follow
+            // small tracked translations without moving or reparenting the camera.
+            if(Seated)neck.position+=Vector3.ClampMagnitude(headSource.position-(head.position+headSource.rotation*eyeOffset*scale),.25f);
             neckTarget.SetPositionAndRotation(neck.position,neck.rotation);
             headTarget.SetPositionAndRotation(headSource.position,headSource.rotation);
         }
         void ApplyFingers(float dt)
         {
+            if(!remoteTracking&&HandTrackingProfile&&trackedFingers.Count>0&&(trackedHands==null||!trackedHands.running)){trackedHandSystems.Clear();SubsystemManager.GetSubsystems(trackedHandSystems);trackedHands=trackedHandSystems.Find(s=>s.running);}
             float blend=1-Mathf.Exp(-dt/.07f);
-            leftGripValue=Mathf.Lerp(leftGripValue,remoteTracking?remoteState.LeftGrip/255f:Read(leftGrip),blend);leftTriggerValue=Mathf.Lerp(leftTriggerValue,remoteTracking?remoteState.LeftTrigger/255f:Read(leftTrigger),blend);
-            rightGripValue=Mathf.Lerp(rightGripValue,remoteTracking?remoteState.RightGrip/255f:Read(rightGrip),blend);rightTriggerValue=Mathf.Lerp(rightTriggerValue,remoteTracking?remoteState.RightTrigger/255f:Read(rightTrigger),blend);
+            leftGripValue=Mathf.Lerp(leftGripValue,remoteTracking?remoteState.LeftGrip/255f:HandTrackingProfile?TrackedCurl(true,true,leftGripValue):Read(leftGrip),blend);leftTriggerValue=Mathf.Lerp(leftTriggerValue,remoteTracking?remoteState.LeftTrigger/255f:HandTrackingProfile?TrackedCurl(true,false,leftTriggerValue):Read(leftTrigger),blend);
+            rightGripValue=Mathf.Lerp(rightGripValue,remoteTracking?remoteState.RightGrip/255f:HandTrackingProfile?TrackedCurl(false,true,rightGripValue):Read(rightGrip),blend);rightTriggerValue=Mathf.Lerp(rightTriggerValue,remoteTracking?remoteState.RightTrigger/255f:HandTrackingProfile?TrackedCurl(false,false,rightTriggerValue):Read(rightTrigger),blend);
             foreach(var finger in fingers)
             {
+                if(ApplyTrackedFinger(finger))continue;
                 float grip=finger.left?leftGripValue:rightGripValue,trigger=finger.left?leftTriggerValue:rightTriggerValue;
                 if(finger.thumb)
                 {
@@ -470,6 +545,12 @@ namespace FirefighterVR
                     finger.bone.localRotation=Quaternion.Slerp(finger.openRotation,finger.closedRotation,curl);
                 }
             }
+        }
+        float TrackedCurl(bool left,bool index,float previous)
+        {
+            if(trackedHands==null)return previous;var h=left?trackedHands.leftHand:trackedHands.rightHand;if(!h.isTracked||!h.GetJoint(XRHandJointID.Wrist).TryGetPose(out var wrist))return previous;
+            float Curl(XRHandJointID a,XRHandJointID b){if(!h.GetJoint(a).TryGetPose(out var p)||!h.GetJoint(b).TryGetPose(out var t))return previous;return Mathf.InverseLerp(.8f,-.2f,Vector3.Dot((p.position-wrist.position).normalized,(t.position-p.position).normalized));}
+            return index?Curl(XRHandJointID.IndexProximal,XRHandJointID.IndexTip):Mathf.Max(Curl(XRHandJointID.MiddleProximal,XRHandJointID.MiddleTip),Curl(XRHandJointID.RingProximal,XRHandJointID.RingTip),Curl(XRHandJointID.LittleProximal,XRHandJointID.LittleTip));
         }
         void ConfigureBreathing()
         {

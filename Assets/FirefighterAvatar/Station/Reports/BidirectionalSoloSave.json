@@ -1,0 +1,28 @@
+{
+  "savedUtc": "2026-11-14T23:02:20.7980168Z",
+  "sceneWrites": [],
+  "scene": "Assets/S1Test.unity",
+  "dirty": false,
+  "compiling": false,
+  "importing": false,
+  "playing": false,
+  "baking": false,
+  "building": false,
+  "newFiles": [
+    {
+      "path": "Assets/CityNightPresentation/Mission/Runtime/FireTruckBotDriver.cs",
+      "exists": true,
+      "bytes": 6765
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/Editor/BidirectionalSoloVerification.cs",
+      "exists": true,
+      "bytes": 14848
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/Reports/BidirectionalSoloReport.md",
+      "exists": true,
+      "bytes": 10302
+    }
+  ]
+}

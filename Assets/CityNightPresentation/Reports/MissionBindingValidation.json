@@ -1,0 +1,12 @@
+{
+  "tabletButtonTogglesFollow": true,
+  "tabletLayer": 5,
+  "tabletCanvasRenderer": true,
+  "firstRemoteSnapshotSnaps": true,
+  "trafficDensityPacketRoundtrip": true,
+  "eyeHeight": 1.35,
+  "audioMixer": "SFX",
+  "buttonListenerCount": 1,
+  "buttonRuntimeListenerState": "RuntimeOnly",
+  "buttonTargetCorrect": true
+}

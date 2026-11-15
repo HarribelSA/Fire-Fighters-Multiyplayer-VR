@@ -1,0 +1,93 @@
+{
+  "scope": "Isolated Edit Mode physics/geometry and tracked-pose fixtures; no live XR/network session",
+  "safeSamples": 417,
+  "levels": [
+    {
+      "height": 0.0,
+      "samples": 131
+    },
+    {
+      "height": 3.35,
+      "samples": 8
+    },
+    {
+      "height": 6.4,
+      "samples": 247
+    },
+    {
+      "height": 11.0,
+      "samples": 31
+    }
+  ],
+  "stairPath": [
+    "(17.200, 0.005, 7.900)",
+    "(16.965, 3.365, 0.778)",
+    "(16.534, 6.383, 6.850)",
+    "(18.057, 11.005, 1.208)"
+  ],
+  "stairPathFound": true,
+  "arcProfiles": [
+    {
+      "velocity": 7.5,
+      "path": []
+    },
+    {
+      "velocity": 8.5,
+      "path": []
+    },
+    {
+      "velocity": 9.0,
+      "path": []
+    },
+    {
+      "velocity": 10.0,
+      "path": [
+        "(17.200, 0.005, 7.900)",
+        "(16.965, 3.365, 0.778)",
+        "(16.534, 6.383, 6.850)",
+        "(18.057, 11.005, 1.208)"
+      ]
+    }
+  ],
+  "spawnOffsets": [
+    {
+      "anchor": "Station_Player1_Spawn",
+      "offset": "(2.20, 1.72, -1.60)",
+      "error": 2.029793E-06
+    },
+    {
+      "anchor": "Station_Player1_Spawn",
+      "offset": "(-1.80, 1.45, 2.40)",
+      "error": 1.22108611E-06
+    },
+    {
+      "anchor": "Station_Player1_Spawn",
+      "offset": "(0.30, 1.90, 0.40)",
+      "error": 1.823253E-06
+    },
+    {
+      "anchor": "Station_Player2_Spawn",
+      "offset": "(2.20, 1.72, -1.60)",
+      "error": 2.13555518E-06
+    },
+    {
+      "anchor": "Station_Player2_Spawn",
+      "offset": "(-1.80, 1.45, 2.40)",
+      "error": 1.22108611E-06
+    },
+    {
+      "anchor": "Station_Player2_Spawn",
+      "offset": "(0.30, 1.90, 0.40)",
+      "error": 1.72307284E-06
+    }
+  ],
+  "invalidFurnitureRejected": true,
+  "wallRejected": true,
+  "ceilingRejected": true,
+  "outsideRejected": true,
+  "existingTeleportProviders": 1,
+  "areas": 4,
+  "missingScripts": 0,
+  "shaderErrors": [],
+  "hardwareValidation": "Not performed: stereo HMD, gestures, reticles and two-device networking require live verification."
+}

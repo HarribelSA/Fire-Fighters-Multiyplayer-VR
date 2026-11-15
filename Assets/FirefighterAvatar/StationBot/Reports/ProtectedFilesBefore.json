@@ -1,0 +1,34 @@
+[
+  {
+    "path": "Assets/FirefighterAvatar/Station/StationSessionFlow.cs",
+    "sha256": "BE244B04736CE814B13A222F12004DC404B6582D6F5C10ECD911CF7232AD84AA"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Station/StationLocalRig.cs",
+    "sha256": "D93D697600BA6772E1A8DE511A90CB1EFA86C75458F65D5D130C6ECBA6721BBC"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Station/StationLobbyState.cs",
+    "sha256": "427FE04B6BF6CF4CDEEF946A4615F1EF736DC46BB939D7532FFC56D817925105"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Station/SeatedDispatchLobby.cs",
+    "sha256": "10B7C3B7C3CBC499632C18A183E96E211CB8AD612019E40C5691C5A3220D49F6"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Prefabs/FirefighterNetworkVisual.prefab",
+    "sha256": "3207F08B1BB8AF9A0769FC9D644A77DFE1CC447BA62AF05D1A44BDF61F6AD108"
+  },
+  {
+    "path": "ProjectSettings/ProjectSettings.asset",
+    "sha256": "EBCAE80940FCF38BF29F5811F0B41183CC76E118C5FE6974B69195E163A87578"
+  },
+  {
+    "path": "ProjectSettings/EditorBuildSettings.asset",
+    "sha256": "4217F08F59A3183759C0505963D249185F2446665C9C049F29C23AF23C972AA7"
+  },
+  {
+    "path": "Assets/FireStation/Scenes/Sample.unity",
+    "sha256": "7F5A6CD40245D4038EB526BC5C0CDAC53BA46A2BBF9558146D7A0477E90C4B94"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "stage": "No siren",
+    "frame": 4370,
+    "time": 27.9049835,
+    "remaining": 272.417755,
+    "signal": "Red",
+    "wait": 60.0,
+    "canActivate": false,
+    "position": "(20.00, 1.06, 22.00)",
+    "speed": 3.99160454E-05,
+    "queue": [
+      {
+        "speed": 0.0,
+        "yieldOffset": 0.0,
+        "position": "(217.00, 5.74, 14.12)"
+      },
+      {
+        "speed": 0.0,
+        "yieldOffset": 0.0,
+        "position": "(207.39, 5.69, 14.50)"
+      }
+    ]
+  },
+  {
+    "stage": "Stopped approach",
+    "frame": 9201,
+    "time": 55.8864174,
+    "remaining": 244.436279,
+    "signal": "Red",
+    "wait": 54.7500839,
+    "canActivate": true,
+    "position": "(190.00, 5.26, 14.90)",
+    "speed": 0.000110403882
+  },
+  {
+    "stage": "Siren priority",
+    "frame": 12354,
+    "time": 78.19062,
+    "remaining": 222.13205,
+    "signal": "Green",
+    "siren": true,
+    "audioPlaying": true,
+    "wait": 32.44938,
+    "queue": [
+      {
+        "name": "Civilian_01_Hatchback Car_15",
+        "speed": 0.0,
+        "yieldOffset": 3.3,
+        "position": "(216.87, 5.74, 10.82)",
+        "reserved": "none"
+      },
+      {
+        "name": "Civilian_02_N Van_10",
+        "speed": 0.0,
+        "yieldOffset": 3.3,
+        "position": "(207.90, 5.70, 11.18)",
+        "reserved": "none"
+      }
+    ]
+  }
+]

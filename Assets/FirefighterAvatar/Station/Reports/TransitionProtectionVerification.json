@@ -1,0 +1,260 @@
+{
+  "Lobby": {
+    "added": [
+      {
+        "id": "1180885481",
+        "type": "1"
+      },
+      {
+        "id": "1180885482",
+        "type": "114"
+      },
+      {
+        "id": "1180885483",
+        "type": "4"
+      }
+    ],
+    "removed": [],
+    "changed": [
+      {
+        "id": "4607428429233221380",
+        "type": "1001"
+      },
+      {
+        "id": "9223372036854775807",
+        "type": "1660057539"
+      }
+    ]
+  },
+  "preservedBotAssets": [
+    {
+      "path": "Assets/FirefighterAvatar/StationBot/StationBotFollower.cs",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/StationBot/StationBotLocomotion.controller",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/StationBot/StationBotNavigator.cs",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/StationBot/StationBotRelaxedIdle.anim",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/StationBot/StationBotRoles.cs",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/StationBot/StationFirefighterBot.prefab",
+      "unchanged": true
+    }
+  ],
+  "Station": {
+    "added": [
+      {
+        "id": "39091829",
+        "type": "1"
+      },
+      {
+        "id": "39091830",
+        "type": "4"
+      },
+      {
+        "id": "71615143",
+        "type": "1"
+      },
+      {
+        "id": "71615144",
+        "type": "4"
+      },
+      {
+        "id": "289095984",
+        "type": "1"
+      },
+      {
+        "id": "289095985",
+        "type": "4"
+      },
+      {
+        "id": "749578410",
+        "type": "1"
+      },
+      {
+        "id": "749578411",
+        "type": "4"
+      },
+      {
+        "id": "837237606",
+        "type": "64"
+      },
+      {
+        "id": "1006987154",
+        "type": "1"
+      },
+      {
+        "id": "1006987155",
+        "type": "4"
+      },
+      {
+        "id": "1058810548",
+        "type": "1"
+      },
+      {
+        "id": "1058810549",
+        "type": "4"
+      },
+      {
+        "id": "1346438087",
+        "type": "1"
+      },
+      {
+        "id": "1346438088",
+        "type": "4"
+      },
+      {
+        "id": "1523780291",
+        "type": "1"
+      },
+      {
+        "id": "1523780292",
+        "type": "4"
+      },
+      {
+        "id": "1552734575",
+        "type": "64"
+      },
+      {
+        "id": "1747007253",
+        "type": "1"
+      },
+      {
+        "id": "1747007254",
+        "type": "4"
+      },
+      {
+        "id": "1762267219",
+        "type": "1"
+      },
+      {
+        "id": "1762267220",
+        "type": "4"
+      },
+      {
+        "id": "1762267221",
+        "type": "114"
+      },
+      {
+        "id": "1762267222",
+        "type": "64"
+      },
+      {
+        "id": "1808988663",
+        "type": "1"
+      },
+      {
+        "id": "1808988664",
+        "type": "4"
+      },
+      {
+        "id": "1831348817",
+        "type": "64"
+      },
+      {
+        "id": "2117418245",
+        "type": "1"
+      },
+      {
+        "id": "2117418246",
+        "type": "4"
+      },
+      {
+        "id": "2128520680",
+        "type": "1"
+      },
+      {
+        "id": "2128520681",
+        "type": "4"
+      }
+    ],
+    "removed": [],
+    "changed": [
+      {
+        "id": "371875393",
+        "type": "114"
+      },
+      {
+        "id": "371875394",
+        "type": "4"
+      },
+      {
+        "id": "1060982078",
+        "type": "1"
+      },
+      {
+        "id": "1062075350",
+        "type": "114"
+      },
+      {
+        "id": "1062075351",
+        "type": "4"
+      },
+      {
+        "id": "1521166678",
+        "type": "114"
+      },
+      {
+        "id": "1521166679",
+        "type": "4"
+      },
+      {
+        "id": "2017476641",
+        "type": "114"
+      },
+      {
+        "id": "2017476642",
+        "type": "4"
+      },
+      {
+        "id": "2065842115",
+        "type": "1"
+      },
+      {
+        "id": "9223372036854775807",
+        "type": "1660057539"
+      }
+    ]
+  },
+  "protectedFiles": [
+    {
+      "path": "ProjectSettings/ProjectSettings.asset",
+      "unchanged": true
+    },
+    {
+      "path": "ProjectSettings/EditorBuildSettings.asset",
+      "unchanged": true
+    },
+    {
+      "path": "ProjectSettings/TagManager.asset",
+      "unchanged": true
+    },
+    {
+      "path": "ProjectSettings/DynamicsManager.asset",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/StationLobbyState.cs",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Station/SeatedDispatchLobby.cs",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/FirefighterAvatar/Prefabs/FirefighterNetworkVisual.prefab",
+      "unchanged": true
+    }
+  ]
+}

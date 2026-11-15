@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b979a4e4acc5a2e4f9ba085f315b10e0, type: 3}
+  m_Name: StationIncident
+  m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.Station.StationIncidentDefinition
+  incidentType: Residential structure fire
+  location: "Residential incident \xB7 route destination"
+  priority: HIGH
+  description: Respond to the residential building identified by the existing mission
+    route. Prepare the crew and proceed safely.
+  assignedVehicle: Fire truck
+  objective: Complete dispatch, open the garage and board together.

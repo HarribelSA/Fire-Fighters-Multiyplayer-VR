@@ -12,6 +12,10 @@ namespace FirefighterVR
         public byte LeftGrip, LeftTrigger, RightGrip, RightTrigger;
         public bool Seated;
         public Vector3 SeatPosition;
+        public bool GripVehicleSpace;
+        public byte LeftVisualWeight,RightVisualWeight;
+        public Vector3 LeftVisualPosition,RightVisualPosition;
+        public Quaternion LeftVisualRotation,RightVisualRotation;
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref FloorY);serializer.SerializeValue(ref OriginY);
@@ -20,16 +24,24 @@ namespace FirefighterVR
             serializer.SerializeValue(ref LeftGrip);serializer.SerializeValue(ref LeftTrigger);
             serializer.SerializeValue(ref RightGrip);serializer.SerializeValue(ref RightTrigger);
             serializer.SerializeValue(ref Seated);serializer.SerializeValue(ref SeatPosition);
+            serializer.SerializeValue(ref GripVehicleSpace);serializer.SerializeValue(ref LeftVisualWeight);serializer.SerializeValue(ref RightVisualWeight);
+            if(LeftVisualWeight>0){serializer.SerializeValue(ref LeftVisualPosition);serializer.SerializeValue(ref LeftVisualRotation);}
+            if(RightVisualWeight>0){serializer.SerializeValue(ref RightVisualPosition);serializer.SerializeValue(ref RightVisualRotation);}
         }
         public bool IsValid => float.IsFinite(FloorY)&&float.IsFinite(OriginY)&&float.IsFinite(BodyYaw)
             &&float.IsFinite(StandingHeight)&&float.IsFinite(AvatarScale)&&float.IsFinite(Speed)
             &&float.IsFinite(SeatPosition.x)&&float.IsFinite(SeatPosition.y)&&float.IsFinite(SeatPosition.z)
-            &&StandingHeight>=.8f&&StandingHeight<=2.4f&&AvatarScale>=.5f&&AvatarScale<=1.5f&&Speed>=0&&Speed<=3.1f;
+            &&StandingHeight>=.8f&&StandingHeight<=2.4f&&AvatarScale>=.5f&&AvatarScale<=1.5f&&Speed>=0&&Speed<=3.1f
+            &&ValidGrip(LeftVisualWeight,LeftVisualPosition,LeftVisualRotation)&&ValidGrip(RightVisualWeight,RightVisualPosition,RightVisualRotation);
+        static bool ValidGrip(byte weight,Vector3 p,Quaternion q)=>weight==0||(float.IsFinite(p.x)&&float.IsFinite(p.y)&&float.IsFinite(p.z)&&float.IsFinite(q.x)&&float.IsFinite(q.y)&&float.IsFinite(q.z)&&float.IsFinite(q.w)&&q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w>.5f&&q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w<1.5f);
         public bool Changed(FirefighterAvatarState other) => Mathf.Abs(FloorY-other.FloorY)>.005f
             ||Mathf.Abs(OriginY-other.OriginY)>.005f||Mathf.Abs(Mathf.DeltaAngle(BodyYaw,other.BodyYaw))>1
             ||Mathf.Abs(StandingHeight-other.StandingHeight)>.005f||Mathf.Abs(AvatarScale-other.AvatarScale)>.005f
             ||Mathf.Abs(Speed-other.Speed)>.03f||(Speed==0)!=(other.Speed==0)
-            ||LeftGrip!=other.LeftGrip||LeftTrigger!=other.LeftTrigger||RightGrip!=other.RightGrip||RightTrigger!=other.RightTrigger||Seated!=other.Seated||(SeatPosition-other.SeatPosition).sqrMagnitude>.0001f;
+            ||LeftGrip!=other.LeftGrip||LeftTrigger!=other.LeftTrigger||RightGrip!=other.RightGrip||RightTrigger!=other.RightTrigger||Seated!=other.Seated||(SeatPosition-other.SeatPosition).sqrMagnitude>.0001f
+            ||GripVehicleSpace!=other.GripVehicleSpace||LeftVisualWeight!=other.LeftVisualWeight||RightVisualWeight!=other.RightVisualWeight
+            ||LeftVisualWeight>0&&((LeftVisualPosition-other.LeftVisualPosition).sqrMagnitude>.0001f||Quaternion.Angle(LeftVisualRotation,other.LeftVisualRotation)>1)
+            ||RightVisualWeight>0&&((RightVisualPosition-other.RightVisualPosition).sqrMagnitude>.0001f||Quaternion.Angle(RightVisualRotation,other.RightVisualRotation)>1);
     }
 
     [DefaultExecutionOrder(250)]
@@ -162,6 +174,9 @@ namespace FirefighterVR
                 LeftGrip=Quantize(localAvatar.leftGripValue),LeftTrigger=Quantize(localAvatar.leftTriggerValue),
                 RightGrip=Quantize(localAvatar.rightGripValue),RightTrigger=Quantize(localAvatar.rightTriggerValue)
             };
+            state.GripVehicleSpace=localAvatar.VisualGripReference!=null;
+            localAvatar.GetVisualGrip(true,out state.LeftVisualPosition,out state.LeftVisualRotation,out state.LeftVisualWeight);
+            localAvatar.GetVisualGrip(false,out state.RightVisualPosition,out state.RightVisualRotation,out state.RightVisualWeight);
             if(!sentState||state.Changed(lastState)||Time.unscaledTime-lastSend>=1)
             {if(postureChanged||postureHeartbeat)PublishPostureRpc(state);else PublishStateRpc(state);lastState=state;lastSend=Time.unscaledTime;sentState=true;}
         }

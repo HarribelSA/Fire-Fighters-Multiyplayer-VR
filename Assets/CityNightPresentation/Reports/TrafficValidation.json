@@ -1,0 +1,41 @@
+{
+  "validation": "Deterministic Edit Mode simulation; not Play Mode or Quest profiling",
+  "simulatedSeconds": 180,
+  "stopChecks": [
+    {
+      "path": "LaneLoop_LeftTurns",
+      "gate": 0,
+      "heldAtRed": true,
+      "resumedAfterGreen": true
+    },
+    {
+      "path": "LaneLoop_LeftTurns",
+      "gate": 1,
+      "heldAtRed": true,
+      "resumedAfterGreen": true
+    },
+    {
+      "path": "LaneLoop_RightTurns",
+      "gate": 0,
+      "heldAtRed": true,
+      "resumedAfterGreen": true
+    },
+    {
+      "path": "LaneLoop_RightTurns",
+      "gate": 1,
+      "heldAtRed": true,
+      "resumedAfterGreen": true
+    }
+  ],
+  "progressMeters": [
+    714.8738,
+    697.2869,
+    648.5786,
+    465.7911,
+    602.938843,
+    556.2612
+  ],
+  "allVehiclesProgressed": true,
+  "sampledVehicleOverlaps": 0,
+  "stepsWithStoppedVehicles": 3483
+}

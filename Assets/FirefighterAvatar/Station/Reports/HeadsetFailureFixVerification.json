@@ -1,0 +1,28 @@
+{
+  "scope": "Focused Edit Mode geometry, native reader scheduling emulation, mission predicates and binding checks. No tracked headset or two-peer runtime test.",
+  "checks": [
+    "Extended index recognized",
+    "Curled finger rejected as extended",
+    "Native manual press is deferred until next frame",
+    "Single queued press applies when its target frame arrives",
+    "Release remains deferred without requeuing",
+    "Single queued release completes native selection",
+    "Two ready assigned real players with both spawn acknowledgements can start",
+    "One real player cannot start cooperative mission",
+    "Missing spawn acknowledgement blocks countdown explicitly",
+    "Missing station presentation blocks countdown explicitly",
+    "Shared deadline triggers dispatch at 60 seconds, not before",
+    "Chair remains locked during exploration",
+    "Existing alarm stage cannot trigger a second countdown",
+    "Driver chair unlocks after emergency alarm",
+    "Driver cannot bypass assistant tablet presentation",
+    "Acceptance still requires existing tablet prerequisites",
+    "Existing hand adapter references valid",
+    "Pointing activation and retained-destination interval configured",
+    "One existing origin and provider retained",
+    "Existing three seat anchors and destination bindings valid",
+    "No missing scripts in lobby/station"
+  ],
+  "missingScripts": 0,
+  "remaining": "Live joint poses, arc/reticle, pinch-to-teleport, grab/UI coexistence, actual two-player countdown/alarm/chair/tablet progression require headset testing. Historical headset mission blocker cannot be identified without runtime state; inspect [StationMission] logs or runtimeMissionDiagnostics."
+}

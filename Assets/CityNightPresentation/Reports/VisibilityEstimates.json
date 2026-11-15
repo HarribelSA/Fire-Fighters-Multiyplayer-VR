@@ -1,0 +1,348 @@
+{
+  "status": "ESTIMATES ONLY. Not actual GPU rendered triangle counts. No Quest/XR player camera runtime was profiled.",
+  "method": "90 degree FOV, 1.2 aspect, driver 2.3 m above asphalt, 450 m frustum, configured decoration distances and vehicle LOD cull. Includes mesh instances and estimated sign glyph geometry. Excludes additional pass/stereo implementation effects.",
+  "rawEditorCounter": {
+    "triangles": 247260,
+    "batches": 346,
+    "setPass": 82,
+    "note": "Counters remained unchanged across different Scene View captures; cannot reliably attribute these to the driver camera."
+  },
+  "samples": [
+    {
+      "view": "Spawn",
+      "headYaw": -90.0,
+      "estimatedMonoVisibleMeshTriangles": 23743,
+      "estimatedStereoTwoEyeGeometry": 47486,
+      "rendererInstances": 106
+    },
+    {
+      "view": "Spawn",
+      "headYaw": -45.0,
+      "estimatedMonoVisibleMeshTriangles": 29633,
+      "estimatedStereoTwoEyeGeometry": 59266,
+      "rendererInstances": 190
+    },
+    {
+      "view": "Spawn",
+      "headYaw": 0.0,
+      "estimatedMonoVisibleMeshTriangles": 87788,
+      "estimatedStereoTwoEyeGeometry": 175576,
+      "rendererInstances": 480
+    },
+    {
+      "view": "Spawn",
+      "headYaw": 45.0,
+      "estimatedMonoVisibleMeshTriangles": 108362,
+      "estimatedStereoTwoEyeGeometry": 216724,
+      "rendererInstances": 621
+    },
+    {
+      "view": "Spawn",
+      "headYaw": 90.0,
+      "estimatedMonoVisibleMeshTriangles": 103095,
+      "estimatedStereoTwoEyeGeometry": 206190,
+      "rendererInstances": 547
+    },
+    {
+      "view": "Spawn",
+      "headYaw": 180.0,
+      "estimatedMonoVisibleMeshTriangles": 72388,
+      "estimatedStereoTwoEyeGeometry": 144776,
+      "rendererInstances": 404
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": -90.0,
+      "estimatedMonoVisibleMeshTriangles": 20247,
+      "estimatedStereoTwoEyeGeometry": 40494,
+      "rendererInstances": 100
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": -45.0,
+      "estimatedMonoVisibleMeshTriangles": 17951,
+      "estimatedStereoTwoEyeGeometry": 35902,
+      "rendererInstances": 129
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": 0.0,
+      "estimatedMonoVisibleMeshTriangles": 46483,
+      "estimatedStereoTwoEyeGeometry": 92966,
+      "rendererInstances": 288
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": 45.0,
+      "estimatedMonoVisibleMeshTriangles": 87665,
+      "estimatedStereoTwoEyeGeometry": 175330,
+      "rendererInstances": 471
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": 90.0,
+      "estimatedMonoVisibleMeshTriangles": 107802,
+      "estimatedStereoTwoEyeGeometry": 215604,
+      "rendererInstances": 584
+    },
+    {
+      "view": "MainStraight",
+      "headYaw": 180.0,
+      "estimatedMonoVisibleMeshTriangles": 94920,
+      "estimatedStereoTwoEyeGeometry": 189840,
+      "rendererInstances": 483
+    },
+    {
+      "view": "Intersection1",
+      "headYaw": -90.0,
+      "estimatedMonoVisibleMeshTriangles": 13136,
+      "estimatedStereoTwoEyeGeometry": 26272,
+      "rendererInstances": 77
+    },
+    {
+      "view": "Intersection1",
+      "headYaw": -45.0,
+      "estimatedMonoVisibleMeshTriangles": 19596,
+      "estimatedStereoTwoEyeGeometry": 39192,
+      "rendererInstances": 94
+    },
+    {
+      "view": "Intersection1",
+      "headYaw": 0.0,
+      "estimatedMonoVisibleMeshTriangles": 31082,
+      "estimatedStereoTwoEyeGeometry": 62164,
+      "rendererInstances": 165
+    },
+    {
+      "view": "Intersection1",
+      "headYaw": 45.0,
+      "estimatedMonoVisibleMeshTriangles": 54729,
+      "estimatedStereoTwoEyeGeometry": 109458,
+      "rendererInstances": 331
+    },
+    {
+      "view": "Intersection1",
+      "headYaw": 90.0,
+      "estimatedMonoVisibleMeshTriangles": 103685,
+      "estimatedStereoTwoEyeGeometry": 207370,
+      "rendererInstances": 567
+    },
+    {
+      "view": "Intersection1",
+      "headYaw": 180.0,
+      "estimatedMonoVisibleMeshTriangles": 106123,
+      "estimatedStereoTwoEyeGeometry": 212246,
+      "rendererInstances": 550
+    },
+    {
+      "view": "Intersection2",
+      "headYaw": -90.0,
+      "estimatedMonoVisibleMeshTriangles": 29424,
+      "estimatedStereoTwoEyeGeometry": 58848,
+      "rendererInstances": 144
+    },
+    {
+      "view": "Intersection2",
+      "headYaw": -45.0,
+      "estimatedMonoVisibleMeshTriangles": 40011,
+      "estimatedStereoTwoEyeGeometry": 80022,
+      "rendererInstances": 199
+    },
+    {
+      "view": "Intersection2",
+      "headYaw": 0.0,
+      "estimatedMonoVisibleMeshTriangles": 75094,
+      "estimatedStereoTwoEyeGeometry": 150188,
+      "rendererInstances": 359
+    },
+    {
+      "view": "Intersection2",
+      "headYaw": 45.0,
+      "estimatedMonoVisibleMeshTriangles": 118611,
+      "estimatedStereoTwoEyeGeometry": 237222,
+      "rendererInstances": 620
+    },
+    {
+      "view": "Intersection2",
+      "headYaw": 90.0,
+      "estimatedMonoVisibleMeshTriangles": 123304,
+      "estimatedStereoTwoEyeGeometry": 246608,
+      "rendererInstances": 617
+    },
+    {
+      "view": "Intersection2",
+      "headYaw": 180.0,
+      "estimatedMonoVisibleMeshTriangles": 28625,
+      "estimatedStereoTwoEyeGeometry": 57250,
+      "rendererInstances": 194
+    },
+    {
+      "view": "Intersection3",
+      "headYaw": -90.0,
+      "estimatedMonoVisibleMeshTriangles": 68279,
+      "estimatedStereoTwoEyeGeometry": 136558,
+      "rendererInstances": 370
+    },
+    {
+      "view": "Intersection3",
+      "headYaw": -45.0,
+      "estimatedMonoVisibleMeshTriangles": 88007,
+      "estimatedStereoTwoEyeGeometry": 176014,
+      "rendererInstances": 459
+    },
+    {
+      "view": "Intersection3",
+      "headYaw": 0.0,
+      "estimatedMonoVisibleMeshTriangles": 93361,
+      "estimatedStereoTwoEyeGeometry": 186722,
+      "rendererInstances": 514
+    },
+    {
+      "view": "Intersection3",
+      "headYaw": 45.0,
+      "estimatedMonoVisibleMeshTriangles": 80404,
+      "estimatedStereoTwoEyeGeometry": 160808,
+      "rendererInstances": 416
+    },
+    {
+      "view": "Intersection3",
+      "headYaw": 90.0,
+      "estimatedMonoVisibleMeshTriangles": 52861,
+      "estimatedStereoTwoEyeGeometry": 105722,
+      "rendererInstances": 287
+    },
+    {
+      "view": "Intersection3",
+      "headYaw": 180.0,
+      "estimatedMonoVisibleMeshTriangles": 66409,
+      "estimatedStereoTwoEyeGeometry": 132818,
+      "rendererInstances": 390
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": -90.0,
+      "estimatedMonoVisibleMeshTriangles": 78339,
+      "estimatedStereoTwoEyeGeometry": 156678,
+      "rendererInstances": 430
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": -45.0,
+      "estimatedMonoVisibleMeshTriangles": 58501,
+      "estimatedStereoTwoEyeGeometry": 117002,
+      "rendererInstances": 275
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": 0.0,
+      "estimatedMonoVisibleMeshTriangles": 40027,
+      "estimatedStereoTwoEyeGeometry": 80054,
+      "rendererInstances": 196
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": 45.0,
+      "estimatedMonoVisibleMeshTriangles": 67213,
+      "estimatedStereoTwoEyeGeometry": 134426,
+      "rendererInstances": 395
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": 90.0,
+      "estimatedMonoVisibleMeshTriangles": 87965,
+      "estimatedStereoTwoEyeGeometry": 175930,
+      "rendererInstances": 521
+    },
+    {
+      "view": "FinalTurn",
+      "headYaw": 180.0,
+      "estimatedMonoVisibleMeshTriangles": 80232,
+      "estimatedStereoTwoEyeGeometry": 160464,
+      "rendererInstances": 439
+    },
+    {
+      "view": "Arrival",
+      "headYaw": -90.0,
+      "estimatedMonoVisibleMeshTriangles": 93508,
+      "estimatedStereoTwoEyeGeometry": 187016,
+      "rendererInstances": 508
+    },
+    {
+      "view": "Arrival",
+      "headYaw": -45.0,
+      "estimatedMonoVisibleMeshTriangles": 91014,
+      "estimatedStereoTwoEyeGeometry": 182028,
+      "rendererInstances": 453
+    },
+    {
+      "view": "Arrival",
+      "headYaw": 0.0,
+      "estimatedMonoVisibleMeshTriangles": 61633,
+      "estimatedStereoTwoEyeGeometry": 123266,
+      "rendererInstances": 327
+    },
+    {
+      "view": "Arrival",
+      "headYaw": 45.0,
+      "estimatedMonoVisibleMeshTriangles": 31233,
+      "estimatedStereoTwoEyeGeometry": 62466,
+      "rendererInstances": 179
+    },
+    {
+      "view": "Arrival",
+      "headYaw": 90.0,
+      "estimatedMonoVisibleMeshTriangles": 22484,
+      "estimatedStereoTwoEyeGeometry": 44968,
+      "rendererInstances": 102
+    },
+    {
+      "view": "Arrival",
+      "headYaw": 180.0,
+      "estimatedMonoVisibleMeshTriangles": 89069,
+      "estimatedStereoTwoEyeGeometry": 178138,
+      "rendererInstances": 514
+    },
+    {
+      "view": "DenseCommercial",
+      "headYaw": -90.0,
+      "estimatedMonoVisibleMeshTriangles": 65729,
+      "estimatedStereoTwoEyeGeometry": 131458,
+      "rendererInstances": 376
+    },
+    {
+      "view": "DenseCommercial",
+      "headYaw": -45.0,
+      "estimatedMonoVisibleMeshTriangles": 81500,
+      "estimatedStereoTwoEyeGeometry": 163000,
+      "rendererInstances": 451
+    },
+    {
+      "view": "DenseCommercial",
+      "headYaw": 0.0,
+      "estimatedMonoVisibleMeshTriangles": 89459,
+      "estimatedStereoTwoEyeGeometry": 178918,
+      "rendererInstances": 466
+    },
+    {
+      "view": "DenseCommercial",
+      "headYaw": 45.0,
+      "estimatedMonoVisibleMeshTriangles": 75781,
+      "estimatedStereoTwoEyeGeometry": 151562,
+      "rendererInstances": 388
+    },
+    {
+      "view": "DenseCommercial",
+      "headYaw": 90.0,
+      "estimatedMonoVisibleMeshTriangles": 56904,
+      "estimatedStereoTwoEyeGeometry": 113808,
+      "rendererInstances": 302
+    },
+    {
+      "view": "DenseCommercial",
+      "headYaw": 180.0,
+      "estimatedMonoVisibleMeshTriangles": 75867,
+      "estimatedStereoTwoEyeGeometry": 151734,
+      "rendererInstances": 424
+    }
+  ]
+}

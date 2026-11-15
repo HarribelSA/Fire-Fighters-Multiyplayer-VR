@@ -1,0 +1,26 @@
+{
+  "scope": "Focused Edit Mode binding and mission state tests; not physical XR or a live two-peer session",
+  "checks": [
+    "Exploration cannot skip alarm/dispatch",
+    "Only seated driver accepts after tablet pickup/presentation",
+    "Assistant garage action and fully-open/sweep checks enforced",
+    "Boarding order and duplicate-event guards pass"
+  ],
+  "missingScripts": 0,
+  "missingMaterials": 0,
+  "xrOrigins": 1,
+  "teleportProviders": 1,
+  "handRays": 1,
+  "stationMissionViews": 1,
+  "logicalTablet": "Persistent StationSessionFlow incident/epoch; existing station and city visual instances",
+  "garageAudio": "EmergencyBell",
+  "readyStateScriptUnchanged": true,
+  "hardwareTestsRequired": [
+    "Driver spawn and no reset rollback",
+    "Right palm-up/pinch-release arc and reticle",
+    "Pinch/grab and controller carry/teleport",
+    "Both-peer alarm/door/boarding replication",
+    "Stereo fades and city seat synchronization",
+    "G29 and navigation in live Quest session"
+  ]
+}

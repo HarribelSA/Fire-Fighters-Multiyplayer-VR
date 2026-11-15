@@ -1,0 +1,30 @@
+[
+  {
+    "path": "ProjectSettings/ProjectSettings.asset",
+    "unchanged": true
+  },
+  {
+    "path": "ProjectSettings/EditorBuildSettings.asset",
+    "unchanged": true
+  },
+  {
+    "path": "ProjectSettings/TagManager.asset",
+    "unchanged": true
+  },
+  {
+    "path": "ProjectSettings/DynamicsManager.asset",
+    "unchanged": true
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Station/StationLobbyState.cs",
+    "unchanged": true
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Station/SeatedDispatchLobby.cs",
+    "unchanged": true
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Prefabs/FirefighterNetworkVisual.prefab",
+    "unchanged": true
+  }
+]

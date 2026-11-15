@@ -1,0 +1,32 @@
+[
+  {
+    "path": "ProjectSettings/ProjectSettings.asset",
+    "unchanged": true,
+    "sha256": "EBCAE80940FCF38BF29F5811F0B41183CC76E118C5FE6974B69195E163A87578"
+  },
+  {
+    "path": "ProjectSettings/EditorBuildSettings.asset",
+    "unchanged": true,
+    "sha256": "4217F08F59A3183759C0505963D249185F2446665C9C049F29C23AF23C972AA7"
+  },
+  {
+    "path": "ProjectSettings/TagManager.asset",
+    "unchanged": true,
+    "sha256": "C3CEB300BC5F80265B8F8B119A908C5DC150F152C9730F881E2AB44791496280"
+  },
+  {
+    "path": "ProjectSettings/DynamicsManager.asset",
+    "unchanged": true,
+    "sha256": "280BED7FE1253DC89DC1872ACBD94AE8EF2D5E702B68B3B1C85426E8A4AD91B4"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Station/StationLobbyState.cs",
+    "unchanged": true,
+    "sha256": "427FE04B6BF6CF4CDEEF946A4615F1EF736DC46BB939D7532FFC56D817925105"
+  },
+  {
+    "path": "Assets/FirefighterAvatar/Prefabs/FirefighterNetworkVisual.prefab",
+    "unchanged": true,
+    "sha256": "3207F08B1BB8AF9A0769FC9D644A77DFE1CC447BA62AF05D1A44BDF61F6AD108"
+  }
+]

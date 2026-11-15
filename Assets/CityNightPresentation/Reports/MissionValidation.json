@@ -1,0 +1,33 @@
+{
+  "prioritySafe": true,
+  "priorityGranted": true,
+  "occupiedClearanceHeld": true,
+  "normalRestored": true,
+  "physics": {
+    "test": "Isolated 3D physics scene; not Play Mode or hardware testing",
+    "torqueProportional": true,
+    "forwardDistance": 10.3314629,
+    "acceleratedSpeed": 17.1401711,
+    "stoppedSpeed": 0.000466198515,
+    "reverseVelocity": -1.96996117,
+    "turnedDegrees": 20.4831562,
+    "accelerationWorks": true,
+    "brakingWorks": true,
+    "reverseWorks": true,
+    "steeringWorks": true
+  },
+  "packetRoundtrip": true,
+  "inputCalibrationEndpoints": true,
+  "stopLineCrossingCases": true,
+  "arrivalCases": true,
+  "arrowCount": 598,
+  "minimumSpacing": 0.992705941,
+  "maximumSpacing": 1.00118589,
+  "tabletRouteBound": true,
+  "tabletIncidentBound": true,
+  "driverSeat": "(-0.75, 1.15, 2.20)",
+  "passengerSeat": "(0.75, 1.15, 2.20)",
+  "sourceControllerInactive": true,
+  "hardware": "G29 device/control layout detected only. Physical steering/pedal operation, calibration and two-headset multiplayer not tested.",
+  "renderedTriangleBudget": "UNVERIFIED: no live XR camera render profiling."
+}

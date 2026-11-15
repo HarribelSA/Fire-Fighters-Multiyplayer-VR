@@ -1,0 +1,21 @@
+{
+  "scope": "Edit Mode phase, queue, geometry and path checks; physical Quest validation still required",
+  "checks": [
+    "Mission approach held red before truck arrival",
+    "No normal opening before 60 seconds of waiting",
+    "Normal 60-second expiry grants safe green",
+    "Normal timed green is not cancelled by inactive emergency update",
+    "Passage releases priority through yellow",
+    "Siren priority first clears cross traffic through yellow",
+    "Siren includes all-red clearance",
+    "Siren safely bypasses remaining minute with one green only",
+    "Two actual civilians queue at first mission signal",
+    "Merged vehicles do not loop or teleport back to approach prefix",
+    "Civilian prefix merges continuously into existing road loop",
+    "Queued civilians have lateral emergency clearance",
+    "Actual traffic simulation holds lead civilian at red",
+    "Normal no-siren traffic resumes after minute and clearance",
+    "Siren branch shifts both civilians aside and holds clear despite green",
+    "Signal lenses active and within driver-visible roadside height"
+  ]
+}

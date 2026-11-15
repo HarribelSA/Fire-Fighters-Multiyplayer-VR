@@ -1,0 +1,8 @@
+{
+  "sleepCancelled": true,
+  "taskOwnedSleepHelperRemoved": true,
+  "matchingSleepProcessesStopped": 0,
+  "newPowerAction": "None",
+  "leaveWindowsRunning": true,
+  "unrelatedWindowsTasksModified": false
+}

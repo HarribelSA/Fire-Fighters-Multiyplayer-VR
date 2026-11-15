@@ -1,0 +1,742 @@
+{
+  "scene": "Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity",
+  "implementationFiles": [
+    "Assets/CityNightPresentation/Editor.meta",
+    "Assets/CityNightPresentation/Editor/CityNightBuilder.cs",
+    "Assets/CityNightPresentation/Editor/CityNightBuilder.cs.meta",
+    "Assets/CityNightPresentation/Editor/CityTrafficValidation.cs",
+    "Assets/CityNightPresentation/Editor/CityTrafficValidation.cs.meta",
+    "Assets/CityNightPresentation/Materials.meta",
+    "Assets/CityNightPresentation/Materials/asphalt_2_tracks_Night.mat",
+    "Assets/CityNightPresentation/Materials/asphalt_2_tracks_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/asphalt_2-5_tracks_Night.mat",
+    "Assets/CityNightPresentation/Materials/asphalt_2-5_tracks_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/asphalt_4_tracks_Night.mat",
+    "Assets/CityNightPresentation/Materials/asphalt_4_tracks_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/asphalt_extra_Night.mat",
+    "Assets/CityNightPresentation/Materials/asphalt_extra_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/asphalt_highway_Night.mat",
+    "Assets/CityNightPresentation/Materials/asphalt_highway_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/asphalt_square_Night.mat",
+    "Assets/CityNightPresentation/Materials/asphalt_square_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/blue_light_Night.mat",
+    "Assets/CityNightPresentation/Materials/blue_light_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/Bollard_Stone.mat",
+    "Assets/CityNightPresentation/Materials/Bollard_Stone.mat.meta",
+    "Assets/CityNightPresentation/Materials/building_interior_Arrival.mat",
+    "Assets/CityNightPresentation/Materials/building_interior_Arrival.mat.meta",
+    "Assets/CityNightPresentation/Materials/building_interior_Commercial.mat",
+    "Assets/CityNightPresentation/Materials/building_interior_Commercial.mat.meta",
+    "Assets/CityNightPresentation/Materials/building_interior_Residential.mat",
+    "Assets/CityNightPresentation/Materials/building_interior_Residential.mat.meta",
+    "Assets/CityNightPresentation/Materials/CityNight_Sky.mat",
+    "Assets/CityNightPresentation/Materials/CityNight_Sky.mat.meta",
+    "Assets/CityNightPresentation/Materials/Civilian_Color_Bloom.mat",
+    "Assets/CityNightPresentation/Materials/Civilian_Color_Bloom.mat.meta",
+    "Assets/CityNightPresentation/Materials/Civilian_Color.mat",
+    "Assets/CityNightPresentation/Materials/Civilian_Color.mat.meta",
+    "Assets/CityNightPresentation/Materials/highrise_facades_Arrival.mat",
+    "Assets/CityNightPresentation/Materials/highrise_facades_Arrival.mat.meta",
+    "Assets/CityNightPresentation/Materials/highrise_facades_Commercial.mat",
+    "Assets/CityNightPresentation/Materials/highrise_facades_Commercial.mat.meta",
+    "Assets/CityNightPresentation/Materials/highrise_facades_Residential.mat",
+    "Assets/CityNightPresentation/Materials/highrise_facades_Residential.mat.meta",
+    "Assets/CityNightPresentation/Materials/orange_light_Night.mat",
+    "Assets/CityNightPresentation/Materials/orange_light_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/pink_light_Night.mat",
+    "Assets/CityNightPresentation/Materials/pink_light_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/props_main_Night.mat",
+    "Assets/CityNightPresentation/Materials/props_main_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/RoadMarking_Amber.mat",
+    "Assets/CityNightPresentation/Materials/RoadMarking_Amber.mat.meta",
+    "Assets/CityNightPresentation/Materials/RoadMarking_White.mat",
+    "Assets/CityNightPresentation/Materials/RoadMarking_White.mat.meta",
+    "Assets/CityNightPresentation/Materials/RoadPool_Warm.mat",
+    "Assets/CityNightPresentation/Materials/RoadPool_Warm.mat.meta",
+    "Assets/CityNightPresentation/Materials/sideway_tile_Night.mat",
+    "Assets/CityNightPresentation/Materials/sideway_tile_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/Sign_Arrival.mat",
+    "Assets/CityNightPresentation/Materials/Sign_Arrival.mat.meta",
+    "Assets/CityNightPresentation/Materials/Sign_Background.mat",
+    "Assets/CityNightPresentation/Materials/Sign_Background.mat.meta",
+    "Assets/CityNightPresentation/Materials/Sign_Direction.mat",
+    "Assets/CityNightPresentation/Materials/Sign_Direction.mat.meta",
+    "Assets/CityNightPresentation/Materials/Sign_Stop.mat",
+    "Assets/CityNightPresentation/Materials/Sign_Stop.mat.meta",
+    "Assets/CityNightPresentation/Materials/Signal_Amber.mat",
+    "Assets/CityNightPresentation/Materials/Signal_Amber.mat.meta",
+    "Assets/CityNightPresentation/Materials/Signal_Green.mat",
+    "Assets/CityNightPresentation/Materials/Signal_Green.mat.meta",
+    "Assets/CityNightPresentation/Materials/Signal_Off.mat",
+    "Assets/CityNightPresentation/Materials/Signal_Off.mat.meta",
+    "Assets/CityNightPresentation/Materials/Signal_Red.mat",
+    "Assets/CityNightPresentation/Materials/Signal_Red.mat.meta",
+    "Assets/CityNightPresentation/Materials/StreetHardware.mat",
+    "Assets/CityNightPresentation/Materials/StreetHardware.mat.meta",
+    "Assets/CityNightPresentation/Materials/vegetation_non_tp_Night.mat",
+    "Assets/CityNightPresentation/Materials/vegetation_non_tp_Night.mat.meta",
+    "Assets/CityNightPresentation/Materials/white_light_Night.mat",
+    "Assets/CityNightPresentation/Materials/white_light_Night.mat.meta",
+    "Assets/CityNightPresentation/Meshes.meta",
+    "Assets/CityNightPresentation/Meshes/Arrival_Arrow_Head.asset",
+    "Assets/CityNightPresentation/Meshes/Arrival_Arrow_Head.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Arrival_Arrow_Stem.asset",
+    "Assets/CityNightPresentation/Meshes/Arrival_Arrow_Stem.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ArrivalBoundary_-1.asset",
+    "Assets/CityNightPresentation/Meshes/ArrivalBoundary_-1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ArrivalBoundary_1.asset",
+    "Assets/CityNightPresentation/Meshes/ArrivalBoundary_1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ArrivalCurbBoundary.asset",
+    "Assets/CityNightPresentation/Meshes/ArrivalCurbBoundary.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Commercial_Arrow_Head.asset",
+    "Assets/CityNightPresentation/Meshes/Commercial_Arrow_Head.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Commercial_Arrow_Stem.asset",
+    "Assets/CityNightPresentation/Meshes/Commercial_Arrow_Stem.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Junction_01_MainCommercial_Stop_0.asset",
+    "Assets/CityNightPresentation/Meshes/Junction_01_MainCommercial_Stop_0.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Junction_01_MainCommercial_Stop_2.asset",
+    "Assets/CityNightPresentation/Meshes/Junction_01_MainCommercial_Stop_2.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Junction_01_MainCommercial_Stop_3.asset",
+    "Assets/CityNightPresentation/Meshes/Junction_01_MainCommercial_Stop_3.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Junction_02_CommercialResidential_Stop_0.asset",
+    "Assets/CityNightPresentation/Meshes/Junction_02_CommercialResidential_Stop_0.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Junction_02_CommercialResidential_Stop_1.asset",
+    "Assets/CityNightPresentation/Meshes/Junction_02_CommercialResidential_Stop_1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Junction_02_CommercialResidential_Stop_3.asset",
+    "Assets/CityNightPresentation/Meshes/Junction_02_CommercialResidential_Stop_3.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Junction_03_Residential_Stop_0.asset",
+    "Assets/CityNightPresentation/Meshes/Junction_03_Residential_Stop_0.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Junction_03_Residential_Stop_2.asset",
+    "Assets/CityNightPresentation/Meshes/Junction_03_Residential_Stop_2.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Junction_03_Residential_Stop_3.asset",
+    "Assets/CityNightPresentation/Meshes/Junction_03_Residential_Stop_3.asset.meta",
+    "Assets/CityNightPresentation/Meshes/MainRoad_Arrow_Head.asset",
+    "Assets/CityNightPresentation/Meshes/MainRoad_Arrow_Head.asset.meta",
+    "Assets/CityNightPresentation/Meshes/MainRoad_Arrow_Stem.asset",
+    "Assets/CityNightPresentation/Meshes/MainRoad_Arrow_Stem.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_0.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_0.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_2.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_2.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_3.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_3.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_4.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_4.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_5.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEdge_5.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_0_-1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_0_-1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_0_1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_0_1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_1_-1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_1_-1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_1_1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_1_1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_2_-1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_2_-1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_2_1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_2_1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_3_-1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_3_-1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_3_1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_3_1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_4_-1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_4_-1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_4_1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_4_1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_5_-1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_5_-1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_5_1.asset",
+    "Assets/CityNightPresentation/Meshes/ParkingEnd_5_1.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Residential_Arrow_Head.asset",
+    "Assets/CityNightPresentation/Meshes/Residential_Arrow_Head.asset.meta",
+    "Assets/CityNightPresentation/Meshes/Residential_Arrow_Stem.asset",
+    "Assets/CityNightPresentation/Meshes/Residential_Arrow_Stem.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_00.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_00.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_01.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_01.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_02.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_02.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_03.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_03.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_04.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_04.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_05.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_05.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_06.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_06.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_07.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_07.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_08.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_08.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_09.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_09.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_10.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_10.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_11.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_11.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_12.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_12.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_13.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_13.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_14.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_14.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_15.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_15.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_16.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_16.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_17.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_17.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_18.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_18.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_19.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_19.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_20.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_20.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_21.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_21.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_22.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_22.asset.meta",
+    "Assets/CityNightPresentation/Meshes/RoadPool_23.asset",
+    "Assets/CityNightPresentation/Meshes/RoadPool_23.asset.meta",
+    "Assets/CityNightPresentation/Meshes/SignalLens_12.asset",
+    "Assets/CityNightPresentation/Meshes/SignalLens_12.asset.meta",
+    "Assets/CityNightPresentation/Meshes/StreetPole_8.asset",
+    "Assets/CityNightPresentation/Meshes/StreetPole_8.asset.meta",
+    "Assets/CityNightPresentation/Mission.meta",
+    "Assets/CityNightPresentation/Mission/Assets.meta",
+    "Assets/CityNightPresentation/Mission/Assets/CabinHardware.mat",
+    "Assets/CityNightPresentation/Mission/Assets/CabinHardware.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/FireTruckDriving.inputactions",
+    "Assets/CityNightPresentation/Mission/Assets/FireTruckDriving.inputactions.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Lever_Grip.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Lever_Grip.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Lightbar_Blue.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Lightbar_Blue.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Lightbar_Off.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Lightbar_Off.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Lightbar_Red.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Lightbar_Red.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/MissionArrow.asset",
+    "Assets/CityNightPresentation/Mission/Assets/MissionArrow.asset.meta",
+    "Assets/CityNightPresentation/Mission/Assets/MissionFireTruck.prefab",
+    "Assets/CityNightPresentation/Mission/Assets/MissionFireTruck.prefab.meta",
+    "Assets/CityNightPresentation/Mission/Assets/NavigationArrow.shader",
+    "Assets/CityNightPresentation/Mission/Assets/NavigationArrow.shader.meta",
+    "Assets/CityNightPresentation/Mission/Assets/NavigationArrows.mat",
+    "Assets/CityNightPresentation/Mission/Assets/NavigationArrows.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/SirenWail.wav",
+    "Assets/CityNightPresentation/Mission/Assets/SirenWail.wav.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_cover_0eb44c.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_cover_0eb44c.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_glass_44acaa.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_glass_44acaa.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_headlights_glass_e2775f.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_headlights_glass_e2775f.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_interior_6f6afe.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_interior_6f6afe.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_lights_glass_fd3b97.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_lights_glass_fd3b97.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_mirrors_223711.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_mirrors_223711.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_parts_663e7d.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_parts_663e7d.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_wheels_b0fcae.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_firetruck_wheels_b0fcae.mat.meta",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_Truck_YellowPaint_cad027.mat",
+    "Assets/CityNightPresentation/Mission/Assets/Truck_Truck_YellowPaint_cad027.mat.meta",
+    "Assets/CityNightPresentation/Mission/Editor.meta",
+    "Assets/CityNightPresentation/Mission/Editor/FireTruckMissionBuilder.cs",
+    "Assets/CityNightPresentation/Mission/Editor/FireTruckMissionBuilder.cs.meta",
+    "Assets/CityNightPresentation/Mission/Runtime.meta",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckEmergency.cs",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckEmergency.cs.meta",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckMission.cs",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckMission.cs.meta",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckPresentation.cs",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckPresentation.cs.meta",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckSeating.cs",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckSeating.cs.meta",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckWheelController.cs",
+    "Assets/CityNightPresentation/Mission/Runtime/FireTruckWheelController.cs.meta",
+    "Assets/CityNightPresentation/Mission/Runtime/MissionTabletMap.cs",
+    "Assets/CityNightPresentation/Mission/Runtime/MissionTabletMap.cs.meta",
+    "Assets/CityNightPresentation/Reports.meta",
+    "Assets/CityNightPresentation/Reports/CityCompletionReport.md",
+    "Assets/CityNightPresentation/Reports/CityCompletionReport.md.meta",
+    "Assets/CityNightPresentation/Reports/EmergencyYieldValidation.json",
+    "Assets/CityNightPresentation/Reports/EmergencyYieldValidation.json.meta",
+    "Assets/CityNightPresentation/Reports/ExistingRigValidation.json",
+    "Assets/CityNightPresentation/Reports/ExistingRigValidation.json.meta",
+    "Assets/CityNightPresentation/Reports/FinalSaveVerification.json",
+    "Assets/CityNightPresentation/Reports/FinalSaveVerification.json.meta",
+    "Assets/CityNightPresentation/Reports/LayoutValidation.json",
+    "Assets/CityNightPresentation/Reports/LayoutValidation.json.meta",
+    "Assets/CityNightPresentation/Reports/MissionAssetManifest.json",
+    "Assets/CityNightPresentation/Reports/MissionAssetManifest.json.meta",
+    "Assets/CityNightPresentation/Reports/MissionBindingValidation.json",
+    "Assets/CityNightPresentation/Reports/MissionBindingValidation.json.meta",
+    "Assets/CityNightPresentation/Reports/MissionCompletionReport.md",
+    "Assets/CityNightPresentation/Reports/MissionCompletionReport.md.meta",
+    "Assets/CityNightPresentation/Reports/MissionFinalVerification.json",
+    "Assets/CityNightPresentation/Reports/MissionFinalVerification.json.meta",
+    "Assets/CityNightPresentation/Reports/MissionValidation.json",
+    "Assets/CityNightPresentation/Reports/MissionValidation.json.meta",
+    "Assets/CityNightPresentation/Reports/MissionVisibilityEstimates.json",
+    "Assets/CityNightPresentation/Reports/MissionVisibilityEstimates.json.meta",
+    "Assets/CityNightPresentation/Reports/PreservationValidation.json",
+    "Assets/CityNightPresentation/Reports/PreservationValidation.json.meta",
+    "Assets/CityNightPresentation/Reports/SceneAssetManifest.json",
+    "Assets/CityNightPresentation/Reports/SceneAssetManifest.json.meta",
+    "Assets/CityNightPresentation/Reports/SleepCancellation.json",
+    "Assets/CityNightPresentation/Reports/SleepCancellation.json.meta",
+    "Assets/CityNightPresentation/Reports/TrafficValidation.json",
+    "Assets/CityNightPresentation/Reports/TrafficValidation.json.meta",
+    "Assets/CityNightPresentation/Reports/VisibilityEstimates.json",
+    "Assets/CityNightPresentation/Reports/VisibilityEstimates.json.meta",
+    "Assets/CityNightPresentation/Scripts.meta",
+    "Assets/CityNightPresentation/Scripts/CityDrivingRoute.cs",
+    "Assets/CityNightPresentation/Scripts/CityDrivingRoute.cs.meta",
+    "Assets/CityNightPresentation/Scripts/CitySignalController.cs",
+    "Assets/CityNightPresentation/Scripts/CitySignalController.cs.meta",
+    "Assets/CityNightPresentation/Scripts/CityTrafficManager.cs",
+    "Assets/CityNightPresentation/Scripts/CityTrafficManager.cs.meta",
+    "Assets/CityNightPresentation/Scripts/CityTrafficPath.cs",
+    "Assets/CityNightPresentation/Scripts/CityTrafficPath.cs.meta",
+    "Assets/CityNightPresentation/Scripts/CityVisibilityController.cs",
+    "Assets/CityNightPresentation/Scripts/CityVisibilityController.cs.meta",
+    "Assets/CityNightPresentation/Shaders.meta",
+    "Assets/CityNightPresentation/Shaders/NightSky.shader",
+    "Assets/CityNightPresentation/Shaders/NightSky.shader.meta",
+    "Assets/CityNightPresentation/Shaders/RoadLightPool.shader",
+    "Assets/CityNightPresentation/Shaders/RoadLightPool.shader.meta"
+  ],
+  "modifiedSharedFiles": [
+    "Assets/FirefighterAvatar/Station/StationSessionFlow.cs",
+    "Assets/FirefighterAvatar/Station/StationLocalRig.cs",
+    "Assets/CityNightPresentation/Scripts/CitySignalController.cs",
+    "Assets/CityNightPresentation/Scripts/CityTrafficPath.cs",
+    "Assets/CityNightPresentation/Scripts/CityTrafficManager.cs",
+    "ProjectSettings/EditorBuildSettings.asset",
+    "Assets/Versatile Studio Assets/Demo City By Versatile Studio/Scenes/demo_city_night.unity"
+  ],
+  "sceneRoots": [
+    "ENVIRONMENT_OBJECTS",
+    "STATIC_MODELS",
+    "ROAD_NETWORK",
+    "TRAFFIC_SYSTEM",
+    "CITY_LIGHTING",
+    "CITY_PROPS",
+    "FIREFIGHTER_DRIVING_ROUTE",
+    "CITY_OPTIMIZATION",
+    "MISSION_FIRE_TRUCK"
+  ],
+  "truckObjects": [
+    {
+      "path": "MISSION_FIRE_TRUCK",
+      "components": [
+        "Transform",
+        "BoxCollider",
+        "Rigidbody",
+        "BasicCarController",
+        "FireTruckWheelController",
+        "NetworkObject",
+        "ClientNetworkTransform",
+        "FireTruckMission",
+        "FireTruckSeating",
+        "FireTruckEmergency",
+        "FireTruckPresentation"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/glass",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/body",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/parts",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/lights_glass",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/healights_glass",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/mirrors",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/interior",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/top cover",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/tubes ",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/top cover locks",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/Spot Light",
+      "components": [
+        "Transform",
+        "Light",
+        "UniversalAdditionalLightData"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/firetruck_wheel_FL",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/firetruck_wheel_FR",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/firetruck_wheel_RL",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/firetruck_wheel_RR",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/firetruck_steering_wheel",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/DrivingWheelColliders",
+      "components": [
+        "Transform"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/DrivingWheelColliders/FL",
+      "components": [
+        "Transform",
+        "WheelCollider"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/DrivingWheelColliders/FR",
+      "components": [
+        "Transform",
+        "WheelCollider"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/DrivingWheelColliders/RL",
+      "components": [
+        "Transform",
+        "WheelCollider"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/DrivingWheelColliders/RR",
+      "components": [
+        "Transform",
+        "WheelCollider"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CrewSeats",
+      "components": [
+        "Transform"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CrewSeats/DriverSeat",
+      "components": [
+        "Transform"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CrewSeats/PassengerSeat",
+      "components": [
+        "Transform"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment",
+      "components": [
+        "Transform"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Ceiling_Siren_Lever",
+      "components": [
+        "Transform",
+        "XRLever"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Ceiling_Siren_Lever/Mount",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Ceiling_Siren_Lever/Handle",
+      "components": [
+        "Transform",
+        "BoxCollider"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Ceiling_Siren_Lever/Handle/Grip",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Windshield_Timer",
+      "components": [
+        "RectTransform",
+        "Canvas"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Windshield_Timer/Timer",
+      "components": [
+        "RectTransform",
+        "CanvasRenderer",
+        "TextMeshProUGUI"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Passenger_Tablet",
+      "components": [
+        "Transform"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Passenger_Tablet/Body",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Passenger_Tablet/Tablet_Canvas",
+      "components": [
+        "RectTransform",
+        "Canvas",
+        "TrackedDeviceGraphicRaycaster",
+        "CanvasGroup"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Passenger_Tablet/Tablet_Canvas/Status",
+      "components": [
+        "RectTransform",
+        "CanvasRenderer",
+        "TextMeshProUGUI"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Passenger_Tablet/Tablet_Canvas/Route_Map",
+      "components": [
+        "RectTransform",
+        "MissionTabletMap",
+        "CanvasRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Passenger_Tablet/Tablet_Canvas/Follow_Button",
+      "components": [
+        "RectTransform",
+        "CanvasRenderer",
+        "Image",
+        "Button"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/CabinMissionEquipment/Passenger_Tablet/Tablet_Canvas/Follow_Button/Label",
+      "components": [
+        "RectTransform",
+        "CanvasRenderer",
+        "TextMeshProUGUI"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/Emergency_Lightbar",
+      "components": [
+        "Transform",
+        "AudioSource"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/Emergency_Lightbar/Housing",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/Emergency_Lightbar/Red",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    },
+    {
+      "path": "MISSION_FIRE_TRUCK/Emergency_Lightbar/Blue",
+      "components": [
+        "Transform",
+        "MeshFilter",
+        "MeshRenderer"
+      ]
+    }
+  ],
+  "hiddenCityInstances": [
+    "CITY_PROPS/Commercial/StreetFurniture/bench (107)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (109)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (111)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (113)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (115)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (117)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (119)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (121)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (105)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (130)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (132)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (134)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (136)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (138)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (140)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (142)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (144)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (146)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (15)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (17)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (19)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (21)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (23)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (25)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (27)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (29)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (47)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (49)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (51)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (53)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (55)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (57)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (59)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (61)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (82)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (93)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (95)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (97)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (101)",
+    "CITY_PROPS/Commercial/StreetFurniture/bench (103)",
+    "CITY_PROPS/Residential/Planters/hedge_with_base (26)",
+    "CITY_PROPS/Residential/Planters/hedge_with_base (27)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (82)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (84)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (100)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (101)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (103)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (105)",
+    "CITY_PROPS/Residential/StreetFurniture/bench",
+    "CITY_PROPS/Residential/StreetFurniture/bench (2)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (4)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (6)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (8)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (12)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (10)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (31)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (33)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (35)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (37)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (39)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (41)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (43)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (45)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (63)",
+    "CITY_PROPS/Residential/StreetFurniture/bench (65)"
+  ],
+  "sleepCancelled": true,
+  "powerAction": "None"
+}

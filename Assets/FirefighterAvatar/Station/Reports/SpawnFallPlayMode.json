@@ -1,0 +1,47 @@
+[
+  {
+    "stage": "Neutral",
+    "frame": 661,
+    "time": 5.657652,
+    "root": "(0.00, 0.00, 0.00)",
+    "resetter": false
+  },
+  {
+    "stage": "Assistant",
+    "frame": 1593,
+    "time": 12.8347044,
+    "role": "Assistant",
+    "root": "(0.85, 0.00, 0.00)",
+    "head": "(0.85, 1.36, 0.00)",
+    "grounded": false,
+    "move": true,
+    "teleport": true
+  },
+  {
+    "stage": "Assistant sustained",
+    "frame": 5333,
+    "time": 41.7962837,
+    "root": "(0.85, 0.00, 0.00)"
+  },
+  {
+    "stage": "Driver",
+    "frame": 6136,
+    "time": 47.8772125,
+    "root": "(-0.83, -0.04, 0.20)",
+    "role": "Driver",
+    "seated": true,
+    "eyeError": 0.0,
+    "enabledMovement": 0
+  },
+  {
+    "stage": "Assistant restored",
+    "frame": 6791,
+    "time": 52.8704071,
+    "root": "(0.85, 0.00, 0.00)",
+    "role": "Assistant",
+    "seated": false,
+    "cc": true,
+    "move": true,
+    "teleport": true
+  }
+]
