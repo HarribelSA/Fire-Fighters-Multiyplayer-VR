@@ -71,7 +71,7 @@ namespace CityNightPresentation.Fireground
             {
                 // Never walk beyond the paid-out hose: wait for the pump operator to crank more.
                 var s = op.Current; float now = Vector3.Distance(op.hoseOutlet.position, t.position), after = Vector3.Distance(op.hoseOutlet.position, next);
-                if (after > now && after + .9f > s.payout) { bot.SetMotion("Idle", .55f); Status("Need more hose — turn the reel crank"); return false; }
+                if (after > now && after + .9f > s.payout) { op.BotPull(after + 1.5f); if (after + .9f > op.Current.payout) { bot.SetMotion("Idle", .55f); Status("Need more hose — turn the reel crank"); return false; } }
             }
             next.y = op.GroundBelow(next).y; t.position = next;
             bot.SetMotion("Walk", Mathf.Clamp(walkSpeed / .9f, .4f, 1.5f));

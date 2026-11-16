@@ -29,7 +29,8 @@ namespace CityNightPresentation.Fireground
         public bool LocalTrigger { get; private set; }
         public Vector3 HoseAttachLocal => hoseAttach ? transform.InverseTransformPoint(hoseAttach.position) : Vector3.zero;
         public bool canProcess => isActiveAndEnabled;
-        public bool Process(IXRSelectInteractor interactor, IXRSelectInteractable interactable) => LocallyHeld || (operation && operation.CanLocalGrabNozzle);
+        // Near grab only: the hose can never be reeled in from a distance with a ray.
+        public bool Process(IXRSelectInteractor interactor, IXRSelectInteractable interactable) => LocallyHeld || (operation && operation.CanLocalGrabNozzle && !(interactor is NearFarInteractor n && n.selectionRegion.Value == NearFarInteractor.Region.Far));
 
         void Awake()
         {

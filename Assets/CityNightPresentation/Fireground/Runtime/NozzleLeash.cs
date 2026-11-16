@@ -17,10 +17,11 @@ namespace CityNightPresentation.Fireground
         {
             if (!operation || !operation.hoseOutlet || !nozzle) return;
             Vector3 anchor = operation.hoseOutlet.position;
-            float limit = Mathf.Max(.25f, operation.Current.payout * .97f);
+            float limit = Mathf.Max(.25f, operation.PredictedPayout * .97f);
             Vector3 offset = targetPose.rotation * Vector3.Scale(nozzle.HoseAttachLocal, nozzle.transform.lossyScale);
             Vector3 coupling = targetPose.position + offset, d = coupling - anchor; float dist = d.magnitude;
             Tension = Mathf.Clamp01((dist - limit * .92f) / Mathf.Max(.05f, limit * .08f));
+            if (dist > limit && operation.LocalHoldsNozzle) { operation.RequestPullOut(dist / .97f + .35f); limit = Mathf.Max(limit, operation.PredictedPayout * .97f); }
             if (dist > limit) targetPose.position = anchor + d / dist * limit - offset;
         }
     }

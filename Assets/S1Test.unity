@@ -19283,6 +19283,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1356834989}
+  - component: {fileID: 1356834990}
   m_Layer: 0
   m_Name: Player2SeatAnchor
   m_TagString: Untagged
@@ -19305,6 +19306,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 194833764}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1356834990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356834988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf72057a33d7044aa7e5c6c564bb26c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.SeatPose
+  id: 2
+  hipLocal: {x: 0, y: 0.62687147, z: -0.14657617}
+  floorLocalY: 0
+  footForward: 0.67
 --- !u!1 &1362743947
 GameObject:
   m_ObjectHideFlags: 0
@@ -25611,6 +25628,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1876219784}
+  - component: {fileID: 1876219785}
   m_Layer: 0
   m_Name: Player1SeatAnchor
   m_TagString: Untagged
@@ -25633,6 +25651,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 194833764}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1876219785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1876219783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf72057a33d7044aa7e5c6c564bb26c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.SeatPose
+  id: 1
+  hipLocal: {x: 0, y: 0.62687147, z: -0.14657617}
+  floorLocalY: 0
+  footForward: 0.67
 --- !u!1 &1877148043
 GameObject:
   m_ObjectHideFlags: 0
@@ -38694,6 +38728,7 @@ MonoBehaviour:
   - {fileID: 1204110433}
   - {fileID: 4607428429233221381}
   permanentlySeatedDriver: 1
+  releaseUnusedAssetsOnReturn: 1
   assistantMovement: 0
 --- !u!137 &4704096488491420648
 SkinnedMeshRenderer:

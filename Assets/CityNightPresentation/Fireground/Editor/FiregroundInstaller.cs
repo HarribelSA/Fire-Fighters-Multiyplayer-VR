@@ -130,6 +130,10 @@ namespace CityNightPresentation.Fireground.EditorTools
             bot.panelStand = Anchor(eq, "Bot_PanelStand", new Vector3(1.6f, 0, -.95f), -90); bot.reelStand = Anchor(eq, "Bot_ReelStand", new Vector3(2.35f, 0, -1.6f), -90);
             bot.waterOnButton = panel.transform.Find("WaterOnButton"); bot.waterOffButton = panel.transform.Find("WaterOffButton"); EditorUtility.SetDirty(bot);
 
+            // ---- Driver switches to Meta controllers at the fireground: glowing controller silhouettes ----
+            var prompt = truck.GetComponent<FiregroundControllerPrompt>() ?? truck.gameObject.AddComponent<FiregroundControllerPrompt>(); prompt.op = op; prompt.ghostRoot = BuildControllerGhosts(eq); EditorUtility.SetDirty(prompt);
+            CrewPresentationInstaller.ApplyCity(truck, log);
+
             // ---- Cab: wider steering-rim grab range; tablet presentation ----
             var cab = Object.FindFirstObjectByType<FireTruckCabInteraction>();
             if (cab) { var cs = new SerializedObject(cab); cs.FindProperty("rimTolerance").floatValue = .1f; cs.ApplyModifiedPropertiesWithoutUndo(); }
@@ -270,7 +274,7 @@ namespace CityNightPresentation.Fireground.EditorTools
             knob = k.transform;
             outlet = new GameObject("HoseOutlet").transform; outlet.SetParent(t, false); outlet.localPosition = new Vector3(.06f, -.25f, 0);
             ratchet = g.AddComponent<AudioSource>(); ratchet.clip = Clip("reel_ratchet"); Spatial(ratchet, true, 0, 1, 12);
-            var reel = g.AddComponent<HoseReel>(); reel.interactionLayers = 1; return reel;
+            var reel = g.AddComponent<HoseReel>(); reel.interactionLayers = 1; var hp = g.AddComponent<InteractionHaptics>(); hp.releaseAmplitude = 0; return reel;
         }
         static GameObject BuildPanel(Transform eq, FiregroundOperation op, out Renderer lamp, out Transform needle, out TMP_Text status, out AudioSource pump)
         {
@@ -297,7 +301,7 @@ namespace CityNightPresentation.Fireground.EditorTools
             Prim(PrimitiveType.Cylinder, "Cap", b.transform, new Vector3(0, 0, -.022f), Quaternion.Euler(90, 0, 0), new Vector3(.075f, .018f, .075f), on ? "ButtonGreen" : "ButtonRed");
             Prim(PrimitiveType.Cylinder, "Ring", b.transform, new Vector3(0, 0, -.012f), Quaternion.Euler(90, 0, 0), new Vector3(.095f, .008f, .095f), "Chrome");
             var c = b.AddComponent<BoxCollider>(); c.center = new Vector3(0, 0, -.03f); c.size = new Vector3(.11f, .11f, .06f);
-            var si = b.AddComponent<XRSimpleInteractable>(); si.interactionLayers = 1;
+            var si = b.AddComponent<XRSimpleInteractable>(); si.interactionLayers = 1; b.AddComponent<InteractionHaptics>();
             var poke = b.AddComponent<XRPokeFilter>();
             UnityEventTools.AddVoidPersistentListener(si.selectEntered, on ? op.PumpButtonOn : op.PumpButtonOff);
             Label(panel, on ? "WATER ON" : "WATER OFF", lp + new Vector3(.065f, 0, -.012f), .016f, TextAlignmentOptions.Left, .14f);
@@ -328,7 +332,9 @@ namespace CityNightPresentation.Fireground.EditorTools
             var gripCol = g.AddComponent<BoxCollider>(); gripCol.center = new Vector3(0, -.07f, .035f); gripCol.size = new Vector3(.05f, .12f, .06f);
             var rb = g.AddComponent<Rigidbody>(); rb.isKinematic = true; rb.useGravity = false; rb.interpolation = RigidbodyInterpolation.None;
             var grab = g.AddComponent<XRGrabInteractable>();
-            grab.movementType = XRBaseInteractable.MovementType.Instantaneous; grab.throwOnDetach = false; grab.useDynamicAttach = true; grab.trackScale = false; grab.interactionLayers = 1;
+            var gripAttach = new GameObject("GripAttach").transform; gripAttach.SetParent(t, false); gripAttach.localPosition = new Vector3(0, -.075f, .035f);
+            grab.movementType = XRBaseInteractable.MovementType.Instantaneous; grab.throwOnDetach = false; grab.useDynamicAttach = false; grab.attachTransform = gripAttach;
+            g.AddComponent<InteractionHaptics>(); grab.trackScale = false; grab.interactionLayers = 1;
             var general = g.AddComponent<XRGeneralGrabTransformer>();
             var leash = g.AddComponent<NozzleLeash>(); leash.operation = op;
             grab.addDefaultGrabTransformers = false; grab.startingSingleGrabTransformers = new List<XRBaseGrabTransformer> { general, leash };
@@ -356,6 +362,20 @@ namespace CityNightPresentation.Fireground.EditorTools
             });
             var spray = g.AddComponent<AudioSource>(); spray.clip = Clip("water_spray"); Spatial(spray, true, 0, 2, 30); n.sprayAudio = spray;
             return n;
+        }
+        static GameObject BuildControllerGhosts(Transform eq)
+        {
+            var root = new GameObject("ControllerGhosts"); root.transform.SetParent(eq, false);
+            var ghost = Lit("ControllerGhost", new Color(.15f, .55f, 1f), 0, .9f, null, new Color(.2f, .9f, 2.4f));
+            foreach (var (path, x) in new[] { ("Assets/VRMPAssets/Prefabs/XRControllerLeftModel.prefab", -.15f), ("Assets/VRMPAssets/Prefabs/XRControllerRightModel.prefab", .15f) })
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path); if (!prefab) continue;
+                var g = Object.Instantiate(prefab, root.transform); g.name = Path.GetFileNameWithoutExtension(path) + "_Ghost"; g.transform.localPosition = new Vector3(x, 0, 0); g.transform.localRotation = Quaternion.Euler(-30, 0, 0);
+                foreach (var tr in g.GetComponentsInChildren<Transform>(true)) GameObjectUtility.RemoveMonoBehavioursWithMissingScript(tr.gameObject);
+                foreach (var c in g.GetComponentsInChildren<Component>(true)) if (c && !(c is Transform) && !(c is MeshFilter) && !(c is Renderer)) Object.DestroyImmediate(c);
+                foreach (var r in g.GetComponentsInChildren<Renderer>(true)) { r.sharedMaterials = Enumerable.Repeat(ghost, r.sharedMaterials.Length).ToArray(); r.shadowCastingMode = ShadowCastingMode.Off; }
+            }
+            root.SetActive(false); return root;
         }
         static void Part(Transform parent, string name, Mesh mesh, string mat)
         { var g = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer)); g.transform.SetParent(parent, false); g.GetComponent<MeshFilter>().sharedMesh = mesh; var r = g.GetComponent<MeshRenderer>(); r.sharedMaterial = mats[mat]; r.shadowCastingMode = ShadowCastingMode.Off; }

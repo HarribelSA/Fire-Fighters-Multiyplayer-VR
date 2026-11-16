@@ -22,7 +22,7 @@ namespace CityNightPresentation.Fireground
         public float payoutDirection = 1;
 
         float lastAngle, pending, nextSend, shownPayout = -1, ratchetLevel, lastShown;
-        bool hasAngle;
+        bool hasAngle; float clickTravel;
 
         public override bool IsSelectableBy(IXRSelectInteractor interactor)
         {
@@ -45,7 +45,12 @@ namespace CityNightPresentation.Fireground
             float radius = new Vector2(p.x, p.y).magnitude;
             if (radius < minimumHandRadius) { hasAngle = false; return; }
             float angle = Mathf.Atan2(p.y, p.x);
-            if (hasAngle) pending += Mathf.DeltaAngle(lastAngle * Mathf.Rad2Deg, angle * Mathf.Rad2Deg) * Mathf.Deg2Rad * payoutDirection;
+            if (hasAngle)
+            {
+                float step = Mathf.DeltaAngle(lastAngle * Mathf.Rad2Deg, angle * Mathf.Rad2Deg) * Mathf.Deg2Rad; pending += step * payoutDirection;
+                // Ratchet feel: one haptic click per ~20 degrees of crank travel.
+                clickTravel += Mathf.Abs(step); if (clickTravel > .35f && interactor is XRBaseInputInteractor input) { clickTravel = 0; input.SendHapticImpulse(.45f, .03f); }
+            }
             lastAngle = angle; hasAngle = true;
             if (Time.unscaledTime >= nextSend) Flush();
         }

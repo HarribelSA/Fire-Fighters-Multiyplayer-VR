@@ -16,11 +16,13 @@ namespace CityNightPresentation.Mission
         public Transform wheel;
         public Vector3 rimCenter=new Vector3(0,-.05f,0);
         public float rimRadius=.29f,rimTolerance=.065f,blendSeconds=.16f;
+        [Tooltip("Steering rim: the hand snaps onto the rim inside this range (no fist needed) and lets go beyond releaseDistance.")]
+        public float snapDistance=.12f,releaseDistance=.2f;
         sealed class HandState
         {
             public int attachment,visualType; // 0 free, 1 wheel rim, 2 pull handle
             public bool wasGrab=true,interactorEnabled;
-            public float blend,startValue;
+            public float blend,startValue,cooldown;
             public Vector3 point,offset,startHand;
             public Quaternion rotation;
             public NearFarInteractor interactor;
@@ -68,8 +70,21 @@ namespace CityNightPresentation.Mission
             hand.GetJoint(XRHandJointID.Palm).TryGetPose(out var palm);hand.GetJoint(XRHandJointID.Wrist).TryGetPose(out var wrist);
             var space=rig.origin.CameraFloorOffsetObject.transform;var position=space.TransformPoint(palm.position);var wristPosition=space.TransformPoint(wrist.position);var wristRotation=space.rotation*wrist.rotation;
             bool grab=IsGrab(hand),closing=grab&&!state.wasGrab;state.wasGrab=grab;
-            if(state.attachment!=0&&!grab)Release(state);
-            if(state.attachment==0&&closing&&(!state.interactor||!state.interactor.hasSelection)&&(!state.interactor||!(state.interactor.TryGetCurrentUIRaycastResult(out _)&&state.interactor.uiPressInput.ReadIsPerformed())))
+            if(state.attachment==2&&!grab)Release(state);
+            // Real-wheel feel: proximity attaches, pulling the hand away detaches (no gesture needed).
+            if(state.attachment==1&&wheel&&Vector3.Distance(position,wheel.TransformPoint(state.point))>releaseDistance){Release(state);state.cooldown=Time.unscaledTime+.3f;}
+            bool uiBusy=state.interactor&&(state.interactor.hasSelection||(state.interactor.TryGetCurrentUIRaycastResult(out _)&&state.interactor.uiPressInput.ReadIsPerformed()));
+            if(state.attachment==0&&!uiBusy&&wheel&&Time.unscaledTime>=state.cooldown&&!(closing&&!isLeft&&emergency&&emergency.pullHandle&&Vector3.Distance(position,emergency.pullHandle.position)<.11f))
+            {
+                var point=RimPoint(wheel.InverseTransformPoint(position),rimCenter,rimRadius);var contact=wheel.TransformPoint(point);
+                if(Vector3.Distance(position,contact)<=snapDistance)
+                {
+                    Attach(state,1);state.point=point;
+                    var target=wristPosition+wristRotation*(isLeft?avatar.leftGripOffset:avatar.rightGripOffset);
+                    state.offset=wheel.InverseTransformVector(target-position);state.rotation=Quaternion.Inverse(wheel.rotation)*(wristRotation*Quaternion.Euler(isLeft?avatar.leftWristEuler:avatar.rightWristEuler));
+                }
+            }
+            if(state.attachment==0&&closing&&!uiBusy)
             {
                 if(!isLeft&&emergency&&emergency.pullHandle&&Vector3.Distance(position,emergency.pullHandle.position)<.11f)
                 {

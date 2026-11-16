@@ -136,10 +136,10 @@ namespace FirefighterVR.StationBot
         void ApplySeatedBody()
         {
             if(!seatAnchor||!hips)return;
-            transform.localPosition=Vector3.zero;transform.localRotation=Quaternion.identity;hips.rotation=seatAnchor.rotation*seatedHipsAxes;
-            transform.position+=seatAnchor.position+seatAnchor.up*.59f-hips.position;
-            SolveLimb(leftThigh,leftShin,leftFoot,seatAnchor.TransformPoint(new Vector3(-.14f,.07f,.43f)),seatAnchor.rotation*leftFootAxes,seatAnchor.forward);
-            SolveLimb(rightThigh,rightShin,rightFoot,seatAnchor.TransformPoint(new Vector3(.14f,.07f,.43f)),seatAnchor.rotation*rightFootAxes,seatAnchor.forward);
+            transform.localPosition=Vector3.zero;transform.localRotation=Quaternion.identity;var f=FirefighterVR.SeatPose.Resolve(seatAnchor);var yaw=Quaternion.Euler(0,f.yaw,0);hips.rotation=seatAnchor.rotation*seatedHipsAxes;
+            transform.position+=f.floorPoint+Vector3.up*f.hipHeight-hips.position;
+            SolveLimb(leftThigh,leftShin,leftFoot,f.floorPoint+yaw*new Vector3(-.14f,.07f,f.footForward),seatAnchor.rotation*leftFootAxes,seatAnchor.forward);
+            SolveLimb(rightThigh,rightShin,rightFoot,f.floorPoint+yaw*new Vector3(.14f,.07f,f.footForward),seatAnchor.rotation*rightFootAxes,seatAnchor.forward);
         }
         void SolveLimb(Transform upperArm,Transform lowerArm,Transform hand,Vector3 reachPoint,Quaternion reachRotation,Vector3 preferredBend)
         {

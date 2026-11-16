@@ -10,6 +10,8 @@ namespace CityNightPresentation.Mission
         public AudioSource siren;
         public Renderer redLens,blueLens;
         public Material redOn,blueOn,lensOff;
+        [Tooltip("Real-time emergency lights (no shadows) driven with the roof lenses.")] public Light[] redLights=new Light[0],blueLights=new Light[0];
+        public float lightIntensity=9;
         public Transform pullMount,pullHandle;
         public Vector3 closedLocalPosition=new Vector3(0,0,-.08f),pullAxis=Vector3.back;
         [Min(.05f)]public float pullTravel=.18f;
@@ -45,9 +47,12 @@ namespace CityNightPresentation.Mission
                 else if(!warnedAudio){warnedAudio=true;Debug.LogWarning("Emergency siren unavailable: check clip load state/source enablement. No playback success claimed.",this);}
             }
             double clock=mission&&mission.IsSpawned?mission.NetworkManager.ServerTime.Time:Time.unscaledTimeAsDouble;
-            int phase=active?(int)(clock*6)%2:-1;if(phase==flash)return;flash=phase;
-            if(redLens)redLens.sharedMaterial=phase==0?redOn:lensOff;if(blueLens)blueLens.sharedMaterial=phase==1?blueOn:lensOff;
+            int phase=active?Pattern(clock):-1;if(phase==flash)return;flash=phase;
+            if(redLens)redLens.sharedMaterial=phase==1?redOn:lensOff;if(blueLens)blueLens.sharedMaterial=phase==2?blueOn:lensOff;
+            foreach(var l in redLights)if(l){l.enabled=phase==1;l.intensity=lightIntensity;}foreach(var l in blueLights)if(l){l.enabled=phase==2;l.intensity=lightIntensity;}
         }
-        void OnDisable(){BeingPulled=false;if(siren)siren.Stop();if(redLens)redLens.sharedMaterial=lensOff;if(blueLens)blueLens.sharedMaterial=lensOff;flash=-1;}
+        // Civil-defence style double flash: red-red, blue-blue, shared server clock so both peers match.
+        static int Pattern(double clock){double t=clock%.8;return t<.08||(t>=.14&&t<.22)?1:(t>=.4&&t<.48)||(t>=.54&&t<.62)?2:0;}
+        void OnDisable(){BeingPulled=false;foreach(var l in redLights)if(l)l.enabled=false;foreach(var l in blueLights)if(l)l.enabled=false;if(siren)siren.Stop();if(redLens)redLens.sharedMaterial=lensOff;if(blueLens)blueLens.sharedMaterial=lensOff;flash=-1;}
     }
 }

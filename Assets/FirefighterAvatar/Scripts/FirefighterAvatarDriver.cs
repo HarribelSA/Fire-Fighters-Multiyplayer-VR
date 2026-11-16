@@ -155,6 +155,18 @@ namespace FirefighterVR
         [NonSerialized] public bool Seated;
         [NonSerialized] public Vector3 SeatPosition;
         [NonSerialized] public float SeatYaw;
+        [NonSerialized] public float SeatHipHeight=.59f, SeatFootForward=.43f;
+        [NonSerialized] public byte SeatId;
+        public void SetSeat(Transform seat)
+        {
+            var f=SeatPose.Resolve(seat);Seated=true;SeatPosition=f.floorPoint;SeatYaw=f.yaw;SeatHipHeight=f.hipHeight;SeatFootForward=f.footForward;SeatId=f.id;
+        }
+        // Registered seats are resolved live every frame (local and remote) so the body never lags a moving vehicle.
+        void RefreshSeat()
+        {
+            if(!Seated||SeatId==0||!SeatPose.TryGet(SeatId,out var pose))return;
+            var f=pose.Current;SeatPosition=f.floorPoint;SeatYaw=f.yaw;SeatHipHeight=f.hipHeight;SeatFootForward=f.footForward;
+        }
         bool wasSeated;
         float standingHeightBeforeSeat;
         FirefighterAvatarState remoteState;
@@ -221,6 +233,7 @@ namespace FirefighterVR
         public void SetRemoteState(FirefighterAvatarState state)
         {
             remoteState=state;remoteStateReady=true;StandingHMDHeight=state.StandingHeight;Seated=state.Seated;SeatPosition=state.SeatPosition;SeatYaw=state.BodyYaw;
+            SeatId=state.Seated?state.SeatId:(byte)0;SeatHipHeight=state.Seated?state.SeatHip:.59f;SeatFootForward=state.Seated?state.SeatFoot:.43f;RefreshSeat();
             if(state.GripVehicleSpace&&(state.LeftVisualWeight>0||state.RightVisualWeight>0)&&!VisualGripReference&&Time.unscaledTime>=nextGripReferenceSearch)
             {nextGripReferenceSearch=Time.unscaledTime+1;var truck=FindFirstObjectByType<CityNightPresentation.Mission.FireTruckMission>();if(truck)VisualGripReference=truck.transform;}
             ApplyRemoteVisualGrips();
@@ -272,6 +285,7 @@ namespace FirefighterVR
             foreach(var r in gloveRenderers)if(r)r.enabled=true;
             foreach(var r in originalLocalVisuals)if(r)r.enabled=false;
             float dt=Mathf.Min(Time.unscaledDeltaTime,.05f);
+            RefreshSeat();
             if(!remoteTracking&&Seated&&!wasSeated)standingHeightBeforeSeat=StandingHMDHeight;
             if(!remoteTracking&&!Seated&&wasSeated){StandingHMDHeight=standingHeightBeforeSeat;standingHeightCalibrated=false;calibrationUntil=Time.unscaledTime+1;ResetMovement();}
             wasSeated=Seated;
@@ -335,7 +349,7 @@ namespace FirefighterVR
             float arcForward=(Mathf.Sin(bend*.35f)*.15f+Mathf.Sin(bend*.7f)*.16f+Mathf.Sin(bend)*.26f)*scale;
             float arcDrop=((1-Mathf.Cos(bend*.35f))*.15f+(1-Mathf.Cos(bend*.7f))*.16f+(1-Mathf.Cos(bend))*.26f)*scale;
             hipsTarget.position+=Vector3.up*(-crouchAmount+arcDrop)-rotation*Vector3.forward*arcForward;
-            if(Seated)hipsTarget.position=SeatPosition+Vector3.up*.59f;
+            if(Seated)hipsTarget.position=SeatPosition+Vector3.up*SeatHipHeight;
             leftTarget.SetPositionAndRotation(leftSource.TransformPoint(leftGripOffset),leftSource.rotation*Quaternion.Euler(leftWristEuler));
             rightTarget.SetPositionAndRotation(rightSource.TransformPoint(rightGripOffset),rightSource.rotation*Quaternion.Euler(rightWristEuler));
             if(remoteTracking&&remoteStateReady)ApplyRemoteVisualGrips();
@@ -451,7 +465,7 @@ namespace FirefighterVR
             for(int i=0;i<legs.Length;i++)
             {
                 var leg=legs[i];var nominal=transform.TransformPoint(leg.restFoot)-leanOffset;nominal.y=floorY;
-                if(Seated)nominal=SeatPosition+placement.rotation*new Vector3(i==0?-.14f:.14f,0,.43f);
+                if(Seated)nominal=SeatPosition+placement.rotation*new Vector3(i==0?-.14f:.14f,0,SeatFootForward);
                 if(!leg.ready){leg.planted=nominal;leg.swinging=false;leg.ready=true;}
                 Vector3 sole=leg.planted;leg.lift=0;
                 if(walkBlend<.01f||walkPoses.Length<2)

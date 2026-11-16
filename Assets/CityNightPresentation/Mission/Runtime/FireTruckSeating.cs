@@ -75,7 +75,7 @@ namespace CityNightPresentation.Mission
             FollowSeat();
             foreach(var p in locomotion.Keys)if(p)p.enabled=false;
             if(capsule)capsule.enabled=false;
-            if(avatar){avatar.Seated=true;avatar.SeatPosition=seat.position;avatar.SeatYaw=seat.eulerAngles.y;}
+            if(avatar)avatar.SetSeat(seat);var seatRig=StationSessionFlow.Instance?StationSessionFlow.Instance.localRig:null;if(seatRig)seatRig.VehicleSeated=true;
             var flow=StationSessionFlow.Instance;
             if(flow&&flow.MissionSessionActive&&flow.MissionState.stage==CrewMissionStage.CityTransition&&seatAcknowledged!=flow.MissionState.epoch&&StationSpawnPlacement.TrackingReady(origin)&&Vector3.Distance(origin.Camera.transform.position,StationSeatPlacement.EyeTarget(seat,avatar))<.15f)
             {seatAcknowledged=flow.MissionState.epoch;TransitionDiagnostics.Mark("local_city_tracking_and_seat_verified");flow.AcknowledgeCitySeat(seatAcknowledged);}
@@ -86,13 +86,13 @@ namespace CityNightPresentation.Mission
             origin.transform.SetPositionAndRotation(seat.position+delta*(origin.transform.position-lastPosition),delta*origin.transform.rotation);
             lastPosition=seat.position;lastRotation=seat.rotation;
         }
-        void LateUpdate(){if(!seat)return;FollowSeat();if(seat&&avatar){avatar.Seated=true;avatar.SeatPosition=seat.position;avatar.SeatYaw=seat.eulerAngles.y;}}
+        void LateUpdate(){if(!seat)return;FollowSeat();if(seat&&avatar)avatar.SetSeat(seat);}
         void Release(bool clear=true)
         {
             if(!seat)return;
             if(chassisCollider)foreach(var c in ignored)if(c)Physics.IgnoreCollision(c,chassisCollider,false);ignored.Clear();
             foreach(var p in locomotion)if(p.Key)p.Key.enabled=p.Value;locomotion.Clear();if(capsule)capsule.enabled=capsuleWasEnabled;
-            if(avatar)avatar.Seated=false;seat=null;if(clear){origin=null;avatar=null;}
+            if(avatar)avatar.Seated=false;var releaseRig=StationSessionFlow.Instance?StationSessionFlow.Instance.localRig:null;if(releaseRig)releaseRig.VehicleSeated=false;seat=null;if(clear){origin=null;avatar=null;}
         }
         void OnDisable(){Release();foreach(var p in hiddenStation)if(p.Key)p.Key.SetActive(p.Value);hiddenStation.Clear();foreach(var p in hiddenLobbyLights)if(p.Key)p.Key.enabled=p.Value;hiddenLobbyLights.Clear();}
     }

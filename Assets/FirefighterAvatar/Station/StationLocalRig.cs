@@ -63,9 +63,13 @@ namespace FirefighterVR.Station
         uint cityBlackEpoch;
         Coroutine spawnRoutine;
         public bool StationSeated {get;set;}
+        // Seated in a vehicle: body locked to the seat; head tracking stays free, locomotion off.
+        public bool VehicleSeated {get;set;}
+        // Fireground pump operator: Driver uses the Meta controllers instead of hand tracking.
+        public bool ControllersOnly {get;set;}
         public bool SeatTransition {get;set;}
         public string SeatedComfortWarning
-        {get{if(LocalRole!=StationRole.Driver||!avatar||!avatar.Seated||!origin||!origin.Camera)return "";var offset=Quaternion.Inverse(Quaternion.Euler(0,avatar.SeatYaw,0))*(origin.Camera.transform.position-avatar.SeatPosition);var eye=avatar.standingEye-avatar.standingHips;eye.y=StationSeatPlacement.EyeHeight(avatar);return Vector3.ProjectOnPlane(offset-eye,Vector3.up).magnitude>.45f||Mathf.Abs(offset.y-eye.y)>.35f?"PLEASE RETURN TO YOUR COMFORTABLE SEATED POSITION":"";}}
+        {get{if(LocalRole!=StationRole.Driver||!avatar||!avatar.Seated||!origin||!origin.Camera)return "";var offset=Quaternion.Inverse(Quaternion.Euler(0,avatar.SeatYaw,0))*(origin.Camera.transform.position-avatar.SeatPosition);var eye=avatar.standingEye-avatar.standingHips;eye.y=avatar.SeatHipHeight+StationSeatPlacement.EyeAboveHips(avatar);return Vector3.ProjectOnPlane(offset-eye,Vector3.up).magnitude>.45f||Mathf.Abs(offset.y-eye.y)>.35f?"PLEASE RETURN TO YOUR COMFORTABLE SEATED POSITION":"";}}
         readonly Dictionary<Collider,bool> lobbyResetVolumes=new Dictionary<Collider,bool>();
         Vector3 lastSafeGround;
         bool safeGroundKnown;
@@ -105,7 +109,7 @@ namespace FirefighterVR.Station
                 if(connected&&state.Phase==StationPhase.Fading&&viewFade.BlackRendered&&blackEpoch!=state.Epoch){blackEpoch=state.Epoch;flow.AcknowledgeBlack(state.Epoch);}}
             if(connected&&viewFade&&viewFade.BlackRendered&&flow.CrewMission.Value.stage==CrewMissionStage.CityTransition&&cityBlackEpoch!=flow.CrewMission.Value.epoch){cityBlackEpoch=flow.CrewMission.Value.epoch;flow.AcknowledgeCityBlack(cityBlackEpoch);}
             else SetFade(Mathf.MoveTowards(fade,transitioning?1:0,Time.unscaledDeltaTime/(transitioning?.35f:.45f)));
-            bool frozen=StationSeated||SeatTransition||(InSeatedLobby&&LocalRole!=StationRole.Assistant)||returningToLobby||transitioning||state.Phase==StationPhase.Blocked||fade>.01f||(state.Phase==StationPhase.StationReady&&!InputAvailable);
+            bool frozen=StationSeated||VehicleSeated||SeatTransition||(InSeatedLobby&&LocalRole!=StationRole.Assistant)||returningToLobby||transitioning||state.Phase==StationPhase.Blocked||fade>.01f||(state.Phase==StationPhase.StationReady&&!InputAvailable);
             bool inStation=StationSceneSetup.Instance&&SceneManager.GetActiveScene()==StationSceneSetup.Instance.gameObject.scene;
             if(inStation)DisableLobbyResetVolumes();else if(InSeatedLobby)foreach(var c in lobbyResetVolumes)if(c.Key)c.Key.enabled=c.Value;
             foreach(var entry in originals)
@@ -122,7 +126,7 @@ namespace FirefighterVR.Station
             providersWereFrozen=frozen;
             bool teleportAllowed=LocalRole==StationRole.Assistant&&!frozen&&assistantMovement!=AssistantMovement.Smooth;
             for(int i=0;i<controllerTeleportRays.Length;i++){if(controllerTeleportRays[i])controllerTeleportRays[i].enabled=teleportAllowed;if(controllerTeleportLines[i])controllerTeleportLines[i].enabled=teleportAllowed;}
-            if(avatar)avatar.HandTrackingProfile=LocalRole==StationRole.Driver;
+            if(avatar)avatar.HandTrackingProfile=LocalRole==StationRole.Driver&&!ControllersOnly;
             if(SeatedComfortWarning.Length>0)InputStatus=SeatedComfortWarning;
             UpdateAvatarHands();
         }
@@ -134,6 +138,8 @@ namespace FirefighterVR.Station
             displays.Clear();SubsystemManager.GetSubsystems(displays);bool display=displays.Any(d=>d.running);
             var head=InputDevices.GetDeviceAtXRNode(XRNode.Head);bool headTracked=head.isValid&&head.TryGetFeatureValue(CommonUsages.isTracked,out bool tracked)&&tracked;
             if(!display||!headTracked){InputAvailable=false;InputStatus="No tracked headset from the active XR runtime. Connect the headset before Ready.";return;}
+            if(LocalRole==StationRole.Driver&&ControllersOnly)
+            {bool Held(XRNode node){var d=InputDevices.GetDeviceAtXRNode(node);return d.isValid&&d.TryGetFeatureValue(CommonUsages.isTracked,out bool t)&&t;}InputAvailable=Held(XRNode.LeftHand)||Held(XRNode.RightHand)||XRInputModalityManager.currentInputMode.Value==XRInputModalityManager.InputMode.MotionController;InputStatus=InputAvailable?"PUMP OPERATOR · Meta controllers active":"Pick up the Meta controllers";return;}
             if(LocalRole==StationRole.Driver&&SceneManager.GetSceneByName(StationSessionFlow.CitySceneName).isLoaded)
             {InputAvailable=true;InputStatus="City driving: tracked headset active. G29 controls the truck; hand tracking remains independent.";return;}
             if(LocalRole==StationRole.Driver)

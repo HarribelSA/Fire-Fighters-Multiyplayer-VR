@@ -134,6 +134,7 @@ namespace CityNightPresentation.Fireground
             if (Authority) AuthorityTick();
             if (dirty && Time.unscaledTimeAsDouble >= nextPublish) Publish(true);
             var s = Current;
+            if (!LocalHoldsNozzle) localPullTarget = 0;
             if (!Authority) { fireAccumulator += Time.deltaTime; if (fireAccumulator >= .1f) { fireAccumulator = 0; EvaluateStream(s); } }
             UpdateCrew(s);
             UpdatePresentation(s);
@@ -260,6 +261,26 @@ namespace CityNightPresentation.Fireground
         }
         public float NozzleDistance() => hoseOutlet && nozzle && nozzle.hoseAttach ? Vector3.Distance(hoseOutlet.position, nozzle.hoseAttach.position) : 0;
 
+        // Pull-out: the nozzle operator walking away unspools the reel (validated against the authority's
+        // view of the nozzle), so the hose holder can always advance; cranking still pays out and rewinds.
+        float localPullTarget; float nextPull;
+        public float PredictedPayout => Mathf.Max(Current.payout, LocalHoldsNozzle ? localPullTarget : 0);
+        public void RequestPullOut(float target)
+        {
+            if (!float.IsFinite(target)) return; target = Mathf.Min(target, maxPayout);
+            if (target <= Current.payout + .02f) return; localPullTarget = Mathf.Max(localPullTarget, target);
+            if (Time.unscaledTime < nextPull) return; nextPull = Time.unscaledTime + .1f;
+            if (!UseNetwork) ApplyPull(LocalId, localPullTarget); else PullRpc(localPullTarget);
+        }
+        public void BotPull(float target) { if (BotAllowed && float.IsFinite(target)) ApplyPull(BotId, target); }
+        [Rpc(SendTo.Authority, InvokePermission = RpcInvokePermission.Everyone)]
+        void PullRpc(float target, RpcParams p = default) { if (Authority && float.IsFinite(target) && Permit(p.Receive.SenderClientId, StationRole.Assistant)) ApplyPull(p.Receive.SenderClientId, target); }
+        void ApplyPull(ulong sender, float target)
+        {
+            var s = local; if (!HandsOn(s) || s.nozzleHolder != sender) return;
+            target = Mathf.Min(target, maxPayout, Mathf.Max(NozzleDistance() + 1.2f, s.payout));
+            if (target <= s.payout + .005f) return; s.payout = target; local = s; Publish(false);
+        }
         public void NozzleGrabbed()
         { if (!UseNetwork) ApplyGrab(LocalId); else GrabRpc(); }
         [Rpc(SendTo.Authority, InvokePermission = RpcInvokePermission.Everyone)]

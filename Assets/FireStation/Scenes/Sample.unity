@@ -3128,6 +3128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 85262288}
+  - component: {fileID: 85262289}
   m_Layer: 0
   m_Name: Station_DriverSeat
   m_TagString: Untagged
@@ -3150,6 +3151,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1741638464}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &85262289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85262287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf72057a33d7044aa7e5c6c564bb26c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.SeatPose
+  id: 4
+  hipLocal: {x: 0.000000014901161, y: 0.46897495, z: 0.12911846}
+  floorLocalY: -0.22648346
+  footForward: 0.6099999
 --- !u!1 &89869489
 GameObject:
   m_ObjectHideFlags: 0
@@ -10892,6 +10909,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 366258568}
+  - component: {fileID: 366258569}
   m_Layer: 0
   m_Name: Dispatch_ChairSeat
   m_TagString: Untagged
@@ -10914,6 +10932,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1741638464}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &366258569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366258567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf72057a33d7044aa7e5c6c564bb26c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.SeatPose
+  id: 3
+  hipLocal: {x: 0.000000014901161, y: 0.62131214, z: -0.10627361}
+  floorLocalY: -0.006923442
+  footForward: 0.67
 --- !u!1 &371875391
 GameObject:
   m_ObjectHideFlags: 0
@@ -12663,6 +12697,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 2469451438663177189, guid: 73a6aad56dadf954cbfd703712fbe2e3,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.7497862
+      objectReference: {fileID: 0}
+    - target: {fileID: 2469451438663177189, guid: 73a6aad56dadf954cbfd703712fbe2e3,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.7497862
+      objectReference: {fileID: 0}
+    - target: {fileID: 2469451438663177189, guid: 73a6aad56dadf954cbfd703712fbe2e3,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.7497862
       objectReference: {fileID: 0}
     - target: {fileID: 2469451438663177189, guid: 73a6aad56dadf954cbfd703712fbe2e3,
         type: 3}
@@ -36104,6 +36153,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1255235303}
+  - component: {fileID: 1255235304}
   m_Layer: 0
   m_Name: Station_PassengerSeat
   m_TagString: Untagged
@@ -36126,6 +36176,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1741638464}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1255235304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255235302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf72057a33d7044aa7e5c6c564bb26c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.SeatPose
+  id: 5
+  hipLocal: {x: 0.000000014901161, y: 0.46897483, z: 0.12911846}
+  floorLocalY: -0.22648346
+  footForward: 0.6099999
 --- !u!1001 &1255283454
 PrefabInstance:
   m_ObjectHideFlags: 0
