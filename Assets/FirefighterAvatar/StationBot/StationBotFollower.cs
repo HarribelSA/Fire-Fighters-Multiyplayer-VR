@@ -44,6 +44,20 @@ namespace FirefighterVR.StationBot
             return Vector3.Distance(shoulder,point)<=Vector3.Distance(upper.position,lower.position)+Vector3.Distance(lower.position,h.position)+.21f;
         }
         public bool IsMissionSeated=>seated;
+        // Fireground (city) control: an external task controller moves the bot; station navigation is bypassed.
+        public bool ExternalControl {get;set;}
+        public void Unseat(Vector3 position,Quaternion rotation)
+        {
+            seated=false;seatAnchor=null;transform.SetParent(null,true);transform.SetPositionAndRotation(position,rotation);
+            if(animator){animator.enabled=true;animationState=null;}
+            reachActive=leftReach=false;MotionState="Idle";
+        }
+        public void SetMotion(string state,float playback)
+        {
+            MotionState=state;if(!animator||!animator.enabled)return;
+            animator.SetFloat(PlaybackSpeed,playback);
+            if(state!=animationState){animator.CrossFadeInFixedTime(state,.18f);animationState=state;}
+        }
         public Transform HeldObject {get;set;}
         public void TaskGoal(Vector3 point,float distance=.4f){if(!taskActive||(taskPoint-point).sqrMagnitude>.01f){taskPoint=point;replan=0;}taskActive=true;taskDistance=distance;}
         public void ClearTask(){taskActive=false;reachActive=false;}
@@ -73,7 +87,7 @@ namespace FirefighterVR.StationBot
         void Update() => Tick(Time.deltaTime);
         public void Tick(float dt)
         {
-            if (seated||!target || navigation == null || dt <= 0) return;
+            if (seated||ExternalControl||!target || navigation == null || dt <= 0) return;
             var goal = taskActive?taskPoint:target.position;if(!taskActive)goal.y = humanRoot.position.y;
             // Follow the ground under the head rather than the headset's standing height.
             if (navigation.Ground(goal, out var grounded)) goal = grounded;

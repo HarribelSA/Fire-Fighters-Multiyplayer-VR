@@ -31,8 +31,14 @@ namespace CityNightPresentation.Mission
                 var flow=StationSessionFlow.Instance;
                 if(windshieldTimer&&flow&&flow.localRig&&flow.localRig.SeatedComfortWarning.Length>0)windshieldTimer.text+="\nPLEASE REMAIN SEATED";
                 string location=flow&&flow.incident?flow.incident.location:"MISSION DESTINATION";
-                if(tabletStatus)tabletStatus.text=$"NAVIGATION · DISPATCH {(flow&&flow.MissionSessionActive?flow.MissionState.epoch:0)}\n{location}\n{time} LEFT | {(mission.SirenActive?"EMERGENCY PRIORITY":"NORMAL TRAFFIC")}"+(flow&&flow.SoloMissionActive?(flow.SoloBotDriverActive?"\nBOT DRIVER · "+flow.SoloTaskStatus:"\nBOT NAVIGATION · DRIVER PULLS EMERGENCY HANDLE"):"");
-                if(tabletDetails)tabletDetails.text=NavigationDetails(time,flow);
+                var fireground=CityNightPresentation.Fireground.FiregroundOperation.Instance;
+                var fg=fireground?fireground.Current:default;
+                if(windshieldTimer&&fireground&&fg.phase==CityNightPresentation.Fireground.FiregroundPhase.ArrivalHold)windshieldTimer.text=$"ARRIVED\nDISMOUNT IN {Mathf.CeilToInt(fireground.SecondsRemaining)}";
+                string type=flow&&flow.incident?flow.incident.incidentType.ToUpperInvariant():"STRUCTURE FIRE";
+                string priority=flow&&flow.incident?flow.incident.priority:"HIGH";
+                string siren=mission.SirenActive?"<color=#FF4A3D>SIREN ● ON</color>":"<color=#9AA4AE>SIREN ○ OFF</color>";
+                if(tabletStatus)tabletStatus.text=$"<b>CIVIL DEFENCE · DISPATCH {(flow&&flow.MissionSessionActive?flow.MissionState.epoch:0)}</b>   <color=#FFB020>PRIORITY {priority}</color>\n{type} · {location}\n{time} LEFT · {siren} · {(mission.SirenActive?"EMERGENCY PRIORITY":"NORMAL TRAFFIC")}"+(flow&&flow.SoloMissionActive?(flow.SoloBotDriverActive?"\nBOT DRIVER · "+flow.SoloTaskStatus:"\nBOT NAVIGATION · DRIVER PULLS EMERGENCY HANDLE"):"");
+                if(tabletDetails)tabletDetails.text=fireground&&fg.phase!=CityNightPresentation.Fireground.FiregroundPhase.Inactive?"<b>MISSION STATUS</b>\n"+fireground.PanelStatus(fg):NavigationDetails(time,flow);
                 if(tabletInteraction){bool allowed=mission.LocalRole==StationRole.Assistant;tabletInteraction.interactable=allowed;tabletInteraction.blocksRaycasts=allowed;}
             }
             if(!playerCamera||!arrowMesh||!arrowMaterial||mission.LocalRole!=StationRole.Driver||mission.HasArrived||mission.HasFailed)return;

@@ -43,8 +43,12 @@ namespace CityNightPresentation.Mission
                 if(l.type==LightType.Directional&&!l.GetComponentInParent<XROrigin>()){hiddenLobbyLights[l]=l.enabled;l.enabled=false;}
             if(gameObject.scene.IsValid()&&gameObject.scene.isLoaded)UnityEngine.SceneManagement.SceneManager.SetActiveScene(gameObject.scene);
         }
+        public void ReleaseForFireground()=>Release();
         void Update()
         {
+            // Fireground dismount hands the rig back to normal standing tracking/locomotion.
+            var fireground=CityNightPresentation.Fireground.FiregroundOperation.Instance;
+            if(fireground&&fireground.LocalDismounted){Release();return;}
             var session=StationSessionFlow.Instance;
             bool authorized=mission&&((mission.offlineDriverTesting&&(!Unity.Netcode.NetworkManager.Singleton||!Unity.Netcode.NetworkManager.Singleton.IsListening))||(session&&session.MissionSessionActive&&session.MissionState.stage>=CrewMissionStage.CityTransition));
             if(!authorized){Release();return;}
@@ -82,7 +86,7 @@ namespace CityNightPresentation.Mission
             origin.transform.SetPositionAndRotation(seat.position+delta*(origin.transform.position-lastPosition),delta*origin.transform.rotation);
             lastPosition=seat.position;lastRotation=seat.rotation;
         }
-        void LateUpdate(){FollowSeat();if(seat&&avatar){avatar.Seated=true;avatar.SeatPosition=seat.position;avatar.SeatYaw=seat.eulerAngles.y;}}
+        void LateUpdate(){if(!seat)return;FollowSeat();if(seat&&avatar){avatar.Seated=true;avatar.SeatPosition=seat.position;avatar.SeatYaw=seat.eulerAngles.y;}}
         void Release(bool clear=true)
         {
             if(!seat)return;

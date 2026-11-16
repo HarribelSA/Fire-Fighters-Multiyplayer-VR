@@ -43,6 +43,8 @@ namespace CityNightPresentation.Mission
         public CityTrafficManager traffic;
         public CityDrivingRoute route;
         public Transform driverSeat,passengerSeat,incidentBuilding;
+        [Tooltip("Arrival trigger volume at the incident. The truck must be inside it, aligned and fully stopped.")] public BoxCollider arrivalZone;
+        [Min(.1f)] public float arrivalStopSeconds=.6f;
         public float redLightPenaltySeconds=10;
         [Min(60)] public float missionTimeLimitSeconds=300;
         [Min(0)] public int emergencyChallengeSignalIndex;
@@ -193,10 +195,12 @@ namespace CityNightPresentation.Mission
             }
             previousFront=front;previousReady=true;
             if(!route.stopZone||HasArrived||HasFailed)return;
-            Vector3 p=route.stopZone.InverseTransformPoint(transform.position);
-            bool stopped=CrewReady&&started&&IsParked(p,Vector3.Dot(transform.forward,route.stopZone.forward),Vector3.Dot(transform.up,Vector3.up),controller.SpeedKmh);
+            bool parked;
+            if(arrivalZone){var z=arrivalZone.transform.InverseTransformPoint(transform.position)-arrivalZone.center;parked=InArrivalZone(z,arrivalZone.size*.5f,Vector3.Dot(transform.forward,arrivalZone.transform.forward),Vector3.Dot(transform.up,Vector3.up),controller.SpeedKmh);}
+            else{Vector3 p=route.stopZone.InverseTransformPoint(transform.position);parked=IsParked(p,Vector3.Dot(transform.forward,route.stopZone.forward),Vector3.Dot(transform.up,Vector3.up),controller.SpeedKmh);}
+            bool stopped=CrewReady&&started&&parked;
             arrivalHold=stopped?arrivalHold+.1f:0;
-            if(arrivalHold>=2){evaluation.outcome=MissionOutcome.Success;if(UseNetworkState){Arrived.Value=true;Siren.Value=false;}else{offlineArrived=true;offlineSiren=false;}UpdateEmergency();}
+            if(arrivalHold>=(arrivalZone?arrivalStopSeconds:2)){evaluation.outcome=MissionOutcome.Success;if(UseNetworkState){Arrived.Value=true;Siren.Value=false;}else{offlineArrived=true;offlineSiren=false;}UpdateEmergency();}
         }
         bool NearChallenge()=>traffic&&traffic.signals.Length>0&&traffic.signals[Mathf.Clamp(emergencyChallengeSignalIndex,0,traffic.signals.Length-1)]&&(traffic.signals[Mathf.Clamp(emergencyChallengeSignalIndex,0,traffic.signals.Length-1)].transform.position-transform.position).sqrMagnitude<65*65;
         bool StoppedAtRed(bool designatedOnly)
@@ -212,6 +216,7 @@ namespace CityNightPresentation.Mission
             return false;
         }
         public static bool CrossedStopLine(Vector3 before,Vector3 now)=>before.z<0&&now.z>=0&&Mathf.Abs(Mathf.Lerp(before.x,now.x,-before.z/Mathf.Max(.001f,now.z-before.z)))<4.2f;
+        public static bool InArrivalZone(Vector3 local,Vector3 half,float headingDot,float upDot,float speedKmh)=>Mathf.Abs(local.x)<=half.x&&Mathf.Abs(local.y)<=half.y&&Mathf.Abs(local.z)<=half.z&&speedKmh<.8f&&headingDot>.9f&&upDot>.95f;
         public static bool IsParked(Vector3 local,float headingDot,float upDot,float speedKmh)=>Mathf.Abs(local.x)<.3f&&Mathf.Abs(local.z)<3.5f&&Mathf.Abs(local.y)<1&&speedKmh<1.2f&&headingDot>.94f&&upDot>.95f;
         void OnDisable(){if(traffic){traffic.localSimulation=false;foreach(var s in traffic.signals)if(s)s.ReleasePriority();foreach(var v in traffic.vehicles)v.yieldRequested=false;}}
     }
