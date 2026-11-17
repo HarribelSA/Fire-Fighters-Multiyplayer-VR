@@ -351,6 +351,9 @@ namespace CityNightPresentation.Fireground
             var origin = rig ? rig.origin : FindFirstObjectByType<XROrigin>();
             var avatar = rig ? rig.avatar : FindFirstObjectByType<FirefighterVR.FirefighterAvatarDriver>();
             LocalDismounted = true; if (seating) seating.ReleaseForFireground();
+            // Clear every seated/transition lock left from the station truck and the drive, so the movement
+            // policy applies again: Firefighter (nozzle) moves freely, Driver (pump/reel) stays in place.
+            if (rig) { rig.StationSeated = false; rig.SeatTransition = false; rig.VehicleSeated = false; }
             yield return null;
             var spawn = LocalRole == StationRole.Assistant ? nozzleOperatorSpawn : pumpOperatorSpawn;
             if (origin && spawn)

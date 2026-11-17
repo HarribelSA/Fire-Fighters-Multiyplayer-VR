@@ -34,6 +34,8 @@ namespace FirefighterVR.Station
         uint diagnosticCityEpoch;
         XRRayInteractor[] controllerTeleportRays;
         XRInteractorLineVisual[] controllerTeleportLines;
+        // Comfort settings record which providers the player prefers; the movement policy still decides.
+        public void SetPreferredEnabled(LocomotionProvider provider,bool on){if(provider&&originals.ContainsKey(provider))originals[provider]=on;}
         public void SetAssistantMovement(int mode){if(LocalRole!=StationRole.Assistant)return;assistantMovement=(AssistantMovement)Mathf.Clamp(mode,0,2);PlayerPrefs.SetInt("Firefighter.AssistantMovement",(int)assistantMovement);}
         public static bool MovementAllowed(LocomotionProvider provider,StationRole role,AssistantMovement mode,bool frozen,bool original,bool seatedDriver)
         {
@@ -86,6 +88,9 @@ namespace FirefighterVR.Station
             leftSkeletons=modality.leftHand.GetComponentsInChildren<XRHandSkeletonDriver>(true);rightSkeletons=modality.rightHand.GetComponentsInChildren<XRHandSkeletonDriver>(true);
             if(avatar)avatar.BindTrackedFingerSources(leftSkeletons,rightSkeletons);
             if(InSeatedLobby){foreach(var p in originals.Keys)p.enabled=false;var resetter=origin.GetComponent<XRMultiplayer.CharacterResetter>();if(resetter)resetter.enabled=false;}
+            // Held objects follow the hand only: no joystick push/pull or rotate of the grab point, so the
+            // player must physically walk to where an object has to go.
+            foreach(var attach in origin.GetComponentsInChildren<UnityEngine.XR.Interaction.Toolkit.Attachment.InteractionAttachController>(true))attach.useManipulationInput=false;
             fadeBlock=new MaterialPropertyBlock();SetFade(0);
             foreach(var root in gameObject.scene.GetRootGameObjects())foreach(var destroyer in root.GetComponentsInChildren<XRMultiplayer.NetworkObjectDestroyer>(true))foreach(var c in destroyer.GetComponentsInChildren<Collider>(true))if(c.isTrigger)lobbyResetVolumes[c]=c.enabled;
         }
@@ -109,7 +114,7 @@ namespace FirefighterVR.Station
                 if(connected&&state.Phase==StationPhase.Fading&&viewFade.BlackRendered&&blackEpoch!=state.Epoch){blackEpoch=state.Epoch;flow.AcknowledgeBlack(state.Epoch);}}
             if(connected&&viewFade&&viewFade.BlackRendered&&flow.CrewMission.Value.stage==CrewMissionStage.CityTransition&&cityBlackEpoch!=flow.CrewMission.Value.epoch){cityBlackEpoch=flow.CrewMission.Value.epoch;flow.AcknowledgeCityBlack(cityBlackEpoch);}
             else SetFade(Mathf.MoveTowards(fade,transitioning?1:0,Time.unscaledDeltaTime/(transitioning?.35f:.45f)));
-            bool frozen=StationSeated||VehicleSeated||SeatTransition||(InSeatedLobby&&LocalRole!=StationRole.Assistant)||returningToLobby||transitioning||state.Phase==StationPhase.Blocked||fade>.01f||(state.Phase==StationPhase.StationReady&&!InputAvailable);
+            bool frozen=StationSeated||VehicleSeated||SeatTransition||InSeatedLobby||returningToLobby||transitioning||state.Phase==StationPhase.Blocked||fade>.01f||(state.Phase==StationPhase.StationReady&&!InputAvailable);
             bool inStation=StationSceneSetup.Instance&&SceneManager.GetActiveScene()==StationSceneSetup.Instance.gameObject.scene;
             if(inStation)DisableLobbyResetVolumes();else if(InSeatedLobby)foreach(var c in lobbyResetVolumes)if(c.Key)c.Key.enabled=c.Value;
             foreach(var entry in originals)

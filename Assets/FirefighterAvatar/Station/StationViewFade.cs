@@ -20,8 +20,10 @@ namespace FirefighterVR.Station
         public bool BlackRendered { get; private set; }
         public bool ManualHold { get; private set; }
         public bool SceneHold { get; private set; }
-        public bool IsBusy => ManualHold || SceneHold || teleporting || Alpha > .001f;
-        public bool SceneBusy => ManualHold || SceneHold || (!lastTeleport && Alpha > .001f);
+        // Held by the mission loading screen until its outro has finished (independent of Cover/Reveal).
+        public bool ExternalHold { get; set; }
+        public bool IsBusy => ManualHold || SceneHold || ExternalHold || teleporting || Alpha > .001f;
+        public bool SceneBusy => ManualHold || SceneHold || ExternalHold || (!lastTeleport && Alpha > .001f);
         public static StationViewFade Instance { get; private set; }
         TeleportationProvider teleport;
         MaterialPropertyBlock block;
@@ -73,7 +75,7 @@ namespace FirefighterVR.Station
         void Update()
         {
             if(teleport)teleport.delayTime=Mathf.Max(originalDelay,teleportFadeOut+.03f);
-            bool scene = SceneHold || ManualHold;
+            bool scene = SceneHold || ManualHold || ExternalHold;
             bool cover = scene || teleporting;
             float duration = scene ? (cover ? sceneFadeOut : sceneFadeIn) : (teleporting ? teleportFadeOut : sceneFadeIn);
             // Remember the shorter reveal after a teleport while retaining scene reveal timing.

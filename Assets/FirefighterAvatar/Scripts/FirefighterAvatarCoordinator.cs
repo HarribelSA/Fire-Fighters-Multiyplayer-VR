@@ -18,6 +18,11 @@ namespace FirefighterVR
         public byte LeftVisualWeight,RightVisualWeight;
         public Vector3 LeftVisualPosition,RightVisualPosition;
         public Quaternion LeftVisualRotation,RightVisualRotation;
+        // Seated in a registered (possibly moving) seat: head/hands relative to that seat, so peers rebuild them
+        // from their own copy of the seat and the vehicle's motion never shakes the remote body.
+        public bool SeatSpace;
+        public Vector3 HeadLocalPos,LeftLocalPos,RightLocalPos;
+        public Quaternion HeadLocalRot,LeftLocalRot,RightLocalRot;
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref FloorY);serializer.SerializeValue(ref OriginY);
@@ -26,7 +31,8 @@ namespace FirefighterVR
             serializer.SerializeValue(ref LeftGrip);serializer.SerializeValue(ref LeftTrigger);
             serializer.SerializeValue(ref RightGrip);serializer.SerializeValue(ref RightTrigger);
             serializer.SerializeValue(ref Seated);serializer.SerializeValue(ref SeatPosition);
-            if(Seated){serializer.SerializeValue(ref SeatId);serializer.SerializeValue(ref SeatHip);serializer.SerializeValue(ref SeatFoot);}
+            if(Seated){serializer.SerializeValue(ref SeatId);serializer.SerializeValue(ref SeatHip);serializer.SerializeValue(ref SeatFoot);serializer.SerializeValue(ref SeatSpace);
+                if(SeatSpace){serializer.SerializeValue(ref HeadLocalPos);serializer.SerializeValue(ref HeadLocalRot);serializer.SerializeValue(ref LeftLocalPos);serializer.SerializeValue(ref LeftLocalRot);serializer.SerializeValue(ref RightLocalPos);serializer.SerializeValue(ref RightLocalRot);}}
             serializer.SerializeValue(ref GripVehicleSpace);serializer.SerializeValue(ref LeftVisualWeight);serializer.SerializeValue(ref RightVisualWeight);
             if(LeftVisualWeight>0){serializer.SerializeValue(ref LeftVisualPosition);serializer.SerializeValue(ref LeftVisualRotation);}
             if(RightVisualWeight>0){serializer.SerializeValue(ref RightVisualPosition);serializer.SerializeValue(ref RightVisualRotation);}
@@ -35,13 +41,16 @@ namespace FirefighterVR
             &&float.IsFinite(StandingHeight)&&float.IsFinite(AvatarScale)&&float.IsFinite(Speed)
             &&float.IsFinite(SeatPosition.x)&&float.IsFinite(SeatPosition.y)&&float.IsFinite(SeatPosition.z)
             &&(!Seated||(float.IsFinite(SeatHip)&&SeatHip>=.2f&&SeatHip<=1.2f&&float.IsFinite(SeatFoot)&&SeatFoot>=.2f&&SeatFoot<=1f))&&StandingHeight>=.8f&&StandingHeight<=2.4f&&AvatarScale>=.5f&&AvatarScale<=1.5f&&Speed>=0&&Speed<=3.1f
-            &&ValidGrip(LeftVisualWeight,LeftVisualPosition,LeftVisualRotation)&&ValidGrip(RightVisualWeight,RightVisualPosition,RightVisualRotation);
+            &&ValidGrip(LeftVisualWeight,LeftVisualPosition,LeftVisualRotation)&&ValidGrip(RightVisualWeight,RightVisualPosition,RightVisualRotation)
+            &&(!SeatSpace||(ValidLocal(HeadLocalPos,HeadLocalRot)&&ValidLocal(LeftLocalPos,LeftLocalRot)&&ValidLocal(RightLocalPos,RightLocalRot)));
+        static bool ValidLocal(Vector3 p,Quaternion q)=>p.sqrMagnitude<9&&ValidGrip(1,p,q);
         static bool ValidGrip(byte weight,Vector3 p,Quaternion q)=>weight==0||(float.IsFinite(p.x)&&float.IsFinite(p.y)&&float.IsFinite(p.z)&&float.IsFinite(q.x)&&float.IsFinite(q.y)&&float.IsFinite(q.z)&&float.IsFinite(q.w)&&q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w>.5f&&q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w<1.5f);
         public bool Changed(FirefighterAvatarState other) => Mathf.Abs(FloorY-other.FloorY)>.005f
             ||Mathf.Abs(OriginY-other.OriginY)>.005f||Mathf.Abs(Mathf.DeltaAngle(BodyYaw,other.BodyYaw))>1
             ||Mathf.Abs(StandingHeight-other.StandingHeight)>.005f||Mathf.Abs(AvatarScale-other.AvatarScale)>.005f
             ||Mathf.Abs(Speed-other.Speed)>.03f||(Speed==0)!=(other.Speed==0)
-            ||LeftGrip!=other.LeftGrip||LeftTrigger!=other.LeftTrigger||RightGrip!=other.RightGrip||RightTrigger!=other.RightTrigger||Seated!=other.Seated||SeatId!=other.SeatId||Mathf.Abs(SeatHip-other.SeatHip)>.005f||(SeatPosition-other.SeatPosition).sqrMagnitude>.0001f
+            ||LeftGrip!=other.LeftGrip||LeftTrigger!=other.LeftTrigger||RightGrip!=other.RightGrip||RightTrigger!=other.RightTrigger||Seated!=other.Seated||SeatId!=other.SeatId||Mathf.Abs(SeatHip-other.SeatHip)>.005f||SeatId==0&&(SeatPosition-other.SeatPosition).sqrMagnitude>.0001f
+            ||SeatSpace!=other.SeatSpace||SeatSpace&&((HeadLocalPos-other.HeadLocalPos).sqrMagnitude>.000016f||Quaternion.Angle(HeadLocalRot,other.HeadLocalRot)>.5f||(LeftLocalPos-other.LeftLocalPos).sqrMagnitude>.000016f||Quaternion.Angle(LeftLocalRot,other.LeftLocalRot)>1||(RightLocalPos-other.RightLocalPos).sqrMagnitude>.000016f||Quaternion.Angle(RightLocalRot,other.RightLocalRot)>1)
             ||GripVehicleSpace!=other.GripVehicleSpace||LeftVisualWeight!=other.LeftVisualWeight||RightVisualWeight!=other.RightVisualWeight
             ||LeftVisualWeight>0&&((LeftVisualPosition-other.LeftVisualPosition).sqrMagnitude>.0001f||Quaternion.Angle(LeftVisualRotation,other.LeftVisualRotation)>1)
             ||RightVisualWeight>0&&((RightVisualPosition-other.RightVisualPosition).sqrMagnitude>.0001f||Quaternion.Angle(RightVisualRotation,other.RightVisualRotation)>1);
@@ -64,6 +73,7 @@ namespace FirefighterVR
             public FirefighterAvatarState state;
             public bool hasState;
             public float receivedAt;
+            public Transform[] proxies;
         }
         readonly Dictionary<ulong,Binding> bindings=new Dictionary<ulong,Binding>();
         readonly List<ulong> removed=new List<ulong>();
@@ -128,7 +138,11 @@ namespace FirefighterVR
             origin.SetParent(binding.player.transform,false);
             binding.origin=origin;binding.visual=driver;
             driver.remoteTracking=true;driver.localFirstPerson=false;
-            driver.headSource=binding.player.head;driver.leftSource=binding.player.leftHand;driver.rightSource=binding.player.rightHand;
+            // Proxy sources: follow the networked head/hands normally, or the seat-relative pose while seated.
+            Transform Proxy(string n,Transform src){var t=new GameObject(n).transform;t.SetParent(binding.player.transform,false);t.SetPositionAndRotation(src.position,src.rotation);return t;}
+            binding.proxies=new[]{Proxy("Avatar Head Source",binding.player.head),Proxy("Avatar Left Source",binding.player.leftHand),Proxy("Avatar Right Source",binding.player.rightHand)};
+            driver.networkHead=binding.player.head;driver.networkLeft=binding.player.leftHand;driver.networkRight=binding.player.rightHand;
+            driver.headSource=binding.proxies[0];driver.leftSource=binding.proxies[1];driver.rightSource=binding.proxies[2];
             driver.playerRoot=origin;driver.SetRemoteState(binding.state);
             UpdateRemote(binding);
             instance.SetActive(true);
@@ -159,15 +173,17 @@ namespace FirefighterVR
             }
             foreach(var id in removed){Release(bindings[id]);bindings.Remove(id);}
             if(!localAvatar||Time.unscaledTime<nextSend)return;
-            bool postureChanged=!sentState||localAvatar.Seated!=lastState.Seated||
-                (localAvatar.SeatPosition-lastState.SeatPosition).sqrMagnitude>.0001f;
+            // A registered seat moving with a vehicle is NOT a posture change (only a different seat is).
+            bool postureChanged=!sentState||localAvatar.Seated!=lastState.Seated||localAvatar.SeatId!=lastState.SeatId||
+                localAvatar.SeatId==0&&(localAvatar.SeatPosition-lastState.SeatPosition).sqrMagnitude>.0001f;
             // Mode changes must not be gated on a live headset or a lost hand pose.
             // A reliable heartbeat also repairs a missed initial posture on a late join.
             bool postureHeartbeat=Time.unscaledTime-lastSend>=1;
             if(!localAvatar.trackingReady&&!postureChanged&&!postureHeartbeat)return;
             var player=XRINetworkPlayer.LocalPlayer;
             if(!player||!player.IsOwner||!bindings.ContainsKey(player.OwnerClientId))return;
-            nextSend=Time.unscaledTime+1/Mathf.Max(2,StateUpdatesPerSecond);
+            SeatPose seatPose=null;bool seatSpace=localAvatar.Seated&&localAvatar.SeatId!=0&&SeatPose.TryGet(localAvatar.SeatId,out seatPose);
+            nextSend=Time.unscaledTime+1/(seatSpace?20:Mathf.Max(2,StateUpdatesPerSecond));
             var state=new FirefighterAvatarState
             {
                 FloorY=localAvatar.floorY,OriginY=localAvatar.trackingOriginY,
@@ -177,6 +193,13 @@ namespace FirefighterVR
                 LeftGrip=Quantize(localAvatar.leftGripValue),LeftTrigger=Quantize(localAvatar.leftTriggerValue),
                 RightGrip=Quantize(localAvatar.rightGripValue),RightTrigger=Quantize(localAvatar.rightTriggerValue)
             };
+            if(seatSpace)
+            {
+                var st=seatPose.transform;var inv=Quaternion.Inverse(st.rotation);state.SeatSpace=true;
+                state.HeadLocalPos=st.InverseTransformPoint(localAvatar.headSource.position);state.HeadLocalRot=inv*localAvatar.headSource.rotation;
+                state.LeftLocalPos=st.InverseTransformPoint(localAvatar.leftSource.position);state.LeftLocalRot=inv*localAvatar.leftSource.rotation;
+                state.RightLocalPos=st.InverseTransformPoint(localAvatar.rightSource.position);state.RightLocalRot=inv*localAvatar.rightSource.rotation;
+            }
             state.GripVehicleSpace=localAvatar.VisualGripReference!=null;
             localAvatar.GetVisualGrip(true,out state.LeftVisualPosition,out state.LeftVisualRotation,out state.LeftVisualWeight);
             localAvatar.GetVisualGrip(false,out state.RightVisualPosition,out state.RightVisualRotation,out state.RightVisualWeight);
@@ -202,6 +225,7 @@ namespace FirefighterVR
             for(int i=0;i<binding.defaults.Length;i++)if(binding.defaults[i])binding.defaults[i].enabled=binding.defaultEnabled[i];
             if(binding.visual&&binding.visual!=localAvatar)Destroy(binding.visual.placement.gameObject);
             if(binding.origin)Destroy(binding.origin.gameObject);
+            if(binding.proxies!=null)foreach(var p in binding.proxies)if(p)Destroy(p.gameObject);
         }
         public override void OnNetworkDespawn()
         {

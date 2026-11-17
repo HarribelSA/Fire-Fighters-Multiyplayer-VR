@@ -1,0 +1,94 @@
+{
+    "version": 1,
+    "name": "FireCenterControls",
+    "maps": [
+        {
+            "name": "DriverControls",
+            "id": "2f6d1a01-0c1e-4a7b-9d01-000000000001",
+            "actions": [
+                { "name": "Steering", "type": "Value", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000101", "expectedControlType": "Axis", "processors": "", "interactions": "", "initialStateCheck": true },
+                { "name": "Accelerate", "type": "Value", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000102", "expectedControlType": "Axis", "processors": "", "interactions": "", "initialStateCheck": true },
+                { "name": "Brake", "type": "Value", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000103", "expectedControlType": "Axis", "processors": "", "interactions": "", "initialStateCheck": true },
+                { "name": "Hand Interaction", "type": "Button", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000104", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "UI Interaction", "type": "Button", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000105", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false }
+            ],
+            "bindings": [
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001001", "path": "<Joystick>/stick/x", "interactions": "", "processors": "", "groups": "", "action": "Steering", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001002", "path": "<Gamepad>/leftStick/x", "interactions": "", "processors": "", "groups": "", "action": "Steering", "isComposite": false, "isPartOfComposite": false },
+                { "name": "Keyboard A/D", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001003", "path": "1DAxis", "interactions": "", "processors": "", "groups": "", "action": "Steering", "isComposite": true, "isPartOfComposite": false },
+                { "name": "negative", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001004", "path": "<Keyboard>/a", "interactions": "", "processors": "", "groups": "", "action": "Steering", "isComposite": false, "isPartOfComposite": true },
+                { "name": "positive", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001005", "path": "<Keyboard>/d", "interactions": "", "processors": "", "groups": "", "action": "Steering", "isComposite": false, "isPartOfComposite": true },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001006", "path": "<Joystick>/stick/y", "interactions": "", "processors": "Invert,Normalize(min=-1,max=1)", "groups": "", "action": "Accelerate", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001007", "path": "<Gamepad>/rightTrigger", "interactions": "", "processors": "", "groups": "", "action": "Accelerate", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001008", "path": "<Keyboard>/w", "interactions": "", "processors": "", "groups": "", "action": "Accelerate", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001009", "path": "<Joystick>/rz", "interactions": "", "processors": "Invert,Normalize(min=-1,max=1)", "groups": "", "action": "Brake", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001010", "path": "<Joystick>/twist", "interactions": "", "processors": "Invert,Normalize(min=-1,max=1)", "groups": "", "action": "Brake", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001011", "path": "<Gamepad>/leftTrigger", "interactions": "", "processors": "", "groups": "", "action": "Brake", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001012", "path": "<Keyboard>/s", "interactions": "", "processors": "", "groups": "", "action": "Brake", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001013", "path": "<XRController>{RightHand}/{GripButton}", "interactions": "", "processors": "", "groups": "", "action": "Hand Interaction", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001014", "path": "<XRController>{LeftHand}/{GripButton}", "interactions": "", "processors": "", "groups": "", "action": "Hand Interaction", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001015", "path": "<Joystick>/trigger", "interactions": "", "processors": "", "groups": "", "action": "Hand Interaction", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001016", "path": "<XRController>{RightHand}/{TriggerButton}", "interactions": "", "processors": "", "groups": "", "action": "UI Interaction", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001017", "path": "<XRController>{LeftHand}/{TriggerButton}", "interactions": "", "processors": "", "groups": "", "action": "UI Interaction", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000001018", "path": "<Keyboard>/enter", "interactions": "", "processors": "", "groups": "", "action": "UI Interaction", "isComposite": false, "isPartOfComposite": false }
+            ]
+        },
+        {
+            "name": "MetaQuestControls",
+            "id": "2f6d1a01-0c1e-4a7b-9d01-000000000002",
+            "actions": [
+                { "name": "Left Controller", "type": "Value", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000201", "expectedControlType": "Vector3", "processors": "", "interactions": "", "initialStateCheck": true },
+                { "name": "Right Controller", "type": "Value", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000202", "expectedControlType": "Vector3", "processors": "", "interactions": "", "initialStateCheck": true },
+                { "name": "Trigger", "type": "Value", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000203", "expectedControlType": "Axis", "processors": "", "interactions": "", "initialStateCheck": true },
+                { "name": "Grip", "type": "Value", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000204", "expectedControlType": "Axis", "processors": "", "interactions": "", "initialStateCheck": true },
+                { "name": "Teleportation", "type": "Value", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000205", "expectedControlType": "Vector2", "processors": "", "interactions": "", "initialStateCheck": true },
+                { "name": "UI Interaction", "type": "Button", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000206", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false }
+            ],
+            "bindings": [
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002001", "path": "<XRController>{LeftHand}/devicePosition", "interactions": "", "processors": "", "groups": "", "action": "Left Controller", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002002", "path": "<XRController>{RightHand}/devicePosition", "interactions": "", "processors": "", "groups": "", "action": "Right Controller", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002003", "path": "<XRController>{RightHand}/{Trigger}", "interactions": "", "processors": "", "groups": "", "action": "Trigger", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002004", "path": "<XRController>{LeftHand}/{Trigger}", "interactions": "", "processors": "", "groups": "", "action": "Trigger", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002005", "path": "<XRController>{RightHand}/{Grip}", "interactions": "", "processors": "", "groups": "", "action": "Grip", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002006", "path": "<XRController>{LeftHand}/{Grip}", "interactions": "", "processors": "", "groups": "", "action": "Grip", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002007", "path": "<XRController>{RightHand}/{Primary2DAxis}", "interactions": "", "processors": "", "groups": "", "action": "Teleportation", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002008", "path": "<XRController>{LeftHand}/{Primary2DAxis}", "interactions": "", "processors": "", "groups": "", "action": "Teleportation", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002009", "path": "<XRController>{RightHand}/{TriggerButton}", "interactions": "", "processors": "", "groups": "", "action": "UI Interaction", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000002010", "path": "<XRController>{LeftHand}/{TriggerButton}", "interactions": "", "processors": "", "groups": "", "action": "UI Interaction", "isComposite": false, "isPartOfComposite": false }
+            ]
+        },
+        {
+            "name": "UIControls",
+            "id": "2f6d1a01-0c1e-4a7b-9d01-000000000003",
+            "actions": [
+                { "name": "Navigate", "type": "PassThrough", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000301", "expectedControlType": "Vector2", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "Select", "type": "Button", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000302", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "Submit", "type": "Button", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000303", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "Cancel", "type": "Button", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000304", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false },
+                { "name": "Editor Mouse UI", "type": "Button", "id": "2f6d1a01-0c1e-4a7b-9d01-000000000305", "expectedControlType": "Button", "processors": "", "interactions": "", "initialStateCheck": false }
+            ],
+            "bindings": [
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003001", "path": "<Gamepad>/leftStick", "interactions": "", "processors": "", "groups": "", "action": "Navigate", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003002", "path": "<Gamepad>/dpad", "interactions": "", "processors": "", "groups": "", "action": "Navigate", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003003", "path": "<Joystick>/hat", "interactions": "", "processors": "", "groups": "", "action": "Navigate", "isComposite": false, "isPartOfComposite": false },
+                { "name": "Keyboard Arrows", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003004", "path": "2DVector", "interactions": "", "processors": "", "groups": "", "action": "Navigate", "isComposite": true, "isPartOfComposite": false },
+                { "name": "up", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003005", "path": "<Keyboard>/upArrow", "interactions": "", "processors": "", "groups": "", "action": "Navigate", "isComposite": false, "isPartOfComposite": true },
+                { "name": "down", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003006", "path": "<Keyboard>/downArrow", "interactions": "", "processors": "", "groups": "", "action": "Navigate", "isComposite": false, "isPartOfComposite": true },
+                { "name": "left", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003007", "path": "<Keyboard>/leftArrow", "interactions": "", "processors": "", "groups": "", "action": "Navigate", "isComposite": false, "isPartOfComposite": true },
+                { "name": "right", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003008", "path": "<Keyboard>/rightArrow", "interactions": "", "processors": "", "groups": "", "action": "Navigate", "isComposite": false, "isPartOfComposite": true },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003009", "path": "<Gamepad>/buttonSouth", "interactions": "", "processors": "", "groups": "", "action": "Select", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003010", "path": "<Keyboard>/space", "interactions": "", "processors": "", "groups": "", "action": "Select", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003011", "path": "<XRController>{RightHand}/{TriggerButton}", "interactions": "", "processors": "", "groups": "", "action": "Select", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003012", "path": "<XRController>{LeftHand}/{TriggerButton}", "interactions": "", "processors": "", "groups": "", "action": "Select", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003013", "path": "<Keyboard>/enter", "interactions": "", "processors": "", "groups": "", "action": "Submit", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003014", "path": "<Gamepad>/buttonSouth", "interactions": "", "processors": "", "groups": "", "action": "Submit", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003015", "path": "<Joystick>/trigger", "interactions": "", "processors": "", "groups": "", "action": "Submit", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003016", "path": "<Keyboard>/escape", "interactions": "", "processors": "", "groups": "", "action": "Cancel", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003017", "path": "<Gamepad>/buttonEast", "interactions": "", "processors": "", "groups": "", "action": "Cancel", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003018", "path": "<XRController>{RightHand}/{SecondaryButton}", "interactions": "", "processors": "", "groups": "", "action": "Cancel", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "2f6d1a01-0c1e-4a7b-9d01-000000003019", "path": "<Keyboard>/f8", "interactions": "", "processors": "", "groups": "", "action": "Editor Mouse UI", "isComposite": false, "isPartOfComposite": false }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

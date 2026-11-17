@@ -91,7 +91,7 @@ namespace CityNightPresentation.Fireground.EditorTools
         public static void Calibrate(Transform seat, byte id, System.Text.StringBuilder log)
         {
             if (!seat) { log.AppendLine("seat " + id + " missing"); return; }
-            var near = Object.FindObjectsByType<MeshFilter>(FindObjectsSortMode.None).Where(m => m.gameObject.scene == seat.gameObject.scene && m.GetComponent<Renderer>() && m.GetComponent<Renderer>().enabled && !m.name.EndsWith("_LOD1") && !m.name.EndsWith("_LOD2") && m.GetComponent<Renderer>().bounds.SqrDistance(seat.position) < 1.6f * 1.6f).ToList();
+            var near = Object.FindObjectsByType<MeshFilter>(FindObjectsSortMode.None).Where(m => m.gameObject.scene.isLoaded && m.GetComponent<Renderer>() && m.GetComponent<Renderer>().enabled && !m.name.EndsWith("_LOD1") && !m.name.EndsWith("_LOD2") && m.GetComponent<Renderer>().bounds.SqrDistance(seat.position) < 1.6f * 1.6f).ToList();
             // Prefer the seat's own mesh (renderers whose footprint contains the anchor) so desks/consoles are ignored.
             var own = near.Where(m => { var b = m.GetComponent<Renderer>().bounds; return seat.position.x > b.min.x - .05f && seat.position.x < b.max.x + .05f && seat.position.z > b.min.z - .05f && seat.position.z < b.max.z + .05f && b.size.y < 3 && b.size.y > .8f && b.min.y < seat.position.y + .12f && (b.size.x < 1.7f && b.size.z < 1.7f || m.name.Contains("interior")); }).ToList();
             if (own.Count > 0) { var floorMeshes = near.Where(m => m.GetComponent<Renderer>().bounds.size.y < .4f && m.GetComponent<Renderer>().bounds.size.x > 1.5f).ToList(); near = own.Concat(floorMeshes).Distinct().ToList(); }
@@ -104,7 +104,7 @@ namespace CityNightPresentation.Fireground.EditorTools
             float rel = cushion - a.y;
             if (rel < -.25f || rel > 1.2f) { log.AppendLine($"seat {id} {seat.name}: cushion not found (rel {rel:F2}), kept legacy"); foreach (var c in cols) Object.DestroyImmediate(c.gameObject); return; }
             float back = Cast(a + up * (rel + .3f) + fwd * .65f, -fwd, 1.2f); float backFwd = float.IsInfinity(back) ? -.05f : .65f - back;
-            float hipFwd = backFwd + .13f, front = hipFwd + .45f;
+            float hipFwd = backFwd + .21f, front = hipFwd + .45f;
             for (float d = hipFwd + .1f; d < 1.1f; d += .03f) { float h = Cast(a + fwd * d + up * (rel + .15f), Vector3.down, 3); if (float.IsInfinity(h) || a.y + rel + .15f - h < cushion - .15f) { front = d; break; } }
             float fh = Cast(a + fwd * (front + .12f) + up * rel, Vector3.down, 3); float floor = float.IsInfinity(fh) ? a.y : a.y + rel - fh;
             // A free-standing chair rests on the floor: its own footprint is the most reliable floor height.

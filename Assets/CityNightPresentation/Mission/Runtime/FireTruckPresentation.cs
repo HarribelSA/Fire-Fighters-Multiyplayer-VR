@@ -41,7 +41,8 @@ namespace CityNightPresentation.Mission
                 if(tabletDetails)tabletDetails.text=fireground&&fg.phase!=CityNightPresentation.Fireground.FiregroundPhase.Inactive?"<b>MISSION STATUS</b>\n"+fireground.PanelStatus(fg):NavigationDetails(time,flow);
                 if(tabletInteraction){bool allowed=mission.LocalRole==StationRole.Assistant;tabletInteraction.interactable=allowed;tabletInteraction.blocksRaycasts=allowed;}
             }
-            if(!playerCamera||!arrowMesh||!arrowMaterial||mission.LocalRole!=StationRole.Driver||mission.HasArrived||mission.HasFailed)return;
+            // Route arrows are shown to the whole crew (Driver and passenger).
+            if(!playerCamera||!arrowMesh||!arrowMaterial||mission.LocalRole==StationRole.None||mission.HasArrived||mission.HasFailed)return;
             int count=0;
             for(int i=0;i<arrowPositions.Length;i++)
             {

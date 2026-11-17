@@ -3164,9 +3164,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.SeatPose
   id: 4
-  hipLocal: {x: 0.000000014901161, y: 0.46897495, z: 0.12911846}
+  hipLocal: {x: 0.000000029802322, y: 0.46897495, z: 0.2091184}
   floorLocalY: -0.22648346
-  footForward: 0.6099999
+  footForward: 0.5499999
 --- !u!1 &89869489
 GameObject:
   m_ObjectHideFlags: 0
@@ -10945,9 +10945,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.SeatPose
   id: 3
-  hipLocal: {x: 0.000000014901161, y: 0.62131214, z: -0.10627361}
+  hipLocal: {x: -0.00000014994293, y: 0.62131214, z: -0.026274057}
   floorLocalY: -0.006923442
-  footForward: 0.67
+  footForward: 0.58
 --- !u!1 &371875391
 GameObject:
   m_ObjectHideFlags: 0
@@ -36189,9 +36189,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.SeatPose
   id: 5
-  hipLocal: {x: 0.000000014901161, y: 0.46897483, z: 0.12911846}
+  hipLocal: {x: 0.000000029802322, y: 0.46897483, z: 0.2091184}
   floorLocalY: -0.22648346
-  footForward: 0.6099999
+  footForward: 0.5499999
 --- !u!1001 &1255283454
 PrefabInstance:
   m_ObjectHideFlags: 0

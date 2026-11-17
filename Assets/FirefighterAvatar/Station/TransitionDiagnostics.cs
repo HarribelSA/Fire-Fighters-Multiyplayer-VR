@@ -22,7 +22,9 @@ namespace FirefighterVR.Station
         public static void End(){if(!active)return;Mark("complete");Debug.Log("[TransitionTiming] "+route+" total="+samples[samples.Count-1].elapsedMs.ToString("F1")+"ms maxFrameGap="+LargestFrameGapMs.ToString("F1")+"ms; see TransitionDiagnostics.Samples for stages");active=false;}
         public static void Tick(){if(!active)return;double now=Time.realtimeSinceStartupAsDouble;LargestFrameGapMs=Math.Max(LargestFrameGapMs,(now-previousFrame)*1000);previousFrame=now;}
         static void Loaded(Scene scene,LoadSceneMode mode){if(mode==LoadSceneMode.Additive)Mark("local_scene_activated:"+scene.name);}
-        public static IEnumerator WaitForLoad(AsyncOperation operation){bool payload=false;while(!operation.isDone){if(!payload&&operation.progress>=.9f){payload=true;Mark("payload_90_observed");}yield return null;}Mark("local_load_completed");}
+        public static AsyncOperation CurrentLoad{get;private set;}
+        public static void ClearCurrentLoad()=>CurrentLoad=null;
+        public static IEnumerator WaitForLoad(AsyncOperation operation){CurrentLoad=operation;bool payload=false;while(!operation.isDone){if(!payload&&operation.progress>=.9f){payload=true;Mark("payload_90_observed");}yield return null;}Mark("local_load_completed");}
         public readonly struct Scope:IDisposable{readonly string name;readonly long start;public Scope(string name){this.name=name;start=System.Diagnostics.Stopwatch.GetTimestamp();}public void Dispose(){if(active)Add(new Sample{route=route,stage=name,elapsedMs=Ms(System.Diagnostics.Stopwatch.GetTimestamp()-began),stageMs=Ms(System.Diagnostics.Stopwatch.GetTimestamp()-start),frame=Time.frameCount,allocatedBytes=Profiler.GetTotalAllocatedMemoryLong()});}}
         public static Scope Measure(string stage)=>new Scope(stage);
         public static void Cancel(string reason){Mark(reason);active=false;}

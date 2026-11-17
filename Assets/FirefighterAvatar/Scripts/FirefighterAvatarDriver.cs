@@ -157,6 +157,31 @@ namespace FirefighterVR
         [NonSerialized] public float SeatYaw;
         [NonSerialized] public float SeatHipHeight=.59f, SeatFootForward=.43f;
         [NonSerialized] public byte SeatId;
+        // Remote only: the networked head/hand transforms (template NetworkTransforms). The driver's sources are
+        // proxies refreshed every frame from these, or from the seat-relative pose while seated in a registered seat.
+        [NonSerialized] public Transform networkHead,networkLeft,networkRight;
+        Vector3 seatHeadP,seatLeftP,seatRightP;Quaternion seatHeadR=Quaternion.identity,seatLeftR=Quaternion.identity,seatRightR=Quaternion.identity;bool seatSmoothReady;
+        void UpdateRemoteSources(float dt)
+        {
+            if(!remoteTracking||!networkHead||!networkLeft||!networkRight||!headSource||!leftSource||!rightSource)return;
+            var s=remoteState;
+            if(remoteStateReady&&Seated&&s.SeatSpace&&SeatId!=0&&SeatPose.TryGet(SeatId,out var pose))
+            {
+                float k=seatSmoothReady?1-Mathf.Exp(-dt*18):1;seatSmoothReady=true;
+                seatHeadP=Vector3.Lerp(seatHeadP,s.HeadLocalPos,k);seatHeadR=Quaternion.Slerp(seatHeadR,s.HeadLocalRot,k);
+                seatLeftP=Vector3.Lerp(seatLeftP,s.LeftLocalPos,k);seatLeftR=Quaternion.Slerp(seatLeftR,s.LeftLocalRot,k);
+                seatRightP=Vector3.Lerp(seatRightP,s.RightLocalPos,k);seatRightR=Quaternion.Slerp(seatRightR,s.RightLocalRot,k);
+                var t=pose.transform;
+                headSource.SetPositionAndRotation(t.TransformPoint(seatHeadP),t.rotation*seatHeadR);
+                leftSource.SetPositionAndRotation(t.TransformPoint(seatLeftP),t.rotation*seatLeftR);
+                rightSource.SetPositionAndRotation(t.TransformPoint(seatRightP),t.rotation*seatRightR);
+                return;
+            }
+            seatSmoothReady=false;
+            headSource.SetPositionAndRotation(networkHead.position,networkHead.rotation);
+            leftSource.SetPositionAndRotation(networkLeft.position,networkLeft.rotation);
+            rightSource.SetPositionAndRotation(networkRight.position,networkRight.rotation);
+        }
         public void SetSeat(Transform seat)
         {
             var f=SeatPose.Resolve(seat);Seated=true;SeatPosition=f.floorPoint;SeatYaw=f.yaw;SeatHipHeight=f.hipHeight;SeatFootForward=f.footForward;SeatId=f.id;
@@ -286,6 +311,7 @@ namespace FirefighterVR
             foreach(var r in originalLocalVisuals)if(r)r.enabled=false;
             float dt=Mathf.Min(Time.unscaledDeltaTime,.05f);
             RefreshSeat();
+            UpdateRemoteSources(dt);
             if(!remoteTracking&&Seated&&!wasSeated)standingHeightBeforeSeat=StandingHMDHeight;
             if(!remoteTracking&&!Seated&&wasSeated){StandingHMDHeight=standingHeightBeforeSeat;standingHeightCalibrated=false;calibrationUntil=Time.unscaledTime+1;ResetMovement();}
             wasSeated=Seated;
@@ -491,7 +517,23 @@ namespace FirefighterVR
                 leg.constraint.weight=Mathf.Max(1-walkBlend,Mathf.Clamp01(crouchAmount/.15f));
                 var side=i==0?-.10f:.10f;
                 leg.hint.position=transform.TransformPoint(new Vector3(side,.45f,.5f));
+                if(Seated)SeatedLeg(leg);
             }
+        }
+        // Static seated pose: thigh rests horizontally on the cushion (knee forward at hip height),
+        // shin hangs down to the floor; the knee hint is forward/up so the leg never sinks into the seat.
+        void SeatedLeg(Leg leg)
+        {
+            var d=leg.constraint.data;if(!d.root||!d.mid||!d.tip)return;
+            var fwd=placement.rotation*Vector3.forward;var hip=d.root.position;
+            float thigh=Vector3.Distance(hip,d.mid.position),shin=Vector3.Distance(d.mid.position,d.tip.position);
+            // Shin leans slightly forward so the lower leg and feet stay clear of the seat front and base.
+            const float lean=.16f;
+            var ankle=hip+fwd*(thigh*.95f+lean)+Vector3.down*Mathf.Sqrt(Mathf.Max(.01f,shin*shin*.94f-lean*lean));
+            ankle.y=Mathf.Max(ankle.y,floorY+leg.soleOffset*scale);
+            leg.target.SetPositionAndRotation(ankle,placement.rotation*leg.footAxes);
+            leg.hint.position=hip+fwd*(thigh+.35f)+Vector3.up*.3f;
+            leg.constraint.weight=1;
         }
         void EvaluatePose(float deltaTime=0)
         {
@@ -541,25 +583,28 @@ namespace FirefighterVR
         }
         void ApplyFingers(float dt)
         {
-            if(!remoteTracking&&HandTrackingProfile&&trackedFingers.Count>0&&(trackedHands==null||!trackedHands.running)){trackedHandSystems.Clear();SubsystemManager.GetSubsystems(trackedHandSystems);trackedHands=trackedHandSystems.Find(s=>s.running);}
+            if(!remoteTracking&&HandTrackingProfile&&(trackedHands==null||!trackedHands.running)){trackedHandSystems.Clear();SubsystemManager.GetSubsystems(trackedHandSystems);trackedHands=trackedHandSystems.Find(s=>s.running);}
             float blend=1-Mathf.Exp(-dt/.07f);
-            leftGripValue=Mathf.Lerp(leftGripValue,remoteTracking?remoteState.LeftGrip/255f:HandTrackingProfile?TrackedCurl(true,true,leftGripValue):Read(leftGrip),blend);leftTriggerValue=Mathf.Lerp(leftTriggerValue,remoteTracking?remoteState.LeftTrigger/255f:HandTrackingProfile?TrackedCurl(true,false,leftTriggerValue):Read(leftTrigger),blend);
-            rightGripValue=Mathf.Lerp(rightGripValue,remoteTracking?remoteState.RightGrip/255f:HandTrackingProfile?TrackedCurl(false,true,rightGripValue):Read(rightGrip),blend);rightTriggerValue=Mathf.Lerp(rightTriggerValue,remoteTracking?remoteState.RightTrigger/255f:HandTrackingProfile?TrackedCurl(false,false,rightTriggerValue):Read(rightTrigger),blend);
+            // One unified hand model for hand tracking AND controllers (local and remote):
+            //   Grab  (grip button / curled middle-ring-little fingers) -> those three fingers close.
+            //   Point (trigger / pinch)                                 -> gun pose: three closed, index straight, thumb up.
+            // Raw tracked joints are no longer copied onto the glove, so every player's hands look the same.
+            leftGripValue=Mathf.Lerp(leftGripValue,remoteTracking?remoteState.LeftGrip/255f:HandTrackingProfile?TrackedCurl(true,false,leftGripValue):Read(leftGrip),blend);leftTriggerValue=Mathf.Lerp(leftTriggerValue,remoteTracking?remoteState.LeftTrigger/255f:HandTrackingProfile?TrackedPinch(true,leftTriggerValue):Read(leftTrigger),blend);
+            rightGripValue=Mathf.Lerp(rightGripValue,remoteTracking?remoteState.RightGrip/255f:HandTrackingProfile?TrackedCurl(false,false,rightGripValue):Read(rightGrip),blend);rightTriggerValue=Mathf.Lerp(rightTriggerValue,remoteTracking?remoteState.RightTrigger/255f:HandTrackingProfile?TrackedPinch(false,rightTriggerValue):Read(rightTrigger),blend);
             foreach(var finger in fingers)
             {
-                if(ApplyTrackedFinger(finger))continue;
                 float grip=finger.left?leftGripValue:rightGripValue,trigger=finger.left?leftTriggerValue:rightTriggerValue;
-                if(finger.thumb)
-                {
-                    var openOrGun=Quaternion.Slerp(finger.openRotation,finger.gunRotation,trigger*(1-grip));
-                    finger.bone.localRotation=Quaternion.Slerp(openOrGun,finger.closedRotation,grip);
-                }
-                else
-                {
-                    float curl=finger.index?grip:Mathf.Max(grip,trigger);
-                    finger.bone.localRotation=Quaternion.Slerp(finger.openRotation,finger.closedRotation,curl);
-                }
+                if(finger.thumb)finger.bone.localRotation=Quaternion.Slerp(finger.openRotation,finger.gunRotation,trigger);
+                else if(finger.index)finger.bone.localRotation=Quaternion.Slerp(finger.openRotation,finger.closedRotation,grip*(1-trigger)*.18f);
+                else finger.bone.localRotation=Quaternion.Slerp(finger.openRotation,finger.closedRotation,Mathf.Max(grip,trigger));
             }
+        }
+        // Thumb-tip to index-tip distance: 1 = pinched, 0 = open.
+        float TrackedPinch(bool left,float previous)
+        {
+            if(trackedHands==null)return previous;var h=left?trackedHands.leftHand:trackedHands.rightHand;
+            if(!h.isTracked||!h.GetJoint(XRHandJointID.ThumbTip).TryGetPose(out var thumb)||!h.GetJoint(XRHandJointID.IndexTip).TryGetPose(out var index))return previous;
+            return Mathf.InverseLerp(.06f,.018f,Vector3.Distance(thumb.position,index.position));
         }
         float TrackedCurl(bool left,bool index,float previous)
         {
