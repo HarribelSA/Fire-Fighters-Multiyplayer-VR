@@ -1,4 +1,4 @@
 {
-  "databaseUrl": "",
+  "databaseUrl": "https://fire-fighters-vr-default-rtdb.europe-west1.firebasedatabase.app",
   "collection": "runs"
 }

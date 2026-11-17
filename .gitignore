@@ -117,3 +117,6 @@ InitTestScene*.unity*
 /[Bb]ackups/
 /[Aa]ssets/_Recovery/
 /[Aa]ssets/_Recovery.meta
+
+# Firebase CLI deploy cache
+StatsWebsite/.firebase/
