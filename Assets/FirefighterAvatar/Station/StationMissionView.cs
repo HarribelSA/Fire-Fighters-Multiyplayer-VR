@@ -189,7 +189,9 @@ namespace FirefighterVR.Station
             if(!f||!f.incident||s.stage<CrewMissionStage.EmergencyAlarm)return "EMERGENCY OPERATIONS\n\n"+(f?f.StationMissionStatus:"Mission coordinator unavailable")+"\n\nDriver · Hand Tracking / G29\nAssistant · Quest Controllers or Solo Bot";
             var d=f.incident;return "<b>EMERGENCY DISPATCH</b>\n"+d.incidentType+"\n"+d.location+"\nPRIORITY: "+d.priority+" · "+s.dispatchTime+"\n\n"+d.description+"\n\nUNIT: "+d.assignedVehicle+"\nDRIVER / ASSISTANT ASSIGNED\nSTATUS: "+s.stage+"\n"+(s.tabletPresented?"TABLET PRESENTED":"ASSISTANT: PRESENT TABLET");
         }
-        void UpdateAvatar(){if(localSeat&&rig&&rig.avatar){rig.avatar.Seated=true;rig.avatar.SeatPosition=localSeat.position;rig.avatar.SeatYaw=localSeat.eulerAngles.y;}}
+        void UpdateAvatar(){// Only while the station is the active scene: in the city/fireground the truck seat or standing pose owns the body.
+            if(localSeat&&rig&&rig.avatar&&UnityEngine.SceneManagement.SceneManager.GetActiveScene()!=gameObject.scene){localSeat=null;return;}
+            if(localSeat&&rig&&rig.avatar)rig.avatar.SetSeat(localSeat);}
         void LateUpdate()=>UpdateAvatar();
         public bool DoorClearToClose()
         {
@@ -203,7 +205,8 @@ namespace FirefighterVR.Station
         }
         public void GarageOpen(){if(Flow)Flow.CommandGarage(true);}
         public void GarageClose(){if(Flow)Flow.CommandGarage(false);}
-        public static bool AlarmRequired(CrewMissionStage stage)=>stage>=CrewMissionStage.EmergencyAlarm&&stage<CrewMissionStage.MissionAccepted;
+        // Bell sound and flashing lights run together from the alarm until the truck departs.
+        public static bool AlarmRequired(CrewMissionStage stage)=>stage>=CrewMissionStage.EmergencyAlarm&&stage<CrewMissionStage.Departure;
         void SetAlarmVisuals(bool active,double elapsed)
         {
             // Sample the original looping bell, lens and point-light clips against

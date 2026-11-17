@@ -32,9 +32,11 @@ namespace FirefighterVR.Station
         public AudioSource[] musicSources;
         public AudioSource menuMusic;
         public GameObject[] legacyUI;
+        [Tooltip("Standing spot before a station is chosen (FireCenterLobby DefaultSpawnPoint).")] public Transform defaultSpot;
         StationRole preference=StationRole.None,positioned=StationRole.None;
         public StationRole SelectedProfile=>preference;
-        bool headAligned;
+        bool headAligned,wasInLobby;
+        static byte SeatPoseId(Transform t){var p=t?t.GetComponent<FirefighterVR.SeatPose>():null;return p?p.id:(byte)255;}
         bool entryPlaced;
         bool explicitPreference;
         float nextClaim;
@@ -84,7 +86,14 @@ namespace FirefighterVR.Station
         {var c=side==0?left:right;var s=channel==0?c.master:channel==1?c.music:c.sfx;s.value=Mathf.Clamp01(s.value+delta);}
         void Update()
         {
-            if(!InLobby){if(menuMusic&&menuMusic.isPlaying)menuMusic.Stop();return;}
+            if(!InLobby)
+            {
+                if(menuMusic&&menuMusic.isPlaying)menuMusic.Stop();
+                // Leaving the lobby: release the lobby chair unless a mission seat (dispatch/truck) took over.
+                if(wasInLobby){wasInLobby=false;entryPlaced=false;if(rig&&rig.avatar&&(rig.avatar.SeatId==SeatPoseId(leftSeat)||rig.avatar.SeatId==SeatPoseId(rightSeat)))rig.avatar.Seated=false;}
+                return;
+            }
+            wasInLobby=true;
             foreach(var g in legacyUI)if(g&&g.activeSelf)g.SetActive(false);
             var resetter=rig.origin.GetComponent<CharacterResetter>();if(resetter)resetter.enabled=false;
             var f=StationSessionFlow.Instance;bool connected=f&&f.IsSpawned;var state=connected?f.Lobby.Value:StationLobbyState.Initial;
@@ -98,12 +107,12 @@ namespace FirefighterVR.Station
             var head=InputDevices.GetDeviceAtXRNode(XRNode.Head);bool tracked=head.TryGetFeatureValue(CommonUsages.isTracked,out bool t)&&t;
             if(!entryPlaced||positioned!=role||(!headAligned&&tracked))
             {
-                if(role==StationRole.Driver)StationSeatPlacement.Place(rig.origin,anchor,rig.avatar);
-                else if(role==StationRole.Assistant){var cc=rig.origin.GetComponent<CharacterController>();if(cc)cc.enabled=false;StationSpawnPlacement.Place(rig.origin,anchor);if(cc)cc.enabled=true;}
-                else {var cc=rig.origin.GetComponent<CharacterController>();if(cc)cc.enabled=false;StationSpawnPlacement.Place(rig.origin,(leftSeat.position+rightSeat.position)*.5f,leftSeat.rotation);}
+                // Both stations are seated (Driver and Firefighter/Assistant); no role yet = standing at the default spot.
+                if(role!=StationRole.None)StationSeatPlacement.Place(rig.origin,anchor,rig.avatar);
+                else {var cc=rig.origin.GetComponent<CharacterController>();if(cc)cc.enabled=false;if(defaultSpot)StationSpawnPlacement.Place(rig.origin,defaultSpot);else StationSpawnPlacement.Place(rig.origin,(leftSeat.position+rightSeat.position)*.5f,leftSeat.rotation);}
                 positioned=role;headAligned=tracked;entryPlaced=true;
             }
-            rig.avatar.Seated=role==StationRole.Driver;rig.avatar.SeatPosition=anchor.position;rig.avatar.SeatYaw=anchor.eulerAngles.y;
+            if(role!=StationRole.None)rig.avatar.SetSeat(anchor);else rig.avatar.Seated=false;
             if(Time.unscaledTime<nextStatus)return;nextStatus=Time.unscaledTime+.1f;
             if(connected&&Time.unscaledTime>=nextPlayerCache){nextPlayerCache=Time.unscaledTime+1;playerCache=FindObjectsByType<XRINetworkPlayer>(FindObjectsSortMode.None);}
             ApplyConsole(left,StationRole.Driver,role,state,id,connected);ApplyConsole(right,StationRole.Assistant,role,state,id,connected);

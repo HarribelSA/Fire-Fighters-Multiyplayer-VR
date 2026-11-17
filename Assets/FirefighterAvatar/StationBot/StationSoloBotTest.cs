@@ -21,6 +21,9 @@ namespace FirefighterVR.StationBot
         public bool IsStationTest { get; private set; }
         public bool Armed { get; private set; }
         public bool OwnsStation => IsStationTest || busy;
+        // The scene load is finished once the eyes start opening (Reveal), so the loading screen can complete.
+        public bool Transitioning => busy && !revealing;
+        bool revealing;
         public string Status { get; private set; } = "PLAY WITH BOT";
         readonly List<UnityEngine.UI.Button> play = new List<UnityEngine.UI.Button>();
         readonly List<UnityEngine.UI.Button> ready = new List<UnityEngine.UI.Button>();
@@ -68,6 +71,7 @@ namespace FirefighterVR.StationBot
         }
         void LateUpdate()
         {
+            UpdateLobbyBot();
             if(IsStationTest&&stationStatus&&stationStatus.gameObject.activeInHierarchy&&Time.unscaledTime>=nextMissionStatus)
             {nextMissionStatus=Time.unscaledTime+.25f;var flow=StationSessionFlow.Instance;stationStatus.text="SOLO · HUMAN "+HumanRole+" / BOT "+StationBotRoles.Opposite(HumanRole)+"\n"+(flow&&flow.SoloMissionActive?flow.StationMissionStatus+"\nBOT: "+flow.SoloTaskStatus:Status);}
             if(returnRequested&&IsStationTest&&!busy)StartCoroutine(ReturnRoutine());
@@ -97,6 +101,20 @@ namespace FirefighterVR.StationBot
                 else if (!soloReady && readyCovered[i])
                 { console.ready.gameObject.SetActive(readyWasActive[i]); readyCovered[i] = false; }
             }
+        }
+        // Lobby presence of the EXISTING bot prefab while Play With Bot is armed: seated at the station the
+        // human did not take, re-seated when the human switches station, removed on entry/cancel/second player.
+        public StationBotFollower LobbyBot { get; private set; }
+        Transform lobbySeat;
+        void UpdateLobbyBot()
+        {
+            var human = lobby ? lobby.SelectedProfile : StationRole.None;
+            bool want = Armed && !busy && !IsStationTest && lobby && lobby.InLobby && botPrefab && RealPlayerCount < 2 && human != StationRole.None;
+            if (!want) { if (LobbyBot) { Destroy(LobbyBot.gameObject); LobbyBot = null; lobbySeat = null; } return; }
+            var seat = StationBotRoles.Opposite(human) == StationRole.Driver ? lobby.leftSeat : lobby.rightSeat;
+            // A station change re-creates the bot from its neutral pose (seated bone axes are captured unseated).
+            if (LobbyBot && lobbySeat != seat) { Destroy(LobbyBot.gameObject); LobbyBot = null; }
+            if (!LobbyBot) { LobbyBot = Instantiate(botPrefab, seat.position, seat.rotation); LobbyBot.name = "Lobby Station Bot"; SceneManager.MoveGameObjectToScene(LobbyBot.gameObject, lobbyScene); LobbyBot.InitializeLobby(human); LobbyBot.Seat(seat); lobbySeat = seat; }
         }
         public void ReadyWithBot()
         {
@@ -171,7 +189,7 @@ namespace FirefighterVR.StationBot
             if(!flow||!flow.BeginSoloMission(this))Status="SOLO MISSION BLOCKED · CHECK STATION REFERENCES";
             CreateStationPanel(anchor);
             Physics.SyncTransforms();
-            yield return fade.Reveal(); busy = false;
+            revealing = true; yield return fade.Reveal(); revealing = false; busy = false;
         }
         public static StationSceneSetup FindSetup(Scene scene)
         {
@@ -223,7 +241,7 @@ namespace FirefighterVR.StationBot
             if (ownsStation && stationScene.isLoaded) yield return SceneManager.UnloadSceneAsync(stationScene);
             yield return null; // Let the existing lobby alignment run before revealing.
             if(lobby.rig.releaseUnusedAssetsOnReturn)yield return TransitionMemory.ReleaseAfterReturn();
-            if (fade) yield return fade.Reveal();
+            revealing = true; if (fade) yield return fade.Reveal(); revealing = false;
             ownsStation = false; Armed = false; busy = false; returnRequested = false; Status = "PLAY WITH BOT";
         }
         IEnumerator AbortLoad(string message)

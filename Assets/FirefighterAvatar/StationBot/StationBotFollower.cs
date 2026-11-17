@@ -84,6 +84,18 @@ namespace FirefighterVR.StationBot
             if(animator.isHuman)spine=animator.GetBoneTransform(HumanBodyBones.Spine);
             if(animator.isHuman){hips=animator.GetBoneTransform(HumanBodyBones.Hips);leftThigh=animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);leftShin=animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);leftFoot=animator.GetBoneTransform(HumanBodyBones.LeftFoot);rightThigh=animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);rightShin=animator.GetBoneTransform(HumanBodyBones.RightLowerLeg);rightFoot=animator.GetBoneTransform(HumanBodyBones.RightFoot);seatedHipsAxes=Quaternion.Inverse(transform.rotation)*hips.rotation;leftFootAxes=Quaternion.Inverse(transform.rotation)*leftFoot.rotation;rightFootAxes=Quaternion.Inverse(transform.rotation)*rightFoot.rotation;}
         }
+        // Lobby presentation: same bot prefab, role and bone bindings, seated at a FireCenterLobby station.
+        // No navigation (the bot never walks in the lobby).
+        public void InitializeLobby(StationRole humanRole)
+        {
+            HumanRole = humanRole; Role = StationBotRoles.Opposite(humanRole);
+            animator.applyRootMotion = false;
+            if(animator.isHuman){upperArm=animator.GetBoneTransform(HumanBodyBones.RightUpperArm);lowerArm=animator.GetBoneTransform(HumanBodyBones.RightLowerArm);hand=animator.GetBoneTransform(HumanBodyBones.RightHand);}
+            if(animator.isHuman){leftUpper=animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);leftLower=animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);leftHand=animator.GetBoneTransform(HumanBodyBones.LeftHand);}
+            if(leftUpper){leftUpperRest=leftUpper.localRotation;leftLowerRest=leftLower.localRotation;leftHandRest=leftHand.localRotation;}
+            if(animator.isHuman)spine=animator.GetBoneTransform(HumanBodyBones.Spine);
+            if(animator.isHuman){hips=animator.GetBoneTransform(HumanBodyBones.Hips);leftThigh=animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);leftShin=animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);leftFoot=animator.GetBoneTransform(HumanBodyBones.LeftFoot);rightThigh=animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);rightShin=animator.GetBoneTransform(HumanBodyBones.RightLowerLeg);rightFoot=animator.GetBoneTransform(HumanBodyBones.RightFoot);seatedHipsAxes=Quaternion.Inverse(transform.rotation)*hips.rotation;leftFootAxes=Quaternion.Inverse(transform.rotation)*leftFoot.rotation;rightFootAxes=Quaternion.Inverse(transform.rotation)*rightFoot.rotation;}
+        }
         void Update() => Tick(Time.deltaTime);
         public void Tick(float dt)
         {
@@ -138,8 +150,15 @@ namespace FirefighterVR.StationBot
             if(!seatAnchor||!hips)return;
             transform.localPosition=Vector3.zero;transform.localRotation=Quaternion.identity;var f=FirefighterVR.SeatPose.Resolve(seatAnchor);var yaw=Quaternion.Euler(0,f.yaw,0);hips.rotation=seatAnchor.rotation*seatedHipsAxes;
             transform.position+=f.floorPoint+Vector3.up*f.hipHeight-hips.position;
-            SolveLimb(leftThigh,leftShin,leftFoot,f.floorPoint+yaw*new Vector3(-.14f,.07f,f.footForward),seatAnchor.rotation*leftFootAxes,seatAnchor.forward);
-            SolveLimb(rightThigh,rightShin,rightFoot,f.floorPoint+yaw*new Vector3(.14f,.07f,f.footForward),seatAnchor.rotation*rightFootAxes,seatAnchor.forward);
+            // Static seated legs: thigh horizontal on the cushion, shin hanging down to the floor (never into the seat).
+            SeatLeg(leftThigh,leftShin,leftFoot,yaw,f.floorPoint.y,seatAnchor.rotation*leftFootAxes);
+            SeatLeg(rightThigh,rightShin,rightFoot,yaw,f.floorPoint.y,seatAnchor.rotation*rightFootAxes);
+        }
+        void SeatLeg(Transform thigh,Transform shin,Transform foot,Quaternion yaw,float floor,Quaternion footRotation)
+        {
+            if(!thigh||!shin||!foot)return;var fwd=yaw*Vector3.forward;float a=Vector3.Distance(thigh.position,shin.position),b=Vector3.Distance(shin.position,foot.position);
+            const float lean=.16f;var ankle=thigh.position+fwd*(a*.95f+lean)+Vector3.down*Mathf.Sqrt(Mathf.Max(.01f,b*b*.94f-lean*lean));ankle.y=Mathf.Max(ankle.y,floor+.08f);
+            SolveLimb(thigh,shin,foot,ankle,footRotation,fwd+Vector3.up*.4f);
         }
         void SolveLimb(Transform upperArm,Transform lowerArm,Transform hand,Vector3 reachPoint,Quaternion reachRotation,Vector3 preferredBend)
         {

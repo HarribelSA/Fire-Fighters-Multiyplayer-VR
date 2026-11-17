@@ -35,7 +35,8 @@ namespace CityNightPresentation.Mission
         float wheelSpin;
         bool hasDrivingDevice;
         float localSteeringVisual;
-        public static Quaternion SteeringRotation(Quaternion mounted,Vector3 shaft,float input,float range)=>mounted*Quaternion.AngleAxis(-Mathf.Clamp(input,-1,1)*range*.5f,shaft.normalized);
+        // Visual wheel only: G29 right = rim turns right as seen from the driver's seat (was mirrored in the headset).
+        public static Quaternion SteeringRotation(Quaternion mounted,Vector3 shaft,float input,float range)=>mounted*Quaternion.AngleAxis(Mathf.Clamp(input,-1,1)*range*.5f,shaft.normalized);
         void Awake()
         {
             using var timing=FirefighterVR.Station.TransitionDiagnostics.Measure("vehicle_input_and_physics_awake");

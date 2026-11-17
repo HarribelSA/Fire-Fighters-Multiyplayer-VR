@@ -75,7 +75,7 @@ namespace CityNightPresentation.Mission
             FollowSeat();
             foreach(var p in locomotion.Keys)if(p)p.enabled=false;
             if(capsule)capsule.enabled=false;
-            if(avatar)avatar.SetSeat(seat);var seatRig=StationSessionFlow.Instance?StationSessionFlow.Instance.localRig:null;if(seatRig)seatRig.VehicleSeated=true;
+            if(avatar)avatar.SetSeat(seat);var seatRig=StationSessionFlow.Instance?StationSessionFlow.Instance.localRig:null;if(seatRig){seatRig.VehicleSeated=true;seatRig.StationSeated=false;}
             var flow=StationSessionFlow.Instance;
             if(flow&&flow.MissionSessionActive&&flow.MissionState.stage==CrewMissionStage.CityTransition&&seatAcknowledged!=flow.MissionState.epoch&&StationSpawnPlacement.TrackingReady(origin)&&Vector3.Distance(origin.Camera.transform.position,StationSeatPlacement.EyeTarget(seat,avatar))<.15f)
             {seatAcknowledged=flow.MissionState.epoch;TransitionDiagnostics.Mark("local_city_tracking_and_seat_verified");flow.AcknowledgeCitySeat(seatAcknowledged);}

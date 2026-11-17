@@ -85,7 +85,10 @@ namespace FirefighterVR.Station
         }
         [Rpc(SendTo.Authority,InvokePermission=RpcInvokePermission.Everyone)]
         void ClaimRoleRpc(StationRole role,RpcParams p=default)
-        {if(!Authority||!Connected(p.Receive.SenderClientId))return;var state=Lobby.Value;if(state.Claim(p.Receive.SenderClientId,role))Lobby.Value=state;}
+        {if(!Authority||!Connected(p.Receive.SenderClientId))return;var state=Lobby.Value;
+        // Host rule: once both real operators are in the room with both stations taken, roles are locked.
+        if(NetworkManager.ConnectedClientsIds.Count>=2&&state.Driver!=StationLobbyState.Unassigned&&state.Assistant!=StationLobbyState.Unassigned&&state.RoleOf(p.Receive.SenderClientId)!=StationRole.None)return;
+        if(state.Claim(p.Receive.SenderClientId,role))Lobby.Value=state;}
         [Rpc(SendTo.Authority,InvokePermission=RpcInvokePermission.Everyone)]
         void ReadyRpc(bool ready,bool inputAvailable,RpcParams p=default)
         {if(!Authority||!Connected(p.Receive.SenderClientId))return;var state=Lobby.Value;if(state.SetReady(p.Receive.SenderClientId,ready,inputAvailable,NetworkManager.ConnectedClientsIds.Count,SharedTime))Lobby.Value=state;}

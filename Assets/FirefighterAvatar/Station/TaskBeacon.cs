@@ -8,9 +8,9 @@ namespace FirefighterVR.Station
     public sealed class TaskBeacon : MonoBehaviour
     {
         public static readonly Color DriverColor = new Color(.15f, .55f, 1f, 1), AssistantColor = new Color(1f, .16f, .1f, 1);
-        static Mesh beamMesh, ringMesh, arrowMesh;
+        static Mesh beamMesh, ringMesh, arrowMesh, haloMesh;
         static Material glow, solid;
-        Renderer beam, ring, arrow;
+        Renderer beam, ring, arrow, halo;
         MaterialPropertyBlock block;
         float seed;
 
@@ -24,7 +24,7 @@ namespace FirefighterVR.Station
         void Build()
         {
             EnsureAssets(); block = new MaterialPropertyBlock(); seed = Random.value * 10;
-            beam = Part("Beam", beamMesh, glow); ring = Part("Ring", ringMesh, glow); arrow = Part("Arrow", arrowMesh, solid);
+            beam = Part("Beam", beamMesh, glow); ring = Part("Ring", ringMesh, glow); arrow = Part("Arrow", arrowMesh, solid); halo = Part("Halo", haloMesh, glow); halo.enabled = false;
         }
         Renderer Part(string name, Mesh mesh, Material mat)
         {
@@ -40,7 +40,7 @@ namespace FirefighterVR.Station
             transform.SetPositionAndRotation(position, Quaternion.identity);
             float t = Time.time + seed, pulse = .75f + .25f * Mathf.Sin(t * 4);
             var c = ColorOf(role);
-            beam.enabled = ring.enabled = beamOn;
+            beam.enabled = ring.enabled = beamOn; halo.enabled = false; arrow.enabled = true;
             if (beamOn)
             {
                 beam.transform.localScale = new Vector3(radius, height, radius);
@@ -53,13 +53,40 @@ namespace FirefighterVR.Station
             arrow.transform.localScale = Vector3.one * (beamOn ? Mathf.Clamp(radius * .55f, .14f, .4f) : .1f);
             block.SetColor("_BaseColor", c); arrow.SetPropertyBlock(block);
         }
+        // Glow ON the object itself (e.g. the reel crank head, a button cap): a pulsing halo, no beam or arrow.
+        public void ShowHalo(Vector3 position, StationRole role, float radius)
+        {
+            if (!gameObject.activeSelf) gameObject.SetActive(true);
+            transform.SetPositionAndRotation(position, Quaternion.identity);
+            beam.enabled = ring.enabled = arrow.enabled = false; halo.enabled = true;
+            float t = Time.time + seed, pulse = .75f + .25f * Mathf.Sin(t * 5);
+            halo.transform.localPosition = Vector3.zero; halo.transform.localScale = Vector3.one * radius * (1 + .12f * Mathf.Sin(t * 5));
+            block.SetColor("_BaseColor", ColorOf(role) * (1.4f * pulse)); halo.SetPropertyBlock(block);
+        }
         public void Hide() { if (gameObject.activeSelf) gameObject.SetActive(false); }
 
         // Floating role arrow above a player's head.
+        TMPro.TextMeshPro label;
+        // Floating role arrow above a player's head (optional caption, e.g. "BOT").
+        public void ShowHeadArrow(Vector3 head, StationRole role, string caption)
+        {
+            ShowHeadArrow(head, role);
+            if (string.IsNullOrEmpty(caption)) { if (label) label.gameObject.SetActive(false); return; }
+            if (!label)
+            {
+                var g = new GameObject("Caption"); g.transform.SetParent(transform, false);
+                label = g.AddComponent<TMPro.TextMeshPro>(); label.alignment = TMPro.TextAlignmentOptions.Center; label.fontSize = 1.2f; label.fontStyle = TMPro.FontStyles.Bold;
+                label.rectTransform.sizeDelta = new Vector2(.6f, .2f); label.outlineWidth = .25f;
+            }
+            label.gameObject.SetActive(true); label.text = caption; label.color = Color.white; label.outlineColor = ColorOf(role);
+            label.transform.localPosition = Vector3.up * .34f; // above the arrow, bobbing with it (same parent)
+            var cam = Camera.main; if (cam) label.transform.rotation = Quaternion.LookRotation(label.transform.position - cam.transform.position, Vector3.up);
+        }
         public void ShowHeadArrow(Vector3 head, StationRole role)
         {
+            if (label && label.gameObject.activeSelf) label.gameObject.SetActive(false);
             if (!gameObject.activeSelf) gameObject.SetActive(true);
-            beam.enabled = ring.enabled = false; float t = Time.time + seed;
+            beam.enabled = ring.enabled = halo.enabled = false; arrow.enabled = true; float t = Time.time + seed;
             transform.SetPositionAndRotation(head + Vector3.up * (.42f + .05f * Mathf.Sin(t * 2.5f)), Quaternion.identity);
             arrow.transform.localPosition = Vector3.zero; arrow.transform.localRotation = Quaternion.Euler(0, t * 60 % 360, 0); arrow.transform.localScale = Vector3.one * .2f;
             block.SetColor("_BaseColor", ColorOf(role)); arrow.SetPropertyBlock(block);
@@ -96,8 +123,14 @@ namespace FirefighterVR.Station
             foreach (var y in new[] { .5f, 1.1f }) { av.Add(new Vector3(-w, y, -w)); av.Add(new Vector3(w, y, -w)); av.Add(new Vector3(w, y, w)); av.Add(new Vector3(-w, y, w)); }
             for (int i = 0; i < 4; i++) { int a = s0 + i, b = s0 + (i + 1) % 4, c = a + 4, d = b + 4; at.AddRange(new[] { a, c, b, b, c, d }); }
             at.AddRange(new[] { s0 + 4, s0 + 6, s0 + 5, s0 + 4, s0 + 7, s0 + 6 });
+            // Halo: UV sphere r=1, brighter toward the silhouette (vertex alpha by latitude is enough for a soft glow).
+            var hv = new System.Collections.Generic.List<Vector3>(); var hc = new System.Collections.Generic.List<Color>(); var ht = new System.Collections.Generic.List<int>();
+            const int lat = 10, lon = 16;
+            for (int a = 0; a <= lat; a++) for (int b = 0; b <= lon; b++) { float th = Mathf.PI * a / lat, ph = 2 * Mathf.PI * b / lon; hv.Add(new Vector3(Mathf.Sin(th) * Mathf.Cos(ph), Mathf.Cos(th), Mathf.Sin(th) * Mathf.Sin(ph))); hc.Add(new Color(1, 1, 1, .45f)); }
+            for (int a = 0; a < lat; a++) for (int b = 0; b < lon; b++) { int i0 = a * (lon + 1) + b, i1 = i0 + lon + 1; ht.AddRange(new[] { i0, i1, i0 + 1, i0 + 1, i1, i1 + 1 }); }
+            haloMesh = new Mesh { name = "CrewHalo", vertices = hv.ToArray(), colors = hc.ToArray(), triangles = ht.ToArray() }; haloMesh.RecalculateNormals();
             arrowMesh = new Mesh { name = "CrewArrow", vertices = av.ToArray(), triangles = at.ToArray() }; arrowMesh.RecalculateNormals();
-            foreach (var m in new[] { beamMesh, ringMesh, arrowMesh }) { m.RecalculateBounds(); m.bounds = new Bounds(m.bounds.center, m.bounds.size + Vector3.one); }
+            foreach (var m in new[] { beamMesh, ringMesh, arrowMesh, haloMesh }) { m.RecalculateBounds(); m.bounds = new Bounds(m.bounds.center, m.bounds.size + Vector3.one); }
         }
     }
 }

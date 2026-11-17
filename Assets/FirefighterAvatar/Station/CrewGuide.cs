@@ -25,7 +25,9 @@ namespace FirefighterVR.Station
         {
             used = headsUsed = 0;
             var flow = StationSessionFlow.Instance;
-            if (flow && flow.MissionSessionActive && flow.MissionState.stage != CrewMissionStage.None)
+            var lobby = SeatedDispatchLobby.Instance;
+            if (lobby && lobby.InLobby && flow) LobbyArrows(flow);
+            else if (flow && flow.MissionSessionActive && flow.MissionState.stage != CrewMissionStage.None)
             {
                 HeadArrows(flow);
                 var s = flow.MissionState;
@@ -42,8 +44,31 @@ namespace FirefighterVR.Station
             return pool[index++];
         }
         void Beam(Vector3 p, StationRole role, float radius = .35f, float height = 1) => Next(beacons, ref used).Show(p, role, radius, true, height);
+        void Halo(Vector3 p, StationRole role, float radius) => Next(beacons, ref used).ShowHalo(p, role, radius);
         void Pointer(Vector3 p, StationRole role) => Next(beacons, ref used).Show(p, role, .1f, false);
 
+        // Lobby: arrows follow each character's CURRENT role (they swap when a station is switched).
+        void LobbyArrows(StationSessionFlow flow)
+        {
+            if (Time.unscaledTime >= nextScan) { nextScan = Time.unscaledTime + .5f; players = FindObjectsByType<XRMultiplayer.XRINetworkPlayer>(FindObjectsSortMode.None); }
+            if (flow.IsSpawned)
+            {
+                var state = flow.Lobby.Value;
+                foreach (var p in players)
+                {
+                    if (!p || !p.IsSpawned || p.IsOwner || !p.head) continue;
+                    var role = state.RoleOf(p.OwnerClientId); if (role == StationRole.None) continue;
+                    Next(heads, ref headsUsed).ShowHeadArrow(p.head.position, role, string.IsNullOrEmpty(p.playerName) ? null : p.playerName);
+                }
+                return;
+            }
+            var test = FindFirstObjectByType<StationSoloBotTest>(); var bot = test ? test.LobbyBot : null;
+            if (bot && bot.animator && bot.animator.isHuman)
+            {
+                var head = bot.animator.GetBoneTransform(HumanBodyBones.Head);
+                Next(heads, ref headsUsed).ShowHeadArrow(head ? head.position : bot.transform.position + Vector3.up * 1.4f, bot.Role, "BOT");
+            }
+        }
         void HeadArrows(StationSessionFlow flow)
         {
             if (Time.unscaledTime >= nextScan) { nextScan = Time.unscaledTime + .5f; players = FindObjectsByType<XRMultiplayer.XRINetworkPlayer>(FindObjectsSortMode.None); }
@@ -54,7 +79,7 @@ namespace FirefighterVR.Station
                 {
                     if (!p || !p.IsSpawned || p.IsOwner || !p.head) continue;
                     var role = lobby.RoleOf(p.OwnerClientId); if (role == StationRole.None) continue;
-                    Next(heads, ref headsUsed).ShowHeadArrow(p.head.position, role);
+                    Next(heads, ref headsUsed).ShowHeadArrow(p.head.position, role, string.IsNullOrEmpty(p.playerName) ? null : p.playerName);
                 }
             }
             if (flow.SoloMissionActive)
@@ -63,7 +88,7 @@ namespace FirefighterVR.Station
                 if (bot && bot.isActiveAndEnabled && bot.animator && bot.animator.isHuman)
                 {
                     var head = bot.animator.GetBoneTransform(HumanBodyBones.Head);
-                    Next(heads, ref headsUsed).ShowHeadArrow(head ? head.position : bot.transform.position + Vector3.up * 1.8f, bot.Role);
+                    Next(heads, ref headsUsed).ShowHeadArrow(head ? head.position : bot.transform.position + Vector3.up * 1.8f, bot.Role, "BOT");
                 }
             }
         }
@@ -103,12 +128,13 @@ namespace FirefighterVR.Station
             // Player 1 (blue): reel and pump panel.
             bool needHose = fs.phase == FiregroundPhase.Operation && !fs.nozzleDocked && fs.payout < op.NozzleDistance() + 1.5f && fs.payout < op.maxPayout - .1f;
             bool rewind = fs.phase == FiregroundPhase.Recovery && fs.nozzleDocked && !fs.pumpOn && fs.payout > op.StowedPayout + .05f;
-            if ((needHose || rewind) && op.reel && op.reel.knob) Beam(Down(op.reel.knob.position) + Vector3.up * .02f, StationRole.Driver, .3f, 1.2f);
+            // Glow sits ON the crank head (rotates with the reel) and disappears while it is being grabbed.
+            if ((needHose || rewind) && op.reel && op.reel.knob && !op.reel.isSelected) Halo(op.reel.knob.position, StationRole.Driver, .075f);
             var bot = op.GetComponent<FiregroundBot>();
-            if (fs.phase == FiregroundPhase.Operation && !fs.pumpOn && (fs.Held || !fs.nozzleDocked) && bot && bot.waterOnButton) Pointer(bot.waterOnButton.position, StationRole.Driver);
-            if (fs.phase == FiregroundPhase.Recovery && fs.pumpOn && bot && bot.waterOffButton) Pointer(bot.waterOffButton.position, StationRole.Driver);
+            if (fs.phase == FiregroundPhase.Operation && !fs.pumpOn && (fs.Held || !fs.nozzleDocked) && bot && bot.waterOnButton) Halo(bot.waterOnButton.TransformPoint(0, 0, -.03f), StationRole.Driver, .065f);
+            if (fs.phase == FiregroundPhase.Recovery && fs.pumpOn && bot && bot.waterOffButton) Halo(bot.waterOffButton.TransformPoint(0, 0, -.03f), StationRole.Driver, .065f);
             // Player 2 (red): nozzle, fire attack position, bracket.
-            if (!fs.Held && (fs.phase == FiregroundPhase.Operation || !fs.nozzleDocked) && op.nozzle) Beam(Down(op.nozzle.transform.position), StationRole.Assistant, .3f);
+            if (!fs.Held && (fs.phase == FiregroundPhase.Operation || !fs.nozzleDocked) && op.nozzle) Halo(op.nozzle.transform.TransformPoint(0, -.04f, .1f), StationRole.Assistant, .16f);
             if (fs.Held && fs.phase == FiregroundPhase.Operation)
             {
                 int best = -1; float bestD = float.MaxValue; Vector3 from = op.nozzle.transform.position;
