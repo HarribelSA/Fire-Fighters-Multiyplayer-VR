@@ -90,6 +90,8 @@ namespace CityNightPresentation.Mission
         public bool SirenActive=>UseNetworkState?Siren.Value:offlineSiren;
         public bool HasArrived=>UseNetworkState?Arrived.Value:offlineArrived;
         public float TotalSeconds=>(UseNetworkState?Elapsed.Value+Penalties.Value:offlineElapsed+offlinePenalties);
+        public float PenaltySeconds=>UseNetworkState?Penalties.Value:offlinePenalties;
+        public float DrivingSeconds=>UseNetworkState?Elapsed.Value:offlineElapsed;
         void Awake(){if(traffic)traffic.localSimulation=false;}
         public override void OnNetworkSpawn(){if(HasAuthority&&NetworkManager.DistributedAuthorityMode)NetworkObject.SetOwnershipStatus(NetworkObject.OwnershipStatus.SessionOwner,true);if(traffic)traffic.localSimulation=Authority;}
         public void SubmitDriverInput(Vector4 value)
@@ -121,6 +123,7 @@ namespace CityNightPresentation.Mission
         void Update()
         {
             if(!traffic)return;
+            if(CityNightPresentation.Fireground.MissionDebrief.HideTraffic){traffic.localSimulation=false;foreach(var v in traffic.vehicles)if(v.body&&v.body.gameObject.activeSelf)v.body.gameObject.SetActive(false);return;}
             if(NetworkManagerIsListening&&!IsSpawned&&!(StationSessionFlow.Instance&&StationSessionFlow.Instance.SoloMissionActive)){traffic.localSimulation=false;return;}
             traffic.localSimulation=Authority&&CrewReady;
             if(Authority&&!wasEvaluationAuthority&&UseNetworkState)evaluation=Evaluation.Value;wasEvaluationAuthority=Authority;
@@ -144,7 +147,7 @@ namespace CityNightPresentation.Mission
                 float dt=Time.deltaTime;if(UseNetworkState)Elapsed.Value+=dt;else offlineElapsed+=dt;
                 if(SirenActive){evaluation.sirenSeconds+=dt;evaluation.roofLightSeconds+=dt;}
                 if(waitingForRed)evaluation.trafficWaitingSeconds+=dt;if(waitingAtChallenge)evaluation.intersectionDelaySeconds+=dt;
-                if(RemainingSeconds<=0){evaluation.outcome=MissionOutcome.TimedOut;ApplyEmergency(false);}
+                // No countdown: the response is timed silently and only reported on the debrief dashboard.
             }
             if(Time.unscaledTime>=networkAt)
             {
@@ -183,7 +186,8 @@ namespace CityNightPresentation.Mission
         void CheckArrivalAndSignals()
         {
             Vector3 front=transform.TransformPoint(new Vector3(0,1,3.8f));
-            if(previousReady&&Vector3.Distance(previousFront,front)<20&&started)
+            // Red-light violation = crossing a red stop line WITHOUT the siren active. Each adds redLightPenaltySeconds.
+            if(previousReady&&Vector3.Distance(previousFront,front)<20&&started&&!HasArrived&&!HasFailed&&!SirenActive)
             {
                 for(int i=0;i<traffic.signals.Length;i++)foreach(var head in traffic.signals[i].heads)
                 {

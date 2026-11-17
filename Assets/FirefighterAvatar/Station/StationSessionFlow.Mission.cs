@@ -11,7 +11,7 @@ namespace FirefighterVR.Station
     {
         public CrewMissionStage stage;
         public uint epoch,revision;
-        public double deadline,alarmAt,garageAt;
+        public double deadline,alarmAt,garageAt,acceptedAt;
         public float garageFrom;
         public bool garageOpen,garageTask,driverChair,driverTruck,assistantTruck,tabletPicked,tabletPresented,tabletHeld;
         public byte cityBlack,citySeats;
@@ -30,7 +30,8 @@ namespace FirefighterVR.Station
             if(kind==StationSeatKind.AssistantTruck&&role==StationRole.Assistant&&CanBoardAssistant(now,doorSeconds)){assistantTruck=true;stage=CrewMissionStage.Departure;deadline=now+departureSeconds;return true;}
             return false;
         }
-        public bool TryAccept(StationRole role){if(role!=StationRole.Driver||!CanAccept)return false;stage=CrewMissionStage.MissionAccepted;return true;}
+        public bool TryAccept(StationRole role)=>TryAccept(role,0);
+        public bool TryAccept(StationRole role,double now){if(role!=StationRole.Driver||!CanAccept)return false;stage=CrewMissionStage.MissionAccepted;acceptedAt=now;return true;}
         public bool TryGarage(StationRole role,bool open,bool clear,double now,float seconds)
         {
             if(role!=StationRole.Assistant||stage==CrewMissionStage.None||stage>=CrewMissionStage.Departure||(!open&&!clear))return false;
@@ -40,7 +41,7 @@ namespace FirefighterVR.Station
         {
             s.SerializeValue(ref stage);s.SerializeValue(ref epoch);s.SerializeValue(ref revision);s.SerializeValue(ref deadline);s.SerializeValue(ref alarmAt);s.SerializeValue(ref garageAt);s.SerializeValue(ref garageFrom);
             s.SerializeValue(ref garageOpen);s.SerializeValue(ref garageTask);s.SerializeValue(ref driverChair);s.SerializeValue(ref driverTruck);s.SerializeValue(ref assistantTruck);s.SerializeValue(ref tabletPicked);s.SerializeValue(ref tabletPresented);s.SerializeValue(ref tabletHeld);
-            s.SerializeValue(ref cityBlack);s.SerializeValue(ref citySeats);s.SerializeValue(ref tabletPosition);s.SerializeValue(ref tabletRotation);s.SerializeValue(ref dispatchTime);
+            s.SerializeValue(ref cityBlack);s.SerializeValue(ref citySeats);s.SerializeValue(ref tabletPosition);s.SerializeValue(ref tabletRotation);s.SerializeValue(ref dispatchTime);s.SerializeValue(ref acceptedAt);
         }
     }
     public sealed partial class StationSessionFlow
@@ -152,10 +153,10 @@ namespace FirefighterVR.Station
             var role=Lobby.Value.RoleOf(id);if(!CrewSender(id,role)||role==StationRole.None||!state.TrySeat(kind,role,SharedTime,garageTravelSeconds,departureSeconds))return;
             PublishCrew(state);
         }
-        public void AcceptDispatch(){if(SoloMissionActive){var s=soloMission;if(s.TryAccept(SoloHumanRole))PublishCrew(s);}else if(IsSpawned)AcceptDispatchRpc();}
+        public void AcceptDispatch(){if(SoloMissionActive){var s=soloMission;if(s.TryAccept(SoloHumanRole,SharedTime))PublishCrew(s);}else if(IsSpawned)AcceptDispatchRpc();}
         [Rpc(SendTo.Authority,InvokePermission=RpcInvokePermission.Everyone)]
         void AcceptDispatchRpc(RpcParams p=default)
-        {var state=CrewMission.Value;if(!CrewSender(p.Receive.SenderClientId,StationRole.Driver)||!state.TryAccept(StationRole.Driver))return;PublishCrew(state);}
+        {var state=CrewMission.Value;if(!CrewSender(p.Receive.SenderClientId,StationRole.Driver)||!state.TryAccept(StationRole.Driver,SharedTime))return;PublishCrew(state);}
         public void CommandGarage(bool open){if(SoloMissionActive){if(!soloBotPress&&SoloHumanRole!=StationRole.Assistant)return;var s=soloMission;var v=StationMissionView.Instance;if(s.TryGarage(StationRole.Assistant,open,open||v&&v.DoorClearToClose(),SharedTime,garageTravelSeconds))PublishCrew(s);}else if(IsSpawned)GarageRpc(open);}
         public void SafetyReopenGarage()
         {if(!MissionAuthority)return;var s=MissionState;s.garageFrom=s.GarageFraction(SharedTime,garageTravelSeconds);s.garageAt=SharedTime;s.garageOpen=true;s.garageTask=false;PublishCrew(s);}

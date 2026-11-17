@@ -48,7 +48,7 @@ namespace CityNightPresentation.Mission
         {
             // Fireground dismount hands the rig back to normal standing tracking/locomotion.
             var fireground=CityNightPresentation.Fireground.FiregroundOperation.Instance;
-            if(fireground&&fireground.LocalDismounted){Release();return;}
+            if(fireground&&fireground.LocalDismounted&&!CityNightPresentation.Fireground.MissionDebrief.CrewSeated){Release();return;}
             var session=StationSessionFlow.Instance;
             bool authorized=mission&&((mission.offlineDriverTesting&&(!Unity.Netcode.NetworkManager.Singleton||!Unity.Netcode.NetworkManager.Singleton.IsListening))||(session&&session.MissionSessionActive&&session.MissionState.stage>=CrewMissionStage.CityTransition));
             if(!authorized){Release();return;}

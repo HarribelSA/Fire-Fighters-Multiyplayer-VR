@@ -157,7 +157,7 @@ namespace FirefighterVR.Station
             if(!view)return;
             if(s.stage<=CrewMissionStage.DispatchReview&&!bot.IsMissionSeated)bot.Seat(view.dispatchSeat);
             if(s.stage==CrewMissionStage.EmergencyAlarm&&bot.IsMissionSeated&&s.TrySeat(StationSeatKind.DispatchChair,StationRole.Driver,SharedTime,garageTravelSeconds,departureSeconds)){PublishCrew(s);soloTask="Seated Driver waiting for human Assistant tablet";return;}
-            if(s.stage==CrewMissionStage.DispatchReview){soloTask="Waiting for human tablet pickup and presentation";if(s.CanAccept&&s.TryAccept(StationRole.Driver)){PublishCrew(s);soloTask="Dispatch accepted after tablet presentation";}return;}
+            if(s.stage==CrewMissionStage.DispatchReview){soloTask="Waiting for human tablet pickup and presentation";if(s.CanAccept&&s.TryAccept(StationRole.Driver,SharedTime)){PublishCrew(s);soloTask="Dispatch accepted after tablet presentation";}return;}
             if(s.stage==CrewMissionStage.MissionAccepted){bot.Seat(view.driverSeat);if(bot.IsMissionSeated&&s.TrySeat(StationSeatKind.DriverTruck,StationRole.Driver,SharedTime,garageTravelSeconds,departureSeconds))PublishCrew(s);return;}
             if(s.stage==CrewMissionStage.DriverInTruck)soloTask="Driver seated · waiting for human garage UP and passenger boarding";
         }

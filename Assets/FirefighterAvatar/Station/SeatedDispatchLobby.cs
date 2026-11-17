@@ -19,6 +19,7 @@ namespace FirefighterVR.Station
             public GameObject main,create,join,settings;
             public UnityEngine.CanvasGroup controls;
             public TMP_InputField roomName,roomCode;
+            [Tooltip("Firefighter name typed at the start of the game (shown on the debrief dashboard and stats website).")] public TMP_InputField playerName;
             public TMP_Text feedback,role;
             public UnityEngine.UI.Button ready,seat;
             public UnityEngine.UI.Slider master,music,sfx;
@@ -59,6 +60,39 @@ namespace FirefighterVR.Station
             c.sfx.onValueChanged.AddListener(v=>{mixer.SetFloat("SFXVolume",Db(v));SyncSliders(c.sfx==left.sfx?right.sfx:left.sfx,v);});
             c.music.onValueChanged.AddListener(v=>{foreach(var a in musicSources)if(a)a.volume=v;SyncSliders(c.music==left.music?right.music:left.music,v);});
             foreach(var field in new[]{c.roomName,c.roomCode}){var d=field.GetComponent<XRKeyboardDisplay>();if(d)d.inputField=field;}
+            BindName(c);
+        }
+        // ---------------- Player name ----------------
+        const string NamePref="FFVR.PlayerName";
+        public static string SavedPlayerName=>PlayerPrefs.GetString(NamePref,"").Trim();
+        public static bool HasPlayerName=>SavedPlayerName.Length>=2;
+        bool syncingName;
+        void BindName(Console c)
+        {
+            if(!c.playerName&&c.roomName&&c.main)
+            {
+                // Fallback when the scene has no dedicated field: reuse the existing room-name field style on the main page.
+                var clone=Instantiate(c.roomName.gameObject,c.main.transform,false);clone.name="PlayerNameField";
+                var r=(RectTransform)clone.transform;r.anchorMin=r.anchorMax=r.pivot=new Vector2(.5f,1);r.anchoredPosition=new Vector2(0,-12);
+                c.playerName=clone.GetComponent<TMP_InputField>();
+            }
+            var f=c.playerName;if(!f)return;
+            f.onValueChanged.RemoveAllListeners();f.onEndEdit.RemoveAllListeners();f.onSubmit.RemoveAllListeners();
+            f.characterLimit=20;f.lineType=TMP_InputField.LineType.SingleLine;f.contentType=TMP_InputField.ContentType.Name;
+            if(f.placeholder is TMP_Text ph)ph.text="Enter your name";
+            f.SetTextWithoutNotify(SavedPlayerName);
+            var display=f.GetComponent<XRKeyboardDisplay>();if(display)display.inputField=f;
+            f.onValueChanged.AddListener(v=>SetPlayerName(v,f));
+            f.onEndEdit.AddListener(v=>SetPlayerName(v,f));
+        }
+        void SetPlayerName(string value,TMP_InputField source)
+        {
+            if(syncingName)return;syncingName=true;
+            string clean=FirefighterVR.Stats.MissionStatsStore.CleanName(value,"");
+            PlayerPrefs.SetString(NamePref,clean);PlayerPrefs.Save();
+            foreach(var f in new[]{left.playerName,right.playerName})if(f&&f!=source&&f.text!=clean)f.SetTextWithoutNotify(clean);
+            if(clean.Length>=2)XRINetworkGameManager.LocalPlayerName.Value=clean;
+            syncingName=false;
         }
         static float Db(float v)=>v<=.0001f?-80:Mathf.Log10(v)*20;
         static void SyncSliders(UnityEngine.UI.Slider s,float v)=>s.SetValueWithoutNotify(v);
@@ -70,9 +104,9 @@ namespace FirefighterVR.Station
         {var f=StationSessionFlow.Instance;if(f&&f.IsSpawned){if(f.CanRetrySpawn)f.RequestSpawnRetry();Page(side,"main");return;}Page(side,"create");}
         public void ResetSeatPlacement(){positioned=StationRole.None;headAligned=false;entryPlaced=false;}
         public void Create(int side)
-        {var c=side==0?left:right;var n=XRINetworkGameManager.Instance;if(!n){c.feedback.text="Session system is initializing.";return;}c.feedback.text="Creating room…";n.CreateNewLobby(c.roomName.text.Trim(),true,2);}
+        {var c=side==0?left:right;if(!HasPlayerName){c.feedback.text="ENTER YOUR NAME FIRST";Page(side,"main");return;}var n=XRINetworkGameManager.Instance;if(!n){c.feedback.text="Session system is initializing.";return;}c.feedback.text="Creating room…";n.CreateNewLobby(c.roomName.text.Trim(),true,2);}
         public void Join(int side)
-        {var c=side==0?left:right;string code=c.roomCode.text.Trim();if(string.IsNullOrWhiteSpace(code)){c.feedback.text="Enter a room code first.";return;}var n=XRINetworkGameManager.Instance;if(!n){c.feedback.text="Session system is initializing.";return;}c.feedback.text="Joining room…";n.JoinLobbyByCode(code);}
+        {var c=side==0?left:right;if(!HasPlayerName){c.feedback.text="ENTER YOUR NAME FIRST";Page(side,"main");return;}string code=c.roomCode.text.Trim();if(string.IsNullOrWhiteSpace(code)){c.feedback.text="Enter a room code first.";return;}var n=XRINetworkGameManager.Instance;if(!n){c.feedback.text="Session system is initializing.";return;}c.feedback.text="Joining room…";n.JoinLobbyByCode(code);}
         public void CopyCode(){string code=XRINetworkGameManager.ConnectedRoomCode;if(!string.IsNullOrEmpty(code))GUIUtility.systemCopyBuffer=code;}
         public void Exit()
         {var n=XRINetworkGameManager.Instance;if(n&&Unity.Netcode.NetworkManager.Singleton&&Unity.Netcode.NetworkManager.Singleton.IsListening){n.Disconnect();return;}
@@ -114,6 +148,8 @@ namespace FirefighterVR.Station
             }
             if(role!=StationRole.None)rig.avatar.SetSeat(anchor);else rig.avatar.Seated=false;
             if(Time.unscaledTime<nextStatus)return;nextStatus=Time.unscaledTime+.1f;
+            // Keep the typed name authoritative (template menus may reset the default name on start).
+            if(HasPlayerName&&XRINetworkGameManager.LocalPlayerName.Value!=SavedPlayerName)XRINetworkGameManager.LocalPlayerName.Value=SavedPlayerName;
             if(connected&&Time.unscaledTime>=nextPlayerCache){nextPlayerCache=Time.unscaledTime+1;playerCache=FindObjectsByType<XRINetworkPlayer>(FindObjectsSortMode.None);}
             ApplyConsole(left,StationRole.Driver,role,state,id,connected);ApplyConsole(right,StationRole.Assistant,role,state,id,connected);
             string code=connected?XRINetworkGameManager.ConnectedRoomCode:"—";
@@ -124,10 +160,11 @@ namespace FirefighterVR.Station
         {
             bool mine=role==owner;c.controls.interactable=mine;c.controls.blocksRaycasts=mine;c.controls.alpha=mine?1:.45f;
             ulong occupant=(owner==StationRole.Driver?state.Driver:state.Assistant);c.seat.interactable=state.Editable&&(!connected||occupant==StationLobbyState.Unassigned||occupant==id);
-            c.ready.interactable=mine&&connected&&state.RoleOf(id)==owner&&state.Editable&&(state.IsReady(id)||rig.InputAvailable);
+            c.ready.interactable=mine&&connected&&state.RoleOf(id)==owner&&state.Editable&&(state.IsReady(id)||rig.InputAvailable&&HasPlayerName);
             c.role.text=(owner==StationRole.Driver?"DRIVER · HAND TRACKING + G29":"ASSISTANT · QUEST CONTROLLERS")+"\n"+(mine?rig.InputStatus:"Reserved for the other control profile")+(mine&&owner==StationRole.Assistant?"\nMovement: "+rig.assistantMovement:"");
             if(connected&&mine)c.feedback.text=state.Phase==StationPhase.Blocked?Safe(StationSessionFlow.Instance.Failure)+"\n"+(StationSessionFlow.Instance.CanRetrySpawn?"Select Play to reset Ready and retry.":"Use Exit / Leave Room, then reconnect."):"Room: "+Safe(XRINetworkGameManager.ConnectedRoomName.Value)+"  Code: "+Safe(XRINetworkGameManager.ConnectedRoomCode)+"\n"+(state.IsReady(id)?"Waiting for the other player…":"Connected · press Ready when prepared.");
-            if(connected&&mine&&state.RoleOf(id)==StationRole.None)c.feedback.text="SELECT CONTROL PROFILE BEFORE READY\nAvailable: "+(state.Driver==StationLobbyState.Unassigned?"Hand Tracking + G29 · Driver":"")+(state.Driver==StationLobbyState.Unassigned&&state.Assistant==StationLobbyState.Unassigned?" / ":"")+(state.Assistant==StationLobbyState.Unassigned?"Quest Controllers · Assistant":"");
+            if(mine&&!HasPlayerName&&!(connected&&state.IsReady(id)))c.feedback.text="ENTER YOUR NAME FIRST\nTap the name field above and type it on the keyboard.";
+            else if(connected&&mine&&state.RoleOf(id)==StationRole.None)c.feedback.text="SELECT CONTROL PROFILE BEFORE READY\nAvailable: "+(state.Driver==StationLobbyState.Unassigned?"Hand Tracking + G29 · Driver":"")+(state.Driver==StationLobbyState.Unassigned&&state.Assistant==StationLobbyState.Unassigned?" / ":"")+(state.Assistant==StationLobbyState.Unassigned?"Quest Controllers · Assistant":"");
         }
         static string Safe(string value)=>string.IsNullOrEmpty(value)?"—":value.Replace("<","‹").Replace(">","›");
         public static StationRole AvailableProfile(StationLobbyState state,ulong id,StationRole selected,bool explicitSelection)

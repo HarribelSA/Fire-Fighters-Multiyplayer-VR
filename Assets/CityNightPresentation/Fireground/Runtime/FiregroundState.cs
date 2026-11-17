@@ -14,7 +14,7 @@ namespace CityNightPresentation.Fireground
         public const int MaxZones = 4;
         public uint revision;
         public FiregroundPhase phase;
-        public double deadline;
+        public double deadline, completedAt;
         public bool pumpOn, trigger, nozzleDocked;
         public ulong nozzleHolder;
         public float payout;
@@ -41,7 +41,7 @@ namespace CityNightPresentation.Fireground
             s.SerializeValue(ref pumpOn); s.SerializeValue(ref trigger); s.SerializeValue(ref nozzleDocked);
             s.SerializeValue(ref nozzleHolder); s.SerializeValue(ref payout); s.SerializeValue(ref dismountAcks);
             s.SerializeValue(ref nozzlePosition); s.SerializeValue(ref nozzleRotation);
-            s.SerializeValue(ref zoneCount); s.SerializeValue(ref f0); s.SerializeValue(ref f1); s.SerializeValue(ref f2); s.SerializeValue(ref f3);
+            s.SerializeValue(ref zoneCount); s.SerializeValue(ref f0); s.SerializeValue(ref f1); s.SerializeValue(ref f2); s.SerializeValue(ref f3); s.SerializeValue(ref completedAt);
         }
         public bool Equals(FiregroundState o) => revision == o.revision;
     }

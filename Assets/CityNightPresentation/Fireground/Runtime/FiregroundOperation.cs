@@ -103,6 +103,7 @@ namespace CityNightPresentation.Fireground
         void Awake()
         {
             Instance = this;
+            MissionDebrief.Attach(this);
             if (hoseOutlet && nozzle && nozzleDock) StowedPayout = Vector3.Distance(hoseOutlet.position, nozzleDock.TransformPoint(nozzle.HoseAttachLocal)) + .35f;
             local = InitialState();
             for (int i = 0; i < intensity.Length; i++) intensity[i] = i < local.zoneCount ? 1 : 0;
@@ -157,7 +158,7 @@ namespace CityNightPresentation.Fireground
                     if ((s.dismountAcks & required) == required || now >= s.deadline) { s.phase = FiregroundPhase.Operation; changed = true; }
                     break;
                 case FiregroundPhase.Recovery:
-                    if (!s.pumpOn && s.nozzleDocked && !s.Held && s.payout <= StowedPayout + .08f) { s.phase = FiregroundPhase.Complete; changed = true; }
+                    if (!s.pumpOn && s.nozzleDocked && !s.Held && s.payout <= StowedPayout + .08f) { s.phase = FiregroundPhase.Complete; s.completedAt = now; changed = true; }
                     break;
             }
             if (s.phase >= FiregroundPhase.Dismount && truckBody && !truckBody.isKinematic)
