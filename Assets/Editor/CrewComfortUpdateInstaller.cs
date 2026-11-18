@@ -60,7 +60,7 @@ public static class CrewComfortUpdateInstaller
             log.AppendLine($"siren handle: ceiling y={ceiling:F3} (hit={hit}) mount y={local.y:F3}, level");
         }
         var esp = Get<Esp32SirenLight>(truck.gameObject);
-        esp.mission = mission; EditorUtility.SetDirty(esp); log.AppendLine("ESP32 light link on " + esp.portName);
+        esp.mission = mission; esp.sirenOnCommand = "OFF"; esp.sirenOffCommand = "ON"; EditorUtility.SetDirty(esp); // this relay lights on "OFF" log.AppendLine("ESP32 light link on " + esp.portName);
 
         var traffic = mission.traffic;
         var audio = Get<CityTrafficAudio>(traffic.gameObject);

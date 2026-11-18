@@ -103,6 +103,19 @@ namespace FirefighterVR.Station
         public void Play(int side)
         {var f=StationSessionFlow.Instance;if(f&&f.IsSpawned){if(f.CanRetrySpawn)f.RequestSpawnRetry();Page(side,"main");return;}Page(side,"create");}
         public void ResetSeatPlacement(){positioned=StationRole.None;headAligned=false;entryPlaced=false;}
+        // "Return to lobby" from the debrief: start over like a new crew — name entry, role, room.
+        public void ResetForNewCrew()
+        {
+            PlayerPrefs.DeleteKey(NamePref);PlayerPrefs.Save();
+            foreach(var c in new[]{left,right})
+            {
+                if(c.playerName)c.playerName.SetTextWithoutNotify("");
+                if(c.roomName)c.roomName.SetTextWithoutNotify("");if(c.roomCode)c.roomCode.SetTextWithoutNotify("");
+                if(c.feedback)c.feedback.text="ENTER YOUR NAME TO START";
+            }
+            Page(0,"main");Page(1,"main");
+            explicitPreference=false;preference=StationRole.None;ResetSeatPlacement();
+        }
         public void Create(int side)
         {var c=side==0?left:right;if(!HasPlayerName){c.feedback.text="ENTER YOUR NAME FIRST";Page(side,"main");return;}var n=XRINetworkGameManager.Instance;if(!n){c.feedback.text="Session system is initializing.";return;}c.feedback.text="Creating room…";n.CreateNewLobby(c.roomName.text.Trim(),true,2);}
         public void Join(int side)

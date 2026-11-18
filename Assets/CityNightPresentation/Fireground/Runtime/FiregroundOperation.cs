@@ -28,6 +28,8 @@ namespace CityNightPresentation.Fireground
         public AudioSource doorAudio;
         public AudioClip doorClose;
         [Min(.2f)] public float fadeOutSeconds = 1.2f, fadeInSeconds = 1f;
+        [Tooltip("Eye height (m above the ground) of the seated Driver once placed at the pump.")]
+        [Range(1.2f, 2f)] public float driverStandingEyeHeight = 1.65f;
 
         [Header("Hose")]
         public HoseReel reel;
@@ -385,6 +387,7 @@ namespace CityNightPresentation.Fireground
                     yield return null;
                 }
                 if (!placed) StationSpawnPlacement.Place(origin, ground, spawn.rotation);
+                if (LocalRole == StationRole.Driver) LiftSeatedDriver(origin);
             }
             if (avatar) { avatar.Seated = false; if (walkableSurfaces.Length > 0) avatar.walkableGroundSurfaces = walkableSurfaces; }
             AcknowledgeDismount();
@@ -392,6 +395,17 @@ namespace CityNightPresentation.Fireground
             while (Current.phase < FiregroundPhase.Operation && Time.unscaledTime < wait) yield return null;
             if (fade) { yield return fade.Reveal(); fade.sceneFadeOut = oldOut; fade.sceneFadeIn = oldIn; }
             dismounting = false;
+        }
+        // The Driver keeps sitting in real life (G29 rig). At the pump the rig is raised so the eyes are at a
+        // normal standing height instead of a seated one; a player who really stands up is not raised.
+        void LiftSeatedDriver(XROrigin origin)
+        {
+            if (!origin || !origin.Camera || !origin.Origin) return;
+            float lift = driverStandingEyeHeight - origin.CameraInOriginSpaceHeight;
+            if (lift <= .1f) return;
+            var cc = origin.GetComponent<CharacterController>(); bool was = cc && cc.enabled; if (cc) cc.enabled = false;
+            origin.Origin.transform.position += Vector3.up * lift; Physics.SyncTransforms();
+            if (cc) cc.enabled = was;
         }
         public Vector3 GroundBelow(Vector3 point)
         {
@@ -454,6 +468,14 @@ namespace CityNightPresentation.Fireground
             }
         }
         static string Check(bool done) => done ? "<color=#4CFF6A>[x]</color>" : "[ ]";
+        // Debrief "RETURN TO LOBBY": the whole crew goes back to the start (name entry) together.
+        public void RequestCrewReturn()
+        {
+            if (Current.phase != FiregroundPhase.Complete) return;
+            if (UseNetwork) CrewReturnRpc(); else MissionDebrief.ReturnLocalToLobby();
+        }
+        [Rpc(SendTo.Everyone, InvokePermission = RpcInvokePermission.Everyone)]
+        void CrewReturnRpc() { if (Current.phase == FiregroundPhase.Complete) MissionDebrief.ReturnLocalToLobby(); }
         public static void Notify(string message) { var hud = XRMultiplayer.PlayerHudNotification.Instance; if (hud) hud.ShowText(message, 6); }
     }
 }

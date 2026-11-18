@@ -54,7 +54,22 @@ namespace CityNightPresentation.Fireground
         Behaviour wheelController;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStatics() { Active = CrewSeated = HideTraffic = false; }
+        static void ResetStatics() { Active = CrewSeated = HideTraffic = returning = false; }
+
+        // Back to the very start: new crew names, role choice and room. Solo -> the solo session unloads
+        // the city/station; networked -> leaving the room makes the rig unload them (StationLocalRig.ResetToLobby).
+        static bool returning;
+        public static void ReturnLocalToLobby()
+        {
+            if (returning) return; returning = true;
+            var lobby = SeatedDispatchLobby.Instance; if (lobby) lobby.ResetForNewCrew();
+            var flow = StationSessionFlow.Instance;
+            var solo = FindFirstObjectByType<FirefighterVR.StationBot.StationSoloBotTest>();
+            var nm = Unity.Netcode.NetworkManager.Singleton;
+            if (flow && flow.SoloMissionActive && solo) solo.ReturnToLobby();
+            else if (XRINetworkGameManager.Instance && nm && nm.IsListening) XRINetworkGameManager.Instance.Disconnect();
+            else if (flow && flow.localRig) flow.localRig.ResetToLobby();
+        }
 
         public static MissionDebrief Attach(FiregroundOperation operation)
         {
@@ -64,7 +79,7 @@ namespace CityNightPresentation.Fireground
             return d;
         }
 
-        void OnDisable() { Active = CrewSeated = HideTraffic = false; }
+        void OnDisable() { Active = CrewSeated = HideTraffic = returning = false; }
 
         void Update()
         {
@@ -287,7 +302,18 @@ namespace CityNightPresentation.Fireground
             previousText.lineSpacing = 18;
 
             Box(rt, "FooterLine", 32, 456, 936, 2, Line);
-            footerText = Label(rt, "", 32, 470, 936, 60, 18, Muted);
+            footerText = Label(rt, "", 32, 470, 660, 60, 18, Muted);
+
+            // RETURN TO LOBBY: the whole crew starts over from name entry (XR ray / poke / mouse).
+            go.AddComponent<UnityEngine.XR.Interaction.Toolkit.UI.TrackedDeviceGraphicRaycaster>();
+            go.AddComponent<GraphicRaycaster>();
+            var flow = StationSessionFlow.Instance; var rig = flow ? flow.localRig : null;
+            dashboard.worldCamera = rig && rig.origin && rig.origin.Camera ? rig.origin.Camera : Camera.main;
+            var buttonImage = Box(rt, "ReturnToLobbyButton", 708, 468, 260, 66, Accent); buttonImage.raycastTarget = true;
+            var button = buttonImage.gameObject.AddComponent<Button>(); button.targetGraphic = buttonImage;
+            var colors = button.colors; colors.normalColor = Color.white; colors.highlightedColor = new Color(1, .85f, .8f); colors.pressedColor = new Color(.75f, .6f, .55f); colors.disabledColor = new Color(.5f, .5f, .5f); button.colors = colors;
+            Label(rt, "RETURN TO LOBBY", 708, 468, 260, 66, 22, Text, FontStyles.Bold, TextAlignmentOptions.Center);
+            button.onClick.AddListener(() => { button.interactable = false; if (op) op.RequestCrewReturn(); else ReturnLocalToLobby(); });
             RefreshPrevious(); RefreshFooter();
         }
         void CrewCard(RectTransform parent, float x, float y, string role, string name)

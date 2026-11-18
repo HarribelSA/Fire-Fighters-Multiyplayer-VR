@@ -347904,6 +347904,7 @@ MonoBehaviour:
   doorClose: {fileID: 8300000, guid: c8914ce3fb547bf409792d364ad004aa, type: 3}
   fadeOutSeconds: 1.2
   fadeInSeconds: 1
+  driverStandingEyeHeight: 1.65
   reel: {fileID: 585006440}
   nozzle: {fileID: 657351626}
   hoseOutlet: {fileID: 1856482508}
@@ -347982,8 +347983,8 @@ MonoBehaviour:
   mission: {fileID: 7696430828461071024}
   portName: COM5
   baudRate: 115200
-  sirenOnCommand: ON
-  sirenOffCommand: OFF
+  sirenOnCommand: OFF
+  sirenOffCommand: ON
   refreshSeconds: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

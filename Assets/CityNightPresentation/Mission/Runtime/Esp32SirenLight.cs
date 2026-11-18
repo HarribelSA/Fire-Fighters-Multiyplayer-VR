@@ -9,9 +9,10 @@ using System.Threading;
 namespace CityNightPresentation.Mission
 {
     // Real emergency light: mirrors the truck's (networked) siren state to an ESP32 paired over Bluetooth
-    // (Serial Port Profile -> a Windows COM port). The ESP32 sketch reads one line per command:
-    //   "ON"  -> relay pin LOW  -> light on      "OFF" -> relay pin HIGH -> light off
-    // Runs only on the Windows PC (the Driver's PCVR machine where the ESP32 is paired); compiled out on Quest.
+    // (Serial Port Profile -> a Windows COM port). The ESP32 sketch reads one line per command ("ON"/"OFF").
+    // With this truck's relay wiring "OFF" lights the lamp and "ON" turns it off (tested by the user 2026-11-18).
+    // The lamp is on only while the siren handle is pulled during the drive; it is forced off once the crew
+    // arrives at the fire scene. Runs only on the Windows PC (where the ESP32 is paired); compiled out on Quest.
     // The port can be overridden from the command line:  FireFighters.exe -esp32Port=COM7
     public sealed class Esp32SirenLight : MonoBehaviour
     {
@@ -19,10 +20,10 @@ namespace CityNightPresentation.Mission
         [Tooltip("Outgoing Bluetooth COM port of the paired ESP32 (Windows: Settings > Bluetooth > More Bluetooth settings > COM Ports).")]
         public string portName = "COM5";
         public int baudRate = 115200;
-        [Tooltip("Sent when the siren handle activates the emergency (light on).")]
-        public string sirenOnCommand = "ON";
-        [Tooltip("Sent when the emergency ends, the mission ends or the game closes (light off).")]
-        public string sirenOffCommand = "OFF";
+        [Tooltip("Sent when the siren handle activates the emergency (lamp on). This truck's relay lights on \"OFF\".")]
+        public string sirenOnCommand = "OFF";
+        [Tooltip("Sent when the emergency ends, the fire scene starts or the game closes (lamp off).")]
+        public string sirenOffCommand = "ON";
         [Tooltip("Resend the current state this often, so a reconnecting ESP32 catches up.")]
         [Min(1)] public float refreshSeconds = 5;
 
@@ -45,7 +46,9 @@ namespace CityNightPresentation.Mission
         }
         void Update()
         {
-            int state = mission && mission.SirenActive ? 1 : 0;
+            var fire = Fireground.FiregroundOperation.Instance;
+            bool atFireScene = mission && mission.HasArrived || fire && fire.Current.phase != Fireground.FiregroundPhase.Inactive;
+            int state = mission && mission.SirenActive && !atFireScene ? 1 : 0;
             if (state != lastState || Time.unscaledTime >= nextRefresh) { lastState = state; nextRefresh = Time.unscaledTime + refreshSeconds; Send(state == 1 ? sirenOnCommand : sirenOffCommand); }
         }
         void Send(string command) { if (string.IsNullOrEmpty(command)) return; while (outbox.Count > 4 && outbox.TryDequeue(out _)) { } outbox.Enqueue(command); signal.Set(); }
