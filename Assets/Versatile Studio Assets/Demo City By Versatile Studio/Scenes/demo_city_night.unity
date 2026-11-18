@@ -272097,6 +272097,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8166825333907914795, guid: b64e7a25ece19a147b10b35a23680ac3,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: 3152a78038fa18a42a50a72dc3a080de, type: 2}
     - target: {fileID: 8248701856472599014, guid: b64e7a25ece19a147b10b35a23680ac3,
         type: 3}
       propertyPath: m_CastShadows
@@ -349146,7 +349151,7 @@ MonoBehaviour:
   rimTolerance: 0.1
   blendSeconds: 0.16
   snapDistance: 0.18
-  releaseDistance: 0.26
+  releaseDistance: 0.45
 --- !u!114 &7696430828461071027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349199,6 +349204,7 @@ MonoBehaviour:
   streamObstacles:
     serializedVersion: 2
     m_Bits: 1
+  reelLockedWhileHeld: 1
 --- !u!114 &7696430828461071028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349275,10 +349281,10 @@ MonoBehaviour:
   roadClip: {fileID: 8300000, guid: 4a5aa24bb864c854bb6dde0ae015386f, type: 3}
   brakeSqueal: {fileID: 8300000, guid: e541d642876bfaf44952817d4c7c7589, type: 3}
   airRelease: {fileID: 8300000, guid: a026c895cce642a45a94e98bfeb7587f, type: 3}
-  engineVolume: 0.45
-  roadVolume: 0.35
-  brakeVolume: 0.4
-  revVolume: 0.45
+  engineVolume: 0.22
+  roadVolume: 0.18
+  brakeVolume: 0.28
+  revVolume: 0.22
   idlePitch: 0.85
   topPitch: 1.65
   output: {fileID: 0}

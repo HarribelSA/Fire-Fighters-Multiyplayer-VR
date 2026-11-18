@@ -19,7 +19,7 @@ namespace CityNightPresentation.Fireground
 
         StationBotFollower bot;
         StationRole role;
-        bool unseated;
+        bool unseated, debriefSeated;
         readonly List<Vector3> path = new List<Vector3>(8);
         int pathIndex, zoneIndex = -1, pathMode;
         Quaternion aim = Quaternion.identity; bool aimed;
@@ -39,6 +39,16 @@ namespace CityNightPresentation.Fireground
             op.BotPartnerActive = true;
             var s = op.Current;
             if (s.phase < FiregroundPhase.Dismount) return;
+            // Debrief ride back: the bot sits in its own seat next to the human instead of staying outside.
+            if (MissionDebrief.CrewSeated)
+            {
+                if (!debriefSeated && op.mission)
+                {
+                    var seat = role == StationRole.Assistant ? op.mission.passengerSeat : op.mission.driverSeat;
+                    if (seat) { bot.StopReach(); bot.ClearTask(); bot.ExternalControl = false; bot.Seat(seat); debriefSeated = true; }
+                }
+                return;
+            }
             if (!unseated)
             {
                 // Swap out of the cab only while the human view is covered (or the crew is already out).
@@ -53,7 +63,7 @@ namespace CityNightPresentation.Fireground
         {
             if (op) op.BotPartnerActive = false;
             if (bot && unseated) { bot.ExternalControl = false; bot.StopReach(); }
-            unseated = false; path.Clear(); zoneIndex = -1;
+            unseated = false; debriefSeated = false; path.Clear(); zoneIndex = -1;
         }
         void Status(string text) => op.BotStatus = text;
 
@@ -115,6 +125,8 @@ namespace CityNightPresentation.Fireground
                 if (!holding)
                 {
                     if (s.Held) { Status("Nozzle held by another firefighter"); return; }
+                    // The reel locks once the nozzle is in hand: wait until the pump operator has paid out the hose.
+                    if (op.reelLockedWhileHeld && s.nozzleDocked && s.payout < op.maxPayout - .5f) { bot.SetMotion("Idle", .55f); Status("Waiting for the hose · turn the reel 3 times clockwise"); return; }
                     Vector3 nozzle = op.nozzle.transform.position;
                     Vector3 stand = s.nozzleDocked ? DockStand : op.GroundBelow(nozzle + Vector3.ProjectOnPlane(bot.transform.position - nozzle, Vector3.up).normalized * .45f);
                     Status("Collecting nozzle");
@@ -199,15 +211,16 @@ namespace CityNightPresentation.Fireground
             {
                 pumpDelay = s.Held ? pumpDelay + dt : 0;
                 if (!s.pumpOn && pumpDelay > 1.2f) { Press(waterOnButton, true, dt, "Charging the line Â· WATER ON"); return; }
-                float desired = Mathf.Clamp(op.NozzleDistance() + 3.5f, op.StowedPayout, op.maxPayout);
-                if (!s.nozzleDocked && s.payout < desired - .2f) { Crank(1, dt, "Paying out hose"); return; }
+                // The reel is locked while the nozzle is held, so the whole hose is paid out (3 turns) first.
+                if (op.reelLockedWhileHeld) { if (!s.Held && s.payout < op.maxPayout - .2f) { Crank(1, dt, "Paying out the hose · 3 turns"); return; } }
+                else { float desired = Mathf.Clamp(op.NozzleDistance() + 3.5f, op.StowedPayout, op.maxPayout); if (!s.nozzleDocked && s.payout < desired - .2f) { Crank(1, dt, "Paying out hose"); return; } }
                 Idle(dt, s.pumpOn ? "Pump running Â· line charged" : "Ready at the pump Â· grab the nozzle"); return;
             }
             // Recovery: water off, wait for the nozzle in its bracket, then rewind.
             if (s.pumpOn) { Press(waterOffButton, false, dt, "Securing water Â· WATER OFF"); return; }
             if (!s.nozzleDocked || s.Held)
             {
-                if (s.payout > op.NozzleDistance() + 2.5f) { Crank(-1, dt, "Taking in slack"); return; }
+                if (!(op.reelLockedWhileHeld && s.Held) && s.payout > op.NozzleDistance() + 2.5f) { Crank(-1, dt, "Taking in slack"); return; }
                 Idle(dt, "Return the nozzle to its bracket"); return;
             }
             if (s.payout > op.StowedPayout + .05f) { Crank(-1, dt, "Rewinding hose onto the reel"); return; }

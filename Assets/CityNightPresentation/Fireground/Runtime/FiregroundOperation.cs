@@ -259,9 +259,12 @@ namespace CityNightPresentation.Fireground
         public static int CrankDirectionFor(FiregroundPhase phase) => phase == FiregroundPhase.Operation ? 1 : phase == FiregroundPhase.Recovery ? -1 : 0;
         public int AllowedCrankDirection => CrankDirectionFor(Current.phase);
         // True when the reel cannot move any further in this direction (empty drum / fully rewound / taut line).
+        [Tooltip("While the nozzle is held the reel is locked: walking with the nozzle does not unspool hose and the crank cannot turn. Released nozzle = the crank works again.")]
+        public bool reelLockedWhileHeld = true;
         public bool CrankBlocked(int direction)
         {
             var s = Current; int allowed = CrankDirectionFor(s.phase);
+            if (reelLockedWhileHeld && s.Held) return true;
             if (direction == 0 || allowed == 0 || direction != allowed) return true;
             if (direction > 0) return s.payout >= maxPayout - .01f;
             float minimum = s.nozzleDocked && !s.Held ? StowedPayout : NozzleDistance() + (s.Held ? .8f : .3f);
@@ -270,6 +273,7 @@ namespace CityNightPresentation.Fireground
         void ApplyCrank(float radians)
         {
             var s = local; if (!HandsOn(s)) return;
+            if (reelLockedWhileHeld && s.Held) return;
             float delta = radians / (2 * Mathf.PI) * payoutPerTurn, target = s.payout;
             int allowed = CrankDirectionFor(s.phase); if (allowed != 0 && delta * allowed < 0) return;
             if (delta > 0) target = Mathf.Min(maxPayout, s.payout + delta);
@@ -290,7 +294,7 @@ namespace CityNightPresentation.Fireground
         public float PredictedPayout => Mathf.Max(Current.payout, LocalHoldsNozzle ? localPullTarget : 0);
         public void RequestPullOut(float target)
         {
-            if (!float.IsFinite(target)) return; target = Mathf.Min(target, maxPayout);
+            if (reelLockedWhileHeld || !float.IsFinite(target)) return; target = Mathf.Min(target, maxPayout);
             if (target <= Current.payout + .02f) return; localPullTarget = Mathf.Max(localPullTarget, target);
             if (Time.unscaledTime < nextPull) return; nextPull = Time.unscaledTime + .1f;
             if (!UseNetwork) ApplyPull(LocalId, localPullTarget); else PullRpc(localPullTarget);
@@ -300,7 +304,7 @@ namespace CityNightPresentation.Fireground
         void PullRpc(float target, RpcParams p = default) { if (Authority && float.IsFinite(target) && Permit(p.Receive.SenderClientId, StationRole.Assistant)) ApplyPull(p.Receive.SenderClientId, target); }
         void ApplyPull(ulong sender, float target)
         {
-            var s = local; if (!HandsOn(s) || s.nozzleHolder != sender) return;
+            var s = local; if (reelLockedWhileHeld || !HandsOn(s) || s.nozzleHolder != sender) return;
             target = Mathf.Min(target, maxPayout, Mathf.Max(NozzleDistance() + 1.2f, s.payout));
             if (target <= s.payout + .005f) return; s.payout = target; local = s; Publish(false);
         }

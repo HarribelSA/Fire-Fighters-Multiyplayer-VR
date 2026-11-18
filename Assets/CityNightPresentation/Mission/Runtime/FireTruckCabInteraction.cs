@@ -17,7 +17,7 @@ namespace CityNightPresentation.Mission
         public Vector3 rimCenter=new Vector3(0,-.05f,0);
         public float rimRadius=.29f,rimTolerance=.065f,blendSeconds=.16f;
         [Tooltip("Steering rim: the hand snaps onto the rim inside this range (no fist needed) and lets go beyond releaseDistance.")]
-        public float snapDistance=.12f,releaseDistance=.2f;
+        public float snapDistance=.18f,releaseDistance=.45f;
         sealed class HandState
         {
             public int attachment,visualType; // 0 free, 1 wheel rim, 2 pull handle
@@ -65,14 +65,17 @@ namespace CityNightPresentation.Mission
         {
             var hand=hands!=null?(isLeft?hands.leftHand:hands.rightHand):default;
             bool tracked=hands!=null&&hand.isTracked&&hand.GetJoint(XRHandJointID.Palm).TryGetPose(out _)&&hand.GetJoint(XRHandJointID.Wrist).TryGetPose(out _);
-            if(!allowed||!tracked)
-            {Release(state);state.wasGrab=true;Blend(state,isLeft);return;}
+            if(!allowed){Release(state);state.wasGrab=true;Blend(state,isLeft);return;}
+            // Hands on the real G29 are often hidden from the headset cameras: a hand already on the rim keeps
+            // holding it while tracking is lost, instead of dropping off the wheel.
+            if(!tracked){if(state.attachment!=1)Release(state);state.wasGrab=true;Blend(state,isLeft);return;}
             hand.GetJoint(XRHandJointID.Palm).TryGetPose(out var palm);hand.GetJoint(XRHandJointID.Wrist).TryGetPose(out var wrist);
             var space=rig.origin.CameraFloorOffsetObject.transform;var position=space.TransformPoint(palm.position);var wristPosition=space.TransformPoint(wrist.position);var wristRotation=space.rotation*wrist.rotation;
             bool grab=IsGrab(hand),closing=grab&&!state.wasGrab;state.wasGrab=grab;
             if(state.attachment==2&&!grab)Release(state);
             // Real-wheel feel: proximity attaches, pulling the hand away detaches (no gesture needed).
-            if(state.attachment==1&&wheel&&Vector3.Distance(position,wheel.TransformPoint(state.point))>releaseDistance){Release(state);state.cooldown=Time.unscaledTime+.3f;}
+            // A closed (grabbing) hand never slips off the rim; an open hand lets go only when clearly pulled away.
+            if(state.attachment==1&&wheel&&!grab&&Vector3.Distance(position,wheel.TransformPoint(state.point))>releaseDistance){Release(state);state.cooldown=Time.unscaledTime+.3f;}
             bool uiBusy=state.interactor&&(state.interactor.hasSelection||(state.interactor.TryGetCurrentUIRaycastResult(out _)&&state.interactor.uiPressInput.ReadIsPerformed()));
             if(state.attachment==0&&!uiBusy&&wheel&&Time.unscaledTime>=state.cooldown&&!(closing&&!isLeft&&emergency&&emergency.pullHandle&&Vector3.Distance(position,emergency.pullHandle.position)<.11f))
             {
@@ -124,7 +127,7 @@ namespace CityNightPresentation.Mission
             state.blend=Mathf.MoveTowards(state.blend,state.attachment!=0?1:0,Time.unscaledDeltaTime/Mathf.Max(.05f,blendSeconds));
             if(!avatar)return;
             if(state.attachment==1&&state.shoulder&&state.elbow&&state.handBone)
-            {float length=Vector3.Distance(state.shoulder.position,state.elbow.position)+Vector3.Distance(state.elbow.position,state.handBone.position);var target=wheel.TransformPoint(state.point)+wheel.TransformVector(state.offset);if(Vector3.Distance(state.shoulder.position,target)>length+.08f)Release(state);}
+            {float length=Vector3.Distance(state.shoulder.position,state.elbow.position)+Vector3.Distance(state.elbow.position,state.handBone.position);var target=wheel.TransformPoint(state.point)+wheel.TransformVector(state.offset);if(Vector3.Distance(state.shoulder.position,target)>length+.35f)Release(state);}
             if(state.visualType==2&&emergency&&emergency.pullMount&&emergency.pullHandle)avatar.SetVisualGrip(isLeft,emergency.pullHandle.position+emergency.pullMount.TransformVector(state.offset),emergency.pullMount.rotation*state.rotation,state.blend);
             else if(wheel)avatar.SetVisualGrip(isLeft,wheel.TransformPoint(state.point)+wheel.TransformVector(state.offset),wheel.rotation*state.rotation,state.blend);
         }

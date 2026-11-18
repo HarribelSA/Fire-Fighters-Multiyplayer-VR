@@ -147,6 +147,68 @@ public static class FireSiteUpdateInstaller
         var c = g.AddComponent<BoxCollider>(); c.size = size; g.isStatic = true;
     }
 
+    // ---------------- Invisible city collider at the entrance ----------------
+    // The city model ships one big MeshCollider (city_part_collider) that still contains the old wall
+    // across the entrance. Cut the same opening in it: wall faces and the wall top are clipped away
+    // between GateMinX and GateMaxX; the ground faces stay, so nobody falls through.
+    [MenuItem("Tools/Fire Fighters/Open Fire-Site Entrance Collider")]
+    public static string OpenEntranceCollider()
+    {
+        var city = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(CityPath);
+        if (!city.isLoaded) city = EditorSceneManager.OpenScene(CityPath, OpenSceneMode.Additive);
+        var mc = Object.FindObjectsByType<MeshCollider>(FindObjectsInactive.Include, FindObjectsSortMode.None).FirstOrDefault(c => c.gameObject.scene == city && c.name == "city_part_collider");
+        if (!mc || !mc.sharedMesh) return "city_part_collider not found";
+        var tr = mc.transform; string path = Gen + "/city_part_collider_gate.asset";
+        Mesh original = mc.sharedMesh;
+        if (original.name == "city_part_collider_gate")
+            foreach (var guid in AssetDatabase.FindAssets("city_part_collider")) foreach (var m in AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GUIDToAssetPath(guid)).OfType<Mesh>()) if (m.name == "city_part_collider") original = m;
+        if (original.name == "city_part_collider_gate") return "original collider mesh not found";
+        var world = original.vertices.Select(v => tr.TransformPoint(v)).ToList();
+        var verts = new List<Vector3>(world); var removed = 0;
+        var subs = new List<int[]>();
+        for (int s = 0; s < original.subMeshCount; s++)
+        {
+            var tri = original.GetTriangles(s); var keep = new List<int>(tri.Length);
+            for (int i = 0; i < tri.Length; i += 3)
+            {
+                Vector3 a = world[tri[i]], b = world[tri[i + 1]], c = world[tri[i + 2]];
+                var centre = (a + b + c) / 3; var n = Vector3.Cross(b - a, c - a).normalized;
+                float minX = Mathf.Min(a.x, b.x, c.x), maxX = Mathf.Max(a.x, b.x, c.x);
+                bool wallPart = Mathf.Abs(n.y) < .5f || centre.y > 6.9f;
+                // No height limit: the city's boundary walls are invisible slabs ~55 m tall.
+                bool inGate = centre.z >= GateMinZ && centre.z <= GateMaxZ && wallPart && maxX > GateMinX && minX < GateMaxX;
+                if (!inGate) { keep.Add(tri[i]); keep.Add(tri[i + 1]); keep.Add(tri[i + 2]); continue; }
+                removed++;
+                foreach (var piece in new[] { ClipWorld(new List<Vector3> { a, b, c }, GateMinX, true), ClipWorld(new List<Vector3> { a, b, c }, GateMaxX, false) })
+                {
+                    if (piece.Count < 3) continue; int b0 = verts.Count; verts.AddRange(piece);
+                    for (int k = 1; k + 1 < piece.Count; k++) { keep.Add(b0); keep.Add(b0 + k); keep.Add(b0 + k + 1); }
+                }
+            }
+            subs.Add(keep.ToArray());
+        }
+        var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path); if (!mesh) { mesh = new Mesh(); AssetDatabase.CreateAsset(mesh, path); }
+        mesh.Clear(); mesh.name = "city_part_collider_gate"; mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        mesh.SetVertices(verts.Select(v => tr.InverseTransformPoint(v)).ToList()); mesh.subMeshCount = subs.Count;
+        for (int s = 0; s < subs.Count; s++) mesh.SetTriangles(subs[s], s);
+        mesh.RecalculateBounds(); mesh.RecalculateNormals(); EditorUtility.SetDirty(mesh); AssetDatabase.SaveAssets();
+        Undo.RecordObject(mc, "Open entrance collider"); mc.sharedMesh = mesh; EditorUtility.SetDirty(mc);
+        EditorSceneManager.MarkSceneDirty(city); EditorSceneManager.SaveScene(city);
+        return $"city collider: {removed} wall triangles clipped at the entrance (x {GateMinX}..{GateMaxX})";
+    }
+    static List<Vector3> ClipWorld(List<Vector3> poly, float x, bool keepBelow)
+    {
+        var o = new List<Vector3>();
+        for (int i = 0; i < poly.Count; i++)
+        {
+            var a = poly[i]; var b = poly[(i + 1) % poly.Count];
+            bool ina = keepBelow ? a.x <= x : a.x >= x, inb = keepBelow ? b.x <= x : b.x >= x;
+            if (ina) o.Add(a);
+            if (ina != inb) o.Add(Vector3.Lerp(a, b, (x - a.x) / (b.x - a.x)));
+        }
+        return o;
+    }
+
     // ---------------- Environment colliders ----------------
     static void EnvironmentColliders(UnityEngine.SceneManagement.Scene city, Transform truck, System.Text.StringBuilder log)
     {

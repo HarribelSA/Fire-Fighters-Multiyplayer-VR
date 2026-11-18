@@ -85,6 +85,26 @@ namespace FirefighterVR.Station
             f.onValueChanged.AddListener(v=>SetPlayerName(v,f));
             f.onEndEdit.AddListener(v=>SetPlayerName(v,f));
         }
+        // Opens the spatial keyboard on the local player's name field (pencil on the RED / BLUE station label,
+        // and automatically on entering the lobby without a name).
+        public void EditPlayerName()
+        {
+            var role=rig&&rig.LocalRole!=StationRole.None?rig.LocalRole:preference!=StationRole.None?preference:(rig&&rig.IsWindowsPcvrHost?StationRole.Driver:StationRole.Assistant);
+            var c=role==StationRole.Driver?left:right;int side=role==StationRole.Driver?0:1;
+            Page(side,"main");
+            var f=c.playerName;if(!f)return;
+            var keyboard=UnityEngine.XR.Interaction.Toolkit.Samples.SpatialKeyboard.GlobalNonNativeKeyboard.instance;
+            if(keyboard)keyboard.ShowKeyboard(f,true);
+            var es=UnityEngine.EventSystems.EventSystem.current;if(es)es.SetSelectedGameObject(f.gameObject);
+            if(c.feedback&&!HasPlayerName)c.feedback.text="TYPE YOUR NAME ON THE KEYBOARD";
+        }
+        bool namePrompted;float lobbyEnteredAt=-1;
+        void AutoPromptName()
+        {
+            if(lobbyEnteredAt<0)lobbyEnteredAt=Time.unscaledTime;
+            if(namePrompted||HasPlayerName||Time.unscaledTime-lobbyEnteredAt<1.5f)return;
+            namePrompted=true;EditPlayerName();
+        }
         void SetPlayerName(string value,TMP_InputField source)
         {
             if(syncingName)return;syncingName=true;
@@ -103,17 +123,18 @@ namespace FirefighterVR.Station
         public void Play(int side)
         {var f=StationSessionFlow.Instance;if(f&&f.IsSpawned){if(f.CanRetrySpawn)f.RequestSpawnRetry();Page(side,"main");return;}Page(side,"create");}
         public void ResetSeatPlacement(){positioned=StationRole.None;headAligned=false;entryPlaced=false;}
-        // "Return to lobby" from the debrief: start over like a new crew — name entry, role, room.
+        // "Return to lobby" from the debrief: the room is left and the lobby starts over like the first time
+        // (room / role cleared), but the player's name and all saved data (settings, mission history) are kept.
+        // The name can be changed with the pencil on the station label.
         public void ResetForNewCrew()
         {
-            PlayerPrefs.DeleteKey(NamePref);PlayerPrefs.Save();
             foreach(var c in new[]{left,right})
             {
-                if(c.playerName)c.playerName.SetTextWithoutNotify("");
                 if(c.roomName)c.roomName.SetTextWithoutNotify("");if(c.roomCode)c.roomCode.SetTextWithoutNotify("");
-                if(c.feedback)c.feedback.text="ENTER YOUR NAME TO START";
+                if(c.feedback)c.feedback.text=HasPlayerName?"WELCOME BACK, "+SavedPlayerName.ToUpperInvariant()+" · CREATE OR JOIN A ROOM":"ENTER YOUR NAME TO START";
             }
             Page(0,"main");Page(1,"main");
+            namePrompted=false;lobbyEnteredAt=-1;
             explicitPreference=false;preference=StationRole.None;ResetSeatPlacement();
         }
         public void Create(int side)
@@ -121,13 +142,29 @@ namespace FirefighterVR.Station
         public void Join(int side)
         {var c=side==0?left:right;if(!HasPlayerName){c.feedback.text="ENTER YOUR NAME FIRST";Page(side,"main");return;}string code=c.roomCode.text.Trim();if(string.IsNullOrWhiteSpace(code)){c.feedback.text="Enter a room code first.";return;}var n=XRINetworkGameManager.Instance;if(!n){c.feedback.text="Session system is initializing.";return;}c.feedback.text="Joining room…";n.JoinLobbyByCode(code);}
         public void CopyCode(){string code=XRINetworkGameManager.ConnectedRoomCode;if(!string.IsNullOrEmpty(code))GUIUtility.systemCopyBuffer=code;}
+        // EXIT / LEAVE ROOM: in a room it leaves the room (and makes sure it really happens); outside a room it quits.
         public void Exit()
-        {var n=XRINetworkGameManager.Instance;if(n&&Unity.Netcode.NetworkManager.Singleton&&Unity.Netcode.NetworkManager.Singleton.IsListening){n.Disconnect();return;}
+        {var n=XRINetworkGameManager.Instance;var nm=Unity.Netcode.NetworkManager.Singleton;if(nm&&nm.IsListening){if(!leaving)StartCoroutine(LeaveRoom(n,nm));return;}
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying=false;
         #else
             Application.Quit();
         #endif
+        }
+        bool leaving;
+        public bool LeaveRoomNow(){var nm=Unity.Netcode.NetworkManager.Singleton;if(!nm||!nm.IsListening||!isActiveAndEnabled)return false;if(!leaving)StartCoroutine(LeaveRoom(XRINetworkGameManager.Instance,nm));return true;}
+        System.Collections.IEnumerator LeaveRoom(XRINetworkGameManager n,Unity.Netcode.NetworkManager nm)
+        {
+            leaving=true;left.feedback.text=right.feedback.text="Leaving the room…";
+            if(n)n.Disconnect();
+            // The session service normally shuts the network down; if it does not within 4 s, shut it down here
+            // so the player is never stuck in a room they asked to leave.
+            float until=Time.unscaledTime+4;
+            while(nm&&nm.IsListening&&Time.unscaledTime<until)yield return null;
+            if(nm&&nm.IsListening){Debug.LogWarning("[Lobby] Session leave did not stop the network in time; shutting down locally.",this);nm.Shutdown();}
+            yield return null;
+            ResetForNewCrew();left.feedback.text=right.feedback.text="LEFT THE ROOM · CREATE OR JOIN A ROOM";
+            leaving=false;
         }
         public void KeyVolume(int side,int channel,float delta)
         {var c=side==0?left:right;var s=channel==0?c.master:channel==1?c.music:c.sfx;s.value=Mathf.Clamp01(s.value+delta);}
@@ -137,10 +174,11 @@ namespace FirefighterVR.Station
             {
                 if(menuMusic&&menuMusic.isPlaying)menuMusic.Stop();
                 // Leaving the lobby: release the lobby chair unless a mission seat (dispatch/truck) took over.
-                if(wasInLobby){wasInLobby=false;entryPlaced=false;if(rig&&rig.avatar&&(rig.avatar.SeatId==SeatPoseId(leftSeat)||rig.avatar.SeatId==SeatPoseId(rightSeat)))rig.avatar.Seated=false;}
+                if(wasInLobby){wasInLobby=false;entryPlaced=false;lobbyEnteredAt=-1;namePrompted=false;if(rig&&rig.avatar&&(rig.avatar.SeatId==SeatPoseId(leftSeat)||rig.avatar.SeatId==SeatPoseId(rightSeat)))rig.avatar.Seated=false;}
                 return;
             }
             wasInLobby=true;
+            AutoPromptName();
             foreach(var g in legacyUI)if(g&&g.activeSelf)g.SetActive(false);
             var resetter=rig.origin.GetComponent<CharacterResetter>();if(resetter)resetter.enabled=false;
             var f=StationSessionFlow.Instance;bool connected=f&&f.IsSpawned;var state=connected?f.Lobby.Value:StationLobbyState.Initial;

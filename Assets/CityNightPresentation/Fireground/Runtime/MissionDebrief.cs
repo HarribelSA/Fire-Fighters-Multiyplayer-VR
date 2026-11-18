@@ -67,6 +67,7 @@ namespace CityNightPresentation.Fireground
             var solo = FindFirstObjectByType<FirefighterVR.StationBot.StationSoloBotTest>();
             var nm = Unity.Netcode.NetworkManager.Singleton;
             if (flow && flow.SoloMissionActive && solo) solo.ReturnToLobby();
+            else if (lobby && lobby.LeaveRoomNow()) { }
             else if (XRINetworkGameManager.Instance && nm && nm.IsListening) XRINetworkGameManager.Instance.Disconnect();
             else if (flow && flow.localRig) flow.localRig.ResetToLobby();
         }

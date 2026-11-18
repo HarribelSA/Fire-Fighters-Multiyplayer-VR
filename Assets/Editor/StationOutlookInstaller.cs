@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using CityNightPresentation.Mission;
 using UnityEditor;
@@ -32,7 +32,7 @@ public static class StationOutlookInstaller
         StationAudio(station, log);
         Backdrop(station, texture, log);
         var cab = Object.FindObjectsByType<FireTruckCabInteraction>(FindObjectsInactive.Include, FindObjectsSortMode.None).FirstOrDefault(c => c.gameObject.scene == city);
-        if (cab) { cab.snapDistance = .18f; cab.releaseDistance = .26f; EditorUtility.SetDirty(cab); log.AppendLine("steering wheel: snap 0.18 m, release 0.26 m"); }
+        if (cab) { cab.snapDistance = .18f; cab.releaseDistance = .45f; EditorUtility.SetDirty(cab); log.AppendLine("steering wheel: snap 0.18 m, release 0.45 m"); }
         EditorSceneManager.SaveScene(station); EditorSceneManager.SaveScene(city);
         Debug.Log("[StationOutlook]\n" + log);
         return log.ToString();

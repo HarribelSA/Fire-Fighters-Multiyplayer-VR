@@ -127,7 +127,8 @@ namespace FirefighterVR.Station
             if (!op || (fs.phase != FiregroundPhase.Operation && fs.phase != FiregroundPhase.Recovery)) return;
             Vector3 Down(Vector3 p) => op.GroundBelow(p);
             // Player 1 (blue): reel and pump panel.
-            bool needHose = fs.phase == FiregroundPhase.Operation && !fs.nozzleDocked && fs.payout < op.NozzleDistance() + 1.5f && fs.payout < op.maxPayout - .1f;
+            // The reel locks while the nozzle is held, so the crank glows until the whole hose is out.
+            bool needHose = fs.phase == FiregroundPhase.Operation && !fs.Held && fs.payout < op.maxPayout - .2f;
             bool rewind = fs.phase == FiregroundPhase.Recovery && fs.nozzleDocked && !fs.pumpOn && fs.payout > op.StowedPayout + .05f;
             // Glow sits ON the crank head (rotates with the reel) and disappears while it is being grabbed.
             if ((needHose || rewind) && op.reel && op.reel.knob && !op.reel.isSelected) Halo(op.reel.knob.position, StationRole.Driver, .075f);

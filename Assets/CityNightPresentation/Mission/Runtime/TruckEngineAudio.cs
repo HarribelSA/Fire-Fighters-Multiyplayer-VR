@@ -12,7 +12,7 @@ namespace CityNightPresentation.Mission
     {
         public FireTruckMission mission;
         public AudioClip idleClip, driveClip, revClip, roadClip, brakeSqueal, airRelease;
-        [Range(0, 1)] public float engineVolume = .45f, roadVolume = .35f, brakeVolume = .4f, revVolume = .45f;
+        [Range(0, 1)] public float engineVolume = .22f, roadVolume = .18f, brakeVolume = .28f, revVolume = .22f;
         public float idlePitch = .85f, topPitch = 1.65f;
         public UnityEngine.Audio.AudioMixerGroup output;
         AudioSource idle, drive, road, squeal, oneShot;

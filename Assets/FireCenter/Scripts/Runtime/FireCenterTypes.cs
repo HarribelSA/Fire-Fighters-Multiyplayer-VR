@@ -53,7 +53,12 @@ namespace FireCenter
         public static TurnStyle turnStyle { get => (TurnStyle)I("Comfort.TurnStyle", 0); set => SetI("Comfort.TurnStyle", (int)value); }
         public static float snapTurnAngle { get => F("Comfort.SnapTurnAngle", 45); set => SetF("Comfort.SnapTurnAngle", value); }
         public static float smoothTurnSpeed { get => F("Comfort.SmoothTurnSpeed", 90); set => SetF("Comfort.SmoothTurnSpeed", value); }
-        public static float moveSpeed { get => F("Comfort.MoveSpeed", 1.5f); set => SetF("Comfort.MoveSpeed", value); }
+        // Default walk speed 2.4 m/s (was 1.5 = too slow). Older saved values at/below the old default are raised once.
+        public static float moveSpeed
+        {
+            get { if (PlayerPrefs.GetInt("FC.Comfort.MoveSpeed.v2", 0) == 0) { PlayerPrefs.SetInt("FC.Comfort.MoveSpeed.v2", 1); if (F("Comfort.MoveSpeed", 2.4f) <= 1.5f) PlayerPrefs.SetFloat("FC.Comfort.MoveSpeed", 2.4f); } return F("Comfort.MoveSpeed", 2.4f); }
+            set => SetF("Comfort.MoveSpeed", value);
+        }
         public static float heightOffset { get => F("Comfort.HeightOffset", 0); set => SetF("Comfort.HeightOffset", value); }
         public static bool vignetteEnabled { get => I("Comfort.Vignette", 1) != 0; set => SetI("Comfort.Vignette", value ? 1 : 0); }
         public static bool teleportEnabled { get => I("Comfort.Teleport", 1) != 0; set => SetI("Comfort.Teleport", value ? 1 : 0); }

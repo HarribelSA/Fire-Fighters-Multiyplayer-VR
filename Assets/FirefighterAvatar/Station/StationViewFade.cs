@@ -72,8 +72,23 @@ namespace FirefighterVR.Station
             Alpha = 1; Apply();
         }
         void TeleportEnded(LocomotionProvider provider) => teleporting = false;
+        // Safety net: a transition coroutine that was interrupted (scene unloaded, session ended) must never
+        // leave the player blind. Manual holds are released after maxManualBlackSeconds of full black, and a
+        // teleport that never reported its end after a few seconds. Network/loading holds (SceneHold,
+        // ExternalHold) are driven every frame by their owners and are left alone.
+        [Min(3)] public float maxManualBlackSeconds = 12, maxTeleportSeconds = 3;
+        float manualSince = -1, teleportSince = -1;
+        void Watchdog()
+        {
+            bool manualOnly = ManualHold && !SceneHold && !ExternalHold;
+            if (manualOnly && Alpha >= .999f) { if (manualSince < 0) manualSince = Time.unscaledTime; else if (Time.unscaledTime - manualSince > maxManualBlackSeconds) { Debug.LogWarning("[ViewFade] Black screen held too long by an interrupted transition; revealing.", this); ManualHold = false; manualSince = -1; } }
+            else manualSince = -1;
+            if (teleporting) { if (teleportSince < 0) teleportSince = Time.unscaledTime; else if (Time.unscaledTime - teleportSince > maxTeleportSeconds) { teleporting = false; teleportSince = -1; } }
+            else teleportSince = -1;
+        }
         void Update()
         {
+            Watchdog();
             if(teleport)teleport.delayTime=Mathf.Max(originalDelay,teleportFadeOut+.03f);
             bool scene = SceneHold || ManualHold || ExternalHold;
             bool cover = scene || teleporting;

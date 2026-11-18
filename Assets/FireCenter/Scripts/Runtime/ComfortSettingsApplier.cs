@@ -88,10 +88,16 @@ namespace FireCenter
             foreach (var v in vignettes) v.gameObject.SetActive(FireCenterSettings.vignetteEnabled);
 
             // Height calibration: offset the Camera Offset object on top of whatever XROrigin set.
+            // The base comes from the CURRENT tracking mode (Floor = 0, Device = CameraYOffset), never from a
+            // cached value: caching the Device-mode 1.36 m and re-applying it in Floor mode lifted the camera
+            // and controllers 1.36 m above the avatar's body.
             var offsetObj = m_Origin.CameraFloorOffsetObject;
             if (offsetObj != null)
             {
-                if (float.IsNaN(m_BaseCameraOffsetY)) m_BaseCameraOffsetY = offsetObj.transform.localPosition.y;
+                var current = m_Origin.CurrentTrackingOriginMode;
+                bool known = current == UnityEngine.XR.TrackingOriginModeFlags.Floor || current == UnityEngine.XR.TrackingOriginModeFlags.Device;
+                bool floor = known ? current == UnityEngine.XR.TrackingOriginModeFlags.Floor : m_Origin.RequestedTrackingOriginMode == XROrigin.TrackingOriginMode.Floor;
+                m_BaseCameraOffsetY = floor ? 0f : m_Origin.CameraYOffset;
                 var lp = offsetObj.transform.localPosition;
                 lp.y = m_BaseCameraOffsetY + FireCenterSettings.heightOffset;
                 offsetObj.transform.localPosition = lp;

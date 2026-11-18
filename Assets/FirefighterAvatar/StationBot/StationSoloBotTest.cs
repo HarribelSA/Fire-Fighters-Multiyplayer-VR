@@ -67,6 +67,8 @@ namespace FirefighterVR.StationBot
         public void ToggleBotMode()
         {
             if (busy || IsStationTest || !Available || !lobby.InLobby) return;
+            // No playing (with the bot or in a room) before the player has typed a name.
+            if (!Armed && !SeatedDispatchLobby.HasPlayerName) { lobby.left.feedback.text = lobby.right.feedback.text = "ENTER YOUR NAME FIRST"; lobby.EditPlayerName(); return; }
             Armed = !Armed; Status = Armed ? "CANCEL BOT TEST" : "PLAY WITH BOT";
         }
         void LateUpdate()
