@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -48,7 +48,7 @@ namespace FirefighterVR.Station
     {
         public StationIncidentDefinition incident;
         // departureSeconds: grace time after the whole crew is seated before the city mission loads.
-        [Min(1)] public float explorationSeconds=60,garageTravelSeconds=4,departureSeconds=5;
+        [Min(1)] public float explorationSeconds=15,garageTravelSeconds=4,departureSeconds=5;
         public readonly NetworkVariable<CrewMissionState> CrewMission=new NetworkVariable<CrewMissionState>(default,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
         double lastTabletPacket;
         bool cityLoadComplete;
@@ -64,7 +64,7 @@ namespace FirefighterVR.Station
             {
                 if(SoloMissionActive)return soloFailure.Length>0?soloFailure:"None";
                 int count=NetworkManager&&NetworkManager.IsListening?NetworkManager.ConnectedClientsIds.Count:0;
-                if(count<2)return "CO-OP WAITING FOR SECOND REAL PLAYER · Play With Bot starts a Solo mission";
+                if(count<2)return "CO-OP WAITING FOR SECOND REAL PLAYER Â· Play With Bot starts a Solo mission";
                 if(count!=2)return "Cooperative station mission requires exactly two real players";
                 if(!IsSpawned)return "Existing mission coordinator has not network-spawned";
                 var lobby=Lobby.Value;
@@ -81,10 +81,10 @@ namespace FirefighterVR.Station
         {
             get
             {
-                string block=MissionBlockingReason;if(block!="None")return block+"\nDISPATCH ACCEPTANCE LOCKED · emergency report required";
+                string block=MissionBlockingReason;if(block!="None")return block+"\nDISPATCH ACCEPTANCE LOCKED Â· emergency report required";
                 var s=MissionState;
-                if(s.stage==CrewMissionStage.None)return "Station crew ready · starting synchronized dispatch countdown";
-                if(s.stage==CrewMissionStage.Exploration)return (MissionLocalRole==StationRole.Assistant?"ASSISTANT EXPLORATION":"SEATED STANDBY")+" · ALERT IN "+Mathf.Max(0,Mathf.CeilToInt((float)(s.deadline-SharedTime)))+" s"+(MissionLocalRole==StationRole.Driver?" · COMPUTER ACTIVITIES AVAILABLE":"");
+                if(s.stage==CrewMissionStage.None)return "Station crew ready Â· starting synchronized dispatch countdown";
+                if(s.stage==CrewMissionStage.Exploration)return (MissionLocalRole==StationRole.Assistant?"ASSISTANT EXPLORATION":"SEATED STANDBY")+" Â· ALERT IN "+Mathf.Max(0,Mathf.CeilToInt((float)(s.deadline-SharedTime)))+" s"+(MissionLocalRole==StationRole.Driver?" Â· COMPUTER ACTIVITIES AVAILABLE":"");
                 return "DISPATCH CHAIR "+(s.stage==CrewMissionStage.EmergencyAlarm||s.stage==CrewMissionStage.DispatchReview?"AVAILABLE TO DRIVER":"UNAVAILABLE AT THIS STAGE");
             }
         }

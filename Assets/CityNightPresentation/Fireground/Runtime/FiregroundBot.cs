@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FirefighterVR.Station;
 using FirefighterVR.StationBot;
 using UnityEngine;
@@ -15,7 +15,7 @@ namespace CityNightPresentation.Fireground
         public Transform gateOuter, gateInner, hub;
         [Header("Truck side (pump role)")]
         public Transform panelStand, reelStand, waterOnButton, waterOffButton;
-        public float walkSpeed = 1.3f, crankRate = 3.2f;
+        public float walkSpeed = 1.9f, crankRate = 3.2f;
 
         StationBotFollower bot;
         StationRole role;
@@ -71,7 +71,7 @@ namespace CityNightPresentation.Fireground
             {
                 // Never walk beyond the paid-out hose: wait for the pump operator to crank more.
                 var s = op.Current; float now = Vector3.Distance(op.hoseOutlet.position, t.position), after = Vector3.Distance(op.hoseOutlet.position, next);
-                if (after > now && after + .9f > s.payout) { op.BotPull(after + 1.5f); if (after + .9f > op.Current.payout) { bot.SetMotion("Idle", .55f); Status("Need more hose — turn the reel crank"); return false; } }
+                if (after > now && after + .9f > s.payout) { op.BotPull(after + 1.5f); if (after + .9f > op.Current.payout) { bot.SetMotion("Idle", .55f); Status("Need more hose â€” turn the reel crank"); return false; } }
             }
             next.y = op.GroundBelow(next).y; t.position = next;
             bot.SetMotion("Walk", Mathf.Clamp(walkSpeed / .9f, .4f, 1.5f));
@@ -139,10 +139,10 @@ namespace CityNightPresentation.Fireground
                 bot.Face(zone.Center, dt);
                 if (!aimed) { aim = SolveAim(zone); aimed = true; }
                 CarryNozzle(aim);
-                if (!s.pumpOn) { Status("At " + zone.label + " · waiting for WATER ON"); return; }
+                if (!s.pumpOn) { Status("At " + zone.label + " Â· waiting for WATER ON"); return; }
                 if (!s.trigger) op.BotTrigger(true);
                 int pct = Mathf.CeilToInt(s.Intensity(z) * 100);
-                if (pct != lastPercent || z != lastZone) { lastPercent = pct; lastZone = z; Status("Attacking " + zone.label + " · " + pct + "%"); }
+                if (pct != lastPercent || z != lastZone) { lastPercent = pct; lastZone = z; Status("Attacking " + zone.label + " Â· " + pct + "%"); }
                 return;
             }
             if (s.phase >= FiregroundPhase.Recovery)
@@ -161,7 +161,7 @@ namespace CityNightPresentation.Fireground
                 }
                 bot.StopReach();
                 if (WalkTo(DockStand + Vector3.ProjectOnPlane(op.nozzleOperatorSpawn.position - op.nozzleDock.position, Vector3.up).normalized * .6f, dt)) bot.Face(op.nozzleDock.position, dt);
-                Status(s.phase == FiregroundPhase.Complete ? "Operation complete" : "Nozzle stowed · waiting for hose rewind");
+                Status(s.phase == FiregroundPhase.Complete ? "Operation complete" : "Nozzle stowed Â· waiting for hose rewind");
             }
         }
         int FirstBurning(FiregroundState s)
@@ -198,13 +198,13 @@ namespace CityNightPresentation.Fireground
             if (s.phase == FiregroundPhase.Operation)
             {
                 pumpDelay = s.Held ? pumpDelay + dt : 0;
-                if (!s.pumpOn && pumpDelay > 1.2f) { Press(waterOnButton, true, dt, "Charging the line · WATER ON"); return; }
+                if (!s.pumpOn && pumpDelay > 1.2f) { Press(waterOnButton, true, dt, "Charging the line Â· WATER ON"); return; }
                 float desired = Mathf.Clamp(op.NozzleDistance() + 3.5f, op.StowedPayout, op.maxPayout);
                 if (!s.nozzleDocked && s.payout < desired - .2f) { Crank(1, dt, "Paying out hose"); return; }
-                Idle(dt, s.pumpOn ? "Pump running · line charged" : "Ready at the pump · grab the nozzle"); return;
+                Idle(dt, s.pumpOn ? "Pump running Â· line charged" : "Ready at the pump Â· grab the nozzle"); return;
             }
             // Recovery: water off, wait for the nozzle in its bracket, then rewind.
-            if (s.pumpOn) { Press(waterOffButton, false, dt, "Securing water · WATER OFF"); return; }
+            if (s.pumpOn) { Press(waterOffButton, false, dt, "Securing water Â· WATER OFF"); return; }
             if (!s.nozzleDocked || s.Held)
             {
                 if (s.payout > op.NozzleDistance() + 2.5f) { Crank(-1, dt, "Taking in slack"); return; }

@@ -1,4 +1,4 @@
-using FirefighterVR.Station;
+﻿using FirefighterVR.Station;
 using UnityEngine;
 
 namespace FirefighterVR.StationBot
@@ -11,7 +11,7 @@ namespace FirefighterVR.StationBot
         public bool FutureDrivingEligible => Role == StationRole.Driver;
         public bool DrivingAdapterActive => Role==StationRole.Driver&&StationSessionFlow.Instance&&StationSessionFlow.Instance.SoloBotDriverActive&&StationSessionFlow.Instance.DrivingMissionReady;
         public string MotionState { get; private set; } = "Idle";
-        public float speed = 1.25f, stopDistance = 1.7f, turnSpeed = 110;
+        public float speed = 1.8f, stopDistance = 1.7f, turnSpeed = 110;
         Transform target, humanRoot;
         StationBotNavigator navigation;
         float replan, velocity;

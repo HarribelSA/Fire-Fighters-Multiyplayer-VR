@@ -37,6 +37,8 @@ namespace CityNightPresentation.Fireground
         public Transform hoseOutlet, nozzleDock;
         [Min(5)] public float maxPayout = 30;
         [Min(.5f)] public float payoutPerTurn = 2.5f;
+        [Tooltip("Clockwise crank turns for the full hose length (out during the operation, back in during recovery). 0 = use payoutPerTurn.")]
+        [Min(0)] public float fullPayoutTurns = 3;
         [Min(.1f)] public float dockRadius = .45f;
 
         [Header("Pump panel")]
@@ -106,7 +108,10 @@ namespace CityNightPresentation.Fireground
         {
             Instance = this;
             MissionDebrief.Attach(this);
+            FiregroundCrewFeedback.Attach(this);
             if (hoseOutlet && nozzle && nozzleDock) StowedPayout = Vector3.Distance(hoseOutlet.position, nozzleDock.TransformPoint(nozzle.HoseAttachLocal)) + .35f;
+            // N clockwise crank turns pay the whole hose out (and N clockwise turns rewind it).
+            if (fullPayoutTurns > 0) payoutPerTurn = Mathf.Max(.5f, (maxPayout - StowedPayout) / fullPayoutTurns);
             local = InitialState();
             for (int i = 0; i < intensity.Length; i++) intensity[i] = i < local.zoneCount ? 1 : 0;
         }

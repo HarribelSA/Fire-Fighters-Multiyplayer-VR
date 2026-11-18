@@ -144,7 +144,9 @@ namespace FirefighterVR.Station
             foreach(var g in legacyUI)if(g&&g.activeSelf)g.SetActive(false);
             var resetter=rig.origin.GetComponent<CharacterResetter>();if(resetter)resetter.enabled=false;
             var f=StationSessionFlow.Instance;bool connected=f&&f.IsSpawned;var state=connected?f.Lobby.Value:StationLobbyState.Initial;
-            if(!explicitPreference&&(!connected||state.RoleOf(f.NetworkManager.LocalClientId)==StationRole.None)){var mode=XRInputModalityManager.currentInputMode.Value;if(mode==XRInputModalityManager.InputMode.MotionController)preference=StationRole.Assistant;else if(mode==XRInputModalityManager.InputMode.TrackedHand)preference=StationRole.Driver;}
+            // Everyone uses controllers in the lobby now, so the default profile follows the device:
+            // Windows PCVR (G29) = Driver, Quest = Assistant. A seat button still overrides it.
+            if(!explicitPreference&&(!connected||state.RoleOf(f.NetworkManager.LocalClientId)==StationRole.None))preference=rig&&rig.IsWindowsPcvrHost?StationRole.Driver:StationRole.Assistant;
             ulong id=connected?f.NetworkManager.LocalClientId:StationLobbyState.Unassigned;
             var role=connected?state.RoleOf(id):preference;
             if(connected&&role==StationRole.None&&Time.unscaledTime>nextClaim)

@@ -93,6 +93,27 @@ namespace FirefighterVR.Station
             foreach(var s in inputSubsystems)if(s!=null&&!recenterHooks.Contains(s)){s.trackingOriginUpdated+=OnTrackingOriginUpdated;recenterHooks.Add(s);}
         }
         void OnTrackingOriginUpdated(XRInputSubsystem subsystem){recenterPending=true;recenterAt=Time.unscaledTime+.15f;}
+        // Some runtimes (PCVR / Link) recenter without raising trackingOriginUpdated: a head that jumps more
+        // than 25 cm in tracking space within one frame is treated as a recenter too.
+        Vector3 lastHeadLocal;bool headLocalKnown;float seatedOffSince=-1;
+        void DetectRecenterJump()
+        {
+            if(!origin||!origin.Camera)return;
+            var local=origin.Camera.transform.localPosition;
+            if(headLocalKnown&&(local-lastHeadLocal).sqrMagnitude>.25f*.25f&&!recenterPending){recenterPending=true;recenterAt=Time.unscaledTime+.1f;}
+            lastHeadLocal=local;headLocalKnown=true;
+        }
+        // Seated players keep a natural eye height: if the head stays more than 30 cm above / below the seat's
+        // eye point for a second (bad floor level after a recenter), the camera is put back on the seat.
+        void KeepSeatedEyeHeight()
+        {
+            bool seated=avatar&&avatar.Seated&&(StationSeated||VehicleSeated||InSeatedLobby)&&!SeatTransition;
+            if(!seated||!origin||!origin.Camera){seatedOffSince=-1;return;}
+            float eye=avatar.SeatPosition.y+avatar.SeatHipHeight+StationSeatPlacement.EyeAboveHips(avatar);
+            if(Mathf.Abs(origin.Camera.transform.position.y-eye)<.3f){seatedOffSince=-1;return;}
+            if(seatedOffSince<0){seatedOffSince=Time.unscaledTime;return;}
+            if(Time.unscaledTime-seatedOffSince>1f){seatedOffSince=-1;StationSeatPlacement.PlaceAtCurrentSeat(origin,avatar);}
+        }
         void ApplyRecenter()
         {
             recenterPending=false;RecenterCount++;
@@ -134,7 +155,9 @@ namespace FirefighterVR.Station
             if(connected&&state.Phase!=diagnosticPhase){diagnosticPhase=state.Phase;if(state.Phase==StationPhase.Fading)TransitionDiagnostics.Begin("multiplayer_station");TransitionDiagnostics.Mark("network_phase:"+state.Phase);}
             if(connected&&flow.MissionState.stage==CrewMissionStage.CityTransition&&diagnosticCityEpoch!=flow.MissionState.epoch){diagnosticCityEpoch=flow.MissionState.epoch;TransitionDiagnostics.Begin("multiplayer_city");}
             LocalRole=flow&&flow.SoloMissionActive?flow.SoloHumanRole:connected?state.RoleOf(flow.NetworkManager.LocalClientId):SeatedDispatchLobby.Instance?SeatedDispatchLobby.Instance.SelectedProfile:StationRole.None;
+            DetectRecenterJump();
             if(recenterPending&&Time.unscaledTime>=recenterAt)ApplyRecenter();
+            KeepSeatedEyeHeight();
             if(Time.unscaledTimeAsDouble>=nextInputCheck){nextInputCheck=Time.unscaledTimeAsDouble+.25;HookRecenter();CheckInput();if(connected&&inputWasAvailable&&!InputAvailable&&state.IsReady(flow.NetworkManager.LocalClientId)&&state.Editable)flow.SetLocalReady(false);inputWasAvailable=InputAvailable;}
             if(connected&&state.Phase==StationPhase.AwaitingSpawn&&(!placed||placedEpoch!=state.Epoch)&&spawnRoutine==null)spawnRoutine=StartCoroutine(PlaceInStation(flow,state));
             if(connected&&state.Phase==StationPhase.Blocked)RecoverBlockedTransition(flow);
@@ -162,9 +185,22 @@ namespace FirefighterVR.Station
             providersWereFrozen=frozen;
             bool teleportAllowed=LocalRole==StationRole.Assistant&&!frozen&&assistantMovement!=AssistantMovement.Smooth;
             for(int i=0;i<controllerTeleportRays.Length;i++){if(controllerTeleportRays[i])controllerTeleportRays[i].enabled=teleportAllowed;if(controllerTeleportLines[i])controllerTeleportLines[i].enabled=teleportAllowed;}
-            if(avatar)avatar.HandTrackingProfile=LocalRole==StationRole.Driver&&!ControllersOnly;
+            ApplyHandPolicy();
+            if(avatar)avatar.HandTrackingProfile=HandTrackingWanted;
             if(SeatedComfortWarning.Length>0)InputStatus=SeatedComfortWarning;
             UpdateAvatarHands();
+        }
+        // Input policy: Meta controllers everywhere (lobby, station, fireground). Hand tracking runs ONLY for the
+        // Driver while seated in the truck during the city drive (hands on the G29 / steering wheel / siren handle).
+        readonly List<XRHandSubsystem> handPolicy=new List<XRHandSubsystem>();
+        public bool HandTrackingWanted {get;private set;}
+        bool InCityTruck=>VehicleSeated&&SceneManager.GetSceneByName(StationSessionFlow.CitySceneName).isLoaded;
+        void ApplyHandPolicy()
+        {
+            bool want=LocalRole==StationRole.Driver&&InCityTruck&&!ControllersOnly;
+            HandTrackingWanted=want;
+            handPolicy.Clear();SubsystemManager.GetSubsystems(handPolicy);
+            foreach(var s in handPolicy){if(s==null)continue;if(want&&!s.running)s.Start();else if(!want&&s.running)s.Stop();}
         }
         void CheckInput()
         {
@@ -179,9 +215,9 @@ namespace FirefighterVR.Station
             if(LocalRole==StationRole.Driver&&SceneManager.GetSceneByName(StationSessionFlow.CitySceneName).isLoaded)
             {InputAvailable=true;InputStatus="City driving: tracked headset active. G29 controls the truck; hand tracking remains independent.";return;}
             if(LocalRole==StationRole.Driver)
-            {hands.Clear();SubsystemManager.GetSubsystems(hands);bool station=StationSceneSetup.Instance&&SceneManager.GetActiveScene()==StationSceneSetup.Instance.gameObject.scene;
-                InputAvailable=hands.Any(h=>h.running&&h.rightHand.isTracked);
-                InputStatus=InputAvailable?"SEATED DRIVER · Hand UI / Grab · G29 driving · locomotion disabled":"Track the right hand for seated UI. The other hand may be occluded.";}
+            {bool Held(XRNode node){var d=InputDevices.GetDeviceAtXRNode(node);return d.isValid&&d.TryGetFeatureValue(CommonUsages.isTracked,out bool t)&&t;}
+                InputAvailable=Held(XRNode.LeftHand)||Held(XRNode.RightHand)||XRInputModalityManager.currentInputMode.Value==XRInputModalityManager.InputMode.MotionController;
+                InputStatus=InputAvailable?"SEATED DRIVER · Meta controllers · hand tracking turns on in the truck":"Pick up the Meta controllers.";}
             else if(LocalRole==StationRole.Assistant)
             {bool Good(XRNode node){var d=InputDevices.GetDeviceAtXRNode(node);return d.isValid&&d.TryGetFeatureValue(CommonUsages.isTracked,out bool t)&&t;}InputAvailable=Good(XRNode.LeftHand)&&Good(XRNode.RightHand)&&XRInputModalityManager.currentInputMode.Value==XRInputModalityManager.InputMode.MotionController;InputStatus=InputAvailable?"Tracked controllers available — existing joystick / turning actions preserved.":"Both motion controllers must be tracked before Ready.";}
             else{InputAvailable=false;InputStatus="Select Driver (hands) or Assistant (controllers).";}

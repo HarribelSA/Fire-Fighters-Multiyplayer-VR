@@ -45,6 +45,11 @@ namespace CityNightPresentation.Mission
         public Transform driverSeat,passengerSeat,incidentBuilding;
         [Tooltip("Arrival trigger volume at the incident. The truck must be inside it, aligned and fully stopped.")] public BoxCollider arrivalZone;
         [Min(.1f)] public float arrivalStopSeconds=.6f;
+        [Tooltip("Arrive the moment the truck reaches the incident marker (no full stop required).")]
+        public bool arriveOnReach=true;
+        [Min(1)] public float arrivalReachRadius=4;
+        // Local query (all peers): truck stopped in front of a red signal.
+        public bool IsStoppedAtRedLight=>StoppedAtRed(false);
         public float redLightPenaltySeconds=10;
         [Min(60)] public float missionTimeLimitSeconds=300;
         [Min(0)] public int emergencyChallengeSignalIndex;
@@ -202,6 +207,16 @@ namespace CityNightPresentation.Mission
             }
             previousFront=front;previousReady=true;
             if(!route.stopZone||HasArrived||HasFailed)return;
+            if(arriveOnReach)
+            {
+                // Arrive as soon as the truck reaches the glowing incident marker: no full stop / alignment needed.
+                bool reached;
+                if(arrivalZone){var z=arrivalZone.transform.InverseTransformPoint(transform.position)-arrivalZone.center;var half=arrivalZone.size*.5f+new Vector3(1,1,1);reached=Mathf.Abs(z.x)<=half.x&&Mathf.Abs(z.y)<=half.y&&Mathf.Abs(z.z)<=half.z;}
+                else reached=false;
+                if(!reached&&route.stopZone)reached=Vector3.ProjectOnPlane(transform.position-route.stopZone.position,Vector3.up).magnitude<=arrivalReachRadius;
+                if(CrewReady&&started&&reached){evaluation.outcome=MissionOutcome.Success;if(UseNetworkState){Arrived.Value=true;Siren.Value=false;}else{offlineArrived=true;offlineSiren=false;}UpdateEmergency();}
+                return;
+            }
             bool parked;
             if(arrivalZone){var z=arrivalZone.transform.InverseTransformPoint(transform.position)-arrivalZone.center;parked=InArrivalZone(z,arrivalZone.size*.5f,Vector3.Dot(transform.forward,arrivalZone.transform.forward),Vector3.Dot(transform.up,Vector3.up),controller.SpeedKmh);}
             else{Vector3 p=route.stopZone.InverseTransformPoint(transform.position);parked=IsParked(p,Vector3.Dot(transform.forward,route.stopZone.forward),Vector3.Dot(transform.up,Vector3.up),controller.SpeedKmh);}

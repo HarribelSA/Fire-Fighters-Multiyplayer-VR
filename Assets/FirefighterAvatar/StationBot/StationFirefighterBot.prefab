@@ -3621,7 +3621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.StationBot.StationBotFollower
   animator: {fileID: 8769581097370822347}
-  speed: 1.25
+  speed: 1.8
   stopDistance: 1.7
   turnSpeed: 110
 --- !u!1 &7337294431887369772

@@ -386,6 +386,9 @@ namespace FirefighterVR
             leftTarget.SetPositionAndRotation(leftSource.TransformPoint(leftGripOffset),leftSource.rotation*Quaternion.Euler(leftWristEuler));
             rightTarget.SetPositionAndRotation(rightSource.TransformPoint(rightGripOffset),rightSource.rotation*Quaternion.Euler(rightWristEuler));
             if(remoteTracking&&remoteStateReady)ApplyRemoteVisualGrips();
+            // Standing players' hands stop at the truck body instead of passing into it (AvatarHandBlocker).
+            if(!Seated&&AvatarHandBlocker.Colliders.Count>0)
+            {leftTarget.position=AvatarHandBlocker.PushOut(leftTarget.position,.05f);rightTarget.position=AvatarHandBlocker.PushOut(rightTarget.position,.05f);}
             if(leftVisualGrip.weight>0)leftTarget.SetPositionAndRotation(Vector3.Lerp(leftTarget.position,leftVisualGrip.position,leftVisualGrip.weight),Quaternion.Slerp(leftTarget.rotation,leftVisualGrip.rotation,leftVisualGrip.weight));
             if(rightVisualGrip.weight>0)rightTarget.SetPositionAndRotation(Vector3.Lerp(rightTarget.position,rightVisualGrip.position,rightVisualGrip.weight),Quaternion.Slerp(rightTarget.rotation,rightVisualGrip.rotation,rightVisualGrip.weight));
             leftHint.position=transform.TransformPoint(new Vector3(-.4f,1,-.28f));

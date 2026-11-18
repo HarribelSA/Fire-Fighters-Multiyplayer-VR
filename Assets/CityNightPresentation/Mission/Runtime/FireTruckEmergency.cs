@@ -39,9 +39,25 @@ namespace CityNightPresentation.Mission
         }
         public bool RequestFromBotDriver(bool active)
         {if(!mission||!mission.RequestBotEmergency(active))return false;SetPullValue(active?1:0);InteractionStatus=active?"BOT DRIVER · VALIDATED PRIORITY REQUEST":"BOT DRIVER · EMERGENCY RESET";return true;}
+        [Tooltip("Show where the siren handle is after the Driver has waited this long at a red light.")]
+        [Min(1)]public float hintAfterSeconds=5;
+        // True while the local Driver has been stopped at a red light for hintAfterSeconds without the siren:
+        // CrewGuide glows the handle and the HUD names it.
+        public bool SirenHint {get;private set;}
+        float redSince=-1;
+        bool hintAnnounced;
+        void UpdateHint(bool active)
+        {
+            bool waiting=mission&&!active&&mission.LocalRole==FirefighterVR.Station.StationRole.Driver&&mission.CrewReady&&!mission.HasArrived&&!mission.HasFailed&&mission.IsStoppedAtRedLight;
+            if(!waiting){redSince=-1;SirenHint=false;hintAnnounced=false;return;}
+            if(redSince<0)redSince=Time.unscaledTime;
+            SirenHint=Time.unscaledTime-redSince>=hintAfterSeconds;
+            if(SirenHint&&!hintAnnounced){hintAnnounced=true;var hud=XRMultiplayer.PlayerHudNotification.Instance;if(hud)hud.ShowText("EMERGENCY? PULL THE RED SIREN HANDLE ABOVE YOU",5);}
+        }
         void Update()
         {
             bool active=mission&&mission.SirenActive;
+            UpdateHint(active);
             if(active!=last)
             {
                 last=active;if(!BeingPulled)SetPullValue(active?1:0);

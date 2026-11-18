@@ -1,4 +1,4 @@
-using FirefighterVR.Station;
+﻿using FirefighterVR.Station;
 using UnityEngine;
 
 namespace CityNightPresentation.Mission
@@ -9,7 +9,7 @@ namespace CityNightPresentation.Mission
     {
         public FireTruckMission mission;
         public FireTruckEmergency emergency;
-        [Range(3,10)]public float cruiseMetresPerSecond=7;
+        [Range(3,16)]public float cruiseMetresPerSecond=11;
         public float blockedSeconds=40;
         public string Status{get;private set;}="Waiting for crew gates";
         public float Progress{get;private set;}
@@ -47,7 +47,7 @@ namespace CityNightPresentation.Mission
             segment=best;Progress=Mathf.Max(Progress,progress);
             if(nearest>64){mission.FailBotDriver("Truck left the validated route corridor");input=new Vector4(0,0,1,0);return;}
             float speed=mission.controller.SpeedKmh/3.6f;float look=Mathf.Clamp(4+speed*.7f,4,9);var target=Sample(Progress+look);var local=transform.InverseTransformPoint(target);local.y=0;
-            float desired=cruiseMetresPerSecond;var future=Sample(Progress+18)-Sample(Progress+7);if(Vector3.Angle(transform.forward,Vector3.ProjectOnPlane(future,Vector3.up))>15)desired=Mathf.Min(desired,3.6f);
+            float desired=cruiseMetresPerSecond;var future=Sample(Progress+18)-Sample(Progress+7);if(Vector3.Angle(transform.forward,Vector3.ProjectOnPlane(future,Vector3.up))>15)desired=Mathf.Min(desired,5f);
             float free=float.PositiveInfinity;bool signalWait=false;
             var front=transform.TransformPoint(new Vector3(0,1,3.8f));
             foreach(var signal in mission.traffic.signals)foreach(var head in signal.heads)
@@ -75,10 +75,10 @@ namespace CityNightPresentation.Mission
             float steer=Steering(local,4.8f,mission.controller.steeringAngle);float throttle=Mathf.Clamp01((desired-speed)*.4f);float brake=Mathf.Clamp01((speed-desired)*.55f);
             if(desired<.15f){throttle=0;brake=1;}
             input=new Vector4(steer,throttle,brake,0);
-            Status=signalWait&&desired<.2f?"Stopped at signal · waiting for safe clearance":remaining<14?"Aligning with incident stop zone":"Following existing route";
+            Status=signalWait&&desired<.2f?"Stopped at signal Â· waiting for safe clearance":remaining<14?"Aligning with incident stop zone":"Following existing route";
             if(Progress>previousProgress+.5f){previousProgress=Progress;lastProgressAt=Time.unscaledTime;}
             if(signalWait||remaining<4&&speed<.4f)lastProgressAt=Time.unscaledTime;
-            if(Time.unscaledTime-lastProgressAt>blockedSeconds){mission.FailBotDriver("Bot Driver blocked for "+blockedSeconds+" seconds; no teleport recovery");input=new Vector4(0,0,1,0);Status="BLOCKED · STOPPED SAFELY";}
+            if(Time.unscaledTime-lastProgressAt>blockedSeconds){mission.FailBotDriver("Bot Driver blocked for "+blockedSeconds+" seconds; no teleport recovery");input=new Vector4(0,0,1,0);Status="BLOCKED Â· STOPPED SAFELY";}
         }
         void OnDisable(){if(mission&&mission.BotDriverMayControl)mission.SubmitBotDriverInput(new Vector4(0,0,1,0));}
     }

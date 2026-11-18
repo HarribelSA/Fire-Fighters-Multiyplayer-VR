@@ -120,7 +120,8 @@ namespace FirefighterVR.Station
                 // Glowing arrival marker at the incident (Driver's destination).
                 if (mission.route && mission.route.stopZone) Beam(mission.route.stopZone.position, StationRole.Driver, 2.4f);
                 var emergency = mission.GetComponent<FireTruckEmergency>();
-                if (emergency && emergency.pullHandle && mission.CanActivateEmergency && !mission.SirenActive) Pointer(emergency.pullHandle.position + Vector3.up * .05f, StationRole.Driver);
+                // Siren handle glows only after the Driver has waited 5 s at a red light (FireTruckEmergency.SirenHint).
+                if (emergency && emergency.pullHandle && emergency.SirenHint) Halo(emergency.pullHandle.position, StationRole.Driver, .12f);
                 return;
             }
             if (!op || (fs.phase != FiregroundPhase.Operation && fs.phase != FiregroundPhase.Recovery)) return;
@@ -135,12 +136,8 @@ namespace FirefighterVR.Station
             if (fs.phase == FiregroundPhase.Recovery && fs.pumpOn && bot && bot.waterOffButton) Halo(bot.waterOffButton.TransformPoint(0, 0, -.03f), StationRole.Driver, .065f);
             // Player 2 (red): nozzle, fire attack position, bracket.
             if (!fs.Held && (fs.phase == FiregroundPhase.Operation || !fs.nozzleDocked) && op.nozzle) Halo(op.nozzle.transform.TransformPoint(0, -.04f, .1f), StationRole.Assistant, .16f);
-            if (fs.Held && fs.phase == FiregroundPhase.Operation)
-            {
-                int best = -1; float bestD = float.MaxValue; Vector3 from = op.nozzle.transform.position;
-                for (int i = 0; i < fs.zoneCount && i < op.zones.Length; i++) if (fs.Intensity(i) > 0 && op.zones[i]) { float d = (op.zones[i].Center - from).sqrMagnitude; if (d < bestD) { bestD = d; best = i; } }
-                if (best >= 0) { var z = op.zones[best]; Beam(z.botStandPoint ? z.botStandPoint.position : Down(z.Center), StationRole.Assistant, .6f); }
-            }
+            // (The red guide beams in front of the three fires were removed on request: the nozzle operator
+            //  finds the fires by sight.)
             if (fs.Held && fs.phase == FiregroundPhase.Recovery && op.nozzleDock) Beam(Down(op.nozzleDock.position), StationRole.Assistant, .35f, 1.7f);
         }
     }

@@ -11378,7 +11378,7 @@ PrefabInstance:
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
       propertyPath: m_Volume
-      value: 0.6
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
@@ -12694,7 +12694,7 @@ AudioSource:
   m_Volume: 0.35
   m_Pitch: 1
   Loop: 1
-  Mute: 0
+  Mute: 1
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
@@ -32067,11 +32067,11 @@ AudioSource:
     type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 70b855c6634362746b4cbcb732cec049, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.22
   m_Pitch: 1
   Loop: 1
-  Mute: 0
+  Mute: 1
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
@@ -44066,7 +44066,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cd2f87e3565adb742ad0e93f13c1cffa, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.22
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -51643,7 +51643,7 @@ PrefabInstance:
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
       propertyPath: m_Volume
-      value: 0.6
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
@@ -89274,7 +89274,7 @@ PrefabInstance:
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
       propertyPath: m_Volume
-      value: 0.6
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
@@ -96418,7 +96418,7 @@ PrefabInstance:
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
       propertyPath: m_Volume
-      value: 0.6
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
@@ -108210,7 +108210,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FirefighterVR.Station.StationSessionFlow
   ShowTopMostFoldoutHeaderGroup: 1
   incident: {fileID: 11400000, guid: a95790fb60aa0344bb6f13ef08ddfd1b, type: 2}
-  explorationSeconds: 60
+  explorationSeconds: 15
   garageTravelSeconds: 4
   departureSeconds: 5
   runtimeMissionDiagnostics: 
@@ -113342,7 +113342,7 @@ PrefabInstance:
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
       propertyPath: m_Volume
-      value: 0.6
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
@@ -137636,7 +137636,7 @@ PrefabInstance:
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
       propertyPath: m_Volume
-      value: 0.6
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6053925230743143922, guid: 055aa771b7bb8904da5505516542d7f8,
         type: 3}
@@ -143675,6 +143675,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -23
+      objectReference: {fileID: 0}
+    - target: {fileID: 8537513404922650695, guid: 77ac6b10722bcca4a8baf70e44d89e78,
+        type: 3}
+      propertyPath: m_MoveSpeed
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8796977001930958068, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}

@@ -49,8 +49,8 @@ public static class CrewComfortUpdateInstaller
         var e = truck.GetComponent<FireTruckEmergency>();
         if (e && e.pullMount)
         {
-            // Flush with the flat cab headliner above-front of the Driver, perfectly level with the truck.
-            var local = new Vector3(-.42f, 0, 2.45f);
+            // Flush with the flat cab headliner straight in front of the Driver's eyes, level with the truck.
+            var local = FireSiteUpdateInstaller.SirenHandleLocal;
             float ceiling = CeilingY(truck, local, e.pullMount, out bool hit);
             var mount = e.pullMount.Find("Mount"); float half = mount ? mount.localScale.z * .5f : .0125f;
             local.y = (hit ? ceiling : 2.69f) - half;
