@@ -26,8 +26,16 @@ namespace CityNightPresentation.Mission
         public bool RequestFromPull(bool active)
         {
             if(!mission||mission.LocalRole!=FirefighterVR.Station.StationRole.Driver)return false;
-            if(active&&!mission.CanActivateEmergency){InteractionStatus="STOP SAFELY AT THE DESIGNATED RED SIGNAL BEFORE PULLING";return false;}
-            mission.RequestSiren(active);InteractionStatus=active?"EMERGENCY PRIORITY REQUESTED":"EMERGENCY RESET";return true;
+            if(active&&!mission.CanActivateEmergency)
+            {
+                // Tell the Driver why the handle sprang back (previously this was silent).
+                string why=!mission.CrewReady?"crew not ready yet":mission.HasArrived?"already arrived":mission.HasFailed?"mission stopped":mission.controller&&mission.controller.SpeedKmh>=1.2f?"truck still moving ("+mission.controller.SpeedKmh.ToString("0")+" km/h)":"not stopped at the designated red light";
+                InteractionStatus="SIREN UNAVAILABLE · "+why.ToUpperInvariant();
+                Debug.Log("[Siren] Pull rejected: "+why,this);
+                var hud=XRMultiplayer.PlayerHudNotification.Instance;if(hud)hud.ShowText(mission.sirenAnytime?"SIREN UNAVAILABLE · "+why.ToUpperInvariant():"SIREN: STOP COMPLETELY AT THE RED LIGHT, THEN PULL",4);
+                return false;
+            }
+            mission.RequestSiren(active);InteractionStatus=active?"EMERGENCY PRIORITY REQUESTED":"EMERGENCY RESET";Debug.Log("[Siren] Pull "+(active?"accepted: emergency ON":"released: emergency OFF"),this);return true;
         }
         public bool RequestFromBotDriver(bool active)
         {if(!mission||!mission.RequestBotEmergency(active))return false;SetPullValue(active?1:0);InteractionStatus=active?"BOT DRIVER · VALIDATED PRIORITY REQUEST":"BOT DRIVER · EMERGENCY RESET";return true;}

@@ -140,6 +140,7 @@ namespace CityNightPresentation.Fireground
             if (!LocalHoldsNozzle) localPullTarget = 0;
             if (!Authority) { fireAccumulator += Time.deltaTime; if (fireAccumulator >= .1f) { fireAccumulator = 0; EvaluateStream(s); } }
             UpdateCrew(s);
+            KeepDriverLift();
             UpdatePresentation(s);
         }
 
@@ -398,13 +399,33 @@ namespace CityNightPresentation.Fireground
         }
         // The Driver keeps sitting in real life (G29 rig). At the pump the rig is raised so the eyes are at a
         // normal standing height instead of a seated one; a player who really stands up is not raised.
+        // The lift is computed once from the upright seated head height and then HELD every frame (KeepDriverLift),
+        // so the camera always sits at the avatar's own eyes; leaning forward to the reel lowers the head
+        // naturally and the body bends with it instead of the camera sinking into the chest / belly.
+        float driverLift; XROrigin liftedOrigin;
         void LiftSeatedDriver(XROrigin origin)
         {
+            driverLift = 0; liftedOrigin = null;
             if (!origin || !origin.Camera || !origin.Origin) return;
-            float lift = driverStandingEyeHeight - origin.CameraInOriginSpaceHeight;
+            var rig = Flow ? Flow.localRig : null;
+            float eye = rig && rig.avatar ? rig.avatar.standingEye.y - rig.avatar.standingSole : driverStandingEyeHeight;
+            if (eye < 1.2f || eye > 2f) eye = driverStandingEyeHeight;
+            float lift = eye - origin.CameraInOriginSpaceHeight;
             if (lift <= .1f) return;
-            var cc = origin.GetComponent<CharacterController>(); bool was = cc && cc.enabled; if (cc) cc.enabled = false;
-            origin.Origin.transform.position += Vector3.up * lift; Physics.SyncTransforms();
+            driverLift = lift; liftedOrigin = origin;
+            KeepDriverLift();
+            Debug.Log($"[Fireground] Seated Driver raised {lift:F2} m (eye {eye:F2} m above ground)", this);
+        }
+        void KeepDriverLift()
+        {
+            if (!liftedOrigin || driverLift <= 0) return;
+            if (!LocalDismounted || LocalRole != StationRole.Driver || MissionDebrief.CrewSeated || !liftedOrigin.Origin) { driverLift = 0; liftedOrigin = null; return; }
+            var o = liftedOrigin.Origin.transform; var p = o.position;
+            float ground = GroundBelow(new Vector3(p.x, p.y - driverLift, p.z)).y;
+            float target = ground + driverLift;
+            if (Mathf.Abs(p.y - target) < .01f) return;
+            var cc = liftedOrigin.GetComponent<CharacterController>(); bool was = cc && cc.enabled; if (cc) cc.enabled = false;
+            o.position = new Vector3(p.x, target, p.z); Physics.SyncTransforms();
             if (cc) cc.enabled = was;
         }
         public Vector3 GroundBelow(Vector3 point)

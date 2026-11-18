@@ -37,27 +37,43 @@ namespace CityNightPresentation.Mission
         int lastState = -1;
         float nextRefresh;
 
+        // The COM port can only be open once: a newer instance (e.g. the freshly loaded mission truck) takes over.
+        static Esp32SirenLight owner;
+        string loggedStatus = "";
         void OnEnable()
         {
             foreach (var arg in Environment.GetCommandLineArgs())
                 if (arg.StartsWith("-esp32Port=", StringComparison.OrdinalIgnoreCase)) portName = arg.Substring(11).Trim();
+            if (owner && owner != this) owner.StopWorker(false);
+            owner = this;
             running = true; lastState = -1;
             worker = new Thread(Run) { IsBackground = true, Name = "ESP32 siren light" }; worker.Start();
+            Debug.Log("[ESP32] Lamp link started on " + portName + " (lamp on = \"" + sirenOnCommand + "\", off = \"" + sirenOffCommand + "\")", this);
         }
         void Update()
         {
+            if (Status != loggedStatus) { loggedStatus = Status; Debug.Log("[ESP32] " + loggedStatus, this); }
+            if (owner != this || !running) return;
             var fire = Fireground.FiregroundOperation.Instance;
             bool atFireScene = mission && mission.HasArrived || fire && fire.Current.phase != Fireground.FiregroundPhase.Inactive;
             int state = mission && mission.SirenActive && !atFireScene ? 1 : 0;
+            if (state != lastState) Debug.Log("[ESP32] Siren " + (state == 1 ? "ON -> lamp on" : "OFF -> lamp off") + (atFireScene ? " (fire scene)" : ""), this);
             if (state != lastState || Time.unscaledTime >= nextRefresh) { lastState = state; nextRefresh = Time.unscaledTime + refreshSeconds; Send(state == 1 ? sirenOnCommand : sirenOffCommand); }
         }
         void Send(string command) { if (string.IsNullOrEmpty(command)) return; while (outbox.Count > 4 && outbox.TryDequeue(out _)) { } outbox.Enqueue(command); signal.Set(); }
+        void StopWorker(bool lampOff)
+        {
+            if (!running && worker == null) return;
+            // Always leave the real light off.
+            if (lampOff) Send(sirenOffCommand);
+            running = false; signal.Set();
+            if (worker != null && !worker.Join(lampOff ? 4500 : 1500)) Debug.LogWarning("[ESP32] port close timed out", this);
+            worker = null;
+        }
         void OnDisable()
         {
-            // Always leave the real light off.
-            Send(sirenOffCommand); running = false; signal.Set();
-            if (worker != null && !worker.Join(1500)) Debug.LogWarning("ESP32 siren light: port close timed out", this);
-            worker = null;
+            StopWorker(owner == this);
+            if (owner == this) owner = null;
         }
         void OnApplicationQuit() { if (running) OnDisable(); }
 
@@ -76,6 +92,7 @@ namespace CityNightPresentation.Mission
                         handle = Open(portName, baudRate);
                         if (handle == INVALID) { Status = "cannot open " + portName + " (error " + Marshal.GetLastWin32Error() + ")"; retry = DateTime.UtcNow.AddSeconds(5); if (!running) break; continue; }
                         Status = "connected " + portName;
+                        Thread.Sleep(400); // let the Bluetooth link settle so the first command is not lost
                     }
                     var bytes = System.Text.Encoding.ASCII.GetBytes(command + "\n");
                     if (WriteFile(handle, bytes, (uint)bytes.Length, out uint written, IntPtr.Zero) && written == bytes.Length) { outbox.TryDequeue(out _); Status = "sent " + command + " on " + portName; }

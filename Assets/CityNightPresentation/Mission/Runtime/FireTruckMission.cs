@@ -58,7 +58,10 @@ namespace CityNightPresentation.Mission
         public float RemainingSeconds=>Mathf.Max(0,missionTimeLimitSeconds-TotalSeconds);
         public string OutcomeReason=>EvaluationState.outcome==MissionOutcome.BotBlocked?BotFailureReason:HasFailed?"Mission time expired before arrival":HasArrived?"Incident stop zone reached safely":"Response in progress";
         public bool EmergencyConditionsSatisfied=>CrewReady&&!HasArrived&&!HasFailed&&controller&&controller.SpeedKmh<1.2f&&NearChallenge()&&(EvaluationState.challengeStopRecorded||StoppedAtRed(true));
-        public bool CanActivateEmergency=>LocalRole==StationRole.Driver&&EmergencyConditionsSatisfied;
+        [Tooltip("Driver may pull the siren handle at any time during the drive (not only when stopped at the designated red light).")]
+        public bool sirenAnytime=true;
+        public bool SirenAllowed=>sirenAnytime?CrewReady&&!HasArrived&&!HasFailed:EmergencyConditionsSatisfied;
+        public bool CanActivateEmergency=>LocalRole==StationRole.Driver&&SirenAllowed;
         public bool offlineDriverTesting;
         public readonly NetworkVariable<bool> Siren=new NetworkVariable<bool>(false,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
         public readonly NetworkVariable<float> Elapsed=new NetworkVariable<float>(0,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
@@ -117,7 +120,7 @@ namespace CityNightPresentation.Mission
         {if(LocalRole!=StationRole.Driver||!CrewReady||enabled&&!CanActivateEmergency)return;if(UseNetworkState)SirenRpc(enabled);else if(Authority)ApplyEmergency(enabled);}
         [Rpc(SendTo.Authority,InvokePermission=RpcInvokePermission.Everyone)]
         void SirenRpc(bool value,RpcParams p=default)
-        {var f=StationSessionFlow.Instance;if(Authority&&CrewReady&&f&&f.IsSpawned&&f.Lobby.Value.RoleOf(p.Receive.SenderClientId)==StationRole.Driver&&(!value||EmergencyConditionsSatisfied))ApplyEmergency(value);}
+        {var f=StationSessionFlow.Instance;if(Authority&&CrewReady&&f&&f.IsSpawned&&f.Lobby.Value.RoleOf(p.Receive.SenderClientId)==StationRole.Driver&&(!value||SirenAllowed))ApplyEmergency(value);}
         void ApplyEmergency(bool enabled)
         {enabled&=!HasArrived&&!HasFailed;if(enabled&&!SirenActive)evaluation.emergencyActivations++;if(UseNetworkState)Siren.Value=enabled;else offlineSiren=enabled;}
         void Update()
