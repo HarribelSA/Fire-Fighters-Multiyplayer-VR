@@ -23,6 +23,9 @@ namespace FireCenter
         [SerializeField, Tooltip("Night ambience loops (crickets, wind, room tone) faded out when the mission begins.")]
         AudioSource[] m_Ambience;
         [SerializeField] float m_AmbienceFadeSeconds = 2.5f;
+        [SerializeField, Min(1f), Tooltip("How long the alarm bells ring once the alert starts.")]
+        float m_BellSeconds = 10f;
+        Coroutine m_BellStop;
 
         float m_MusicBaseVolume = 1f;
         float[] m_AmbienceBase;
@@ -77,12 +80,23 @@ namespace FireCenter
             FadeAmbience(0f);
             foreach (var bell in m_AlarmBells)
                 if (bell != null && !bell.isPlaying) bell.Play();
+            if (m_BellStop != null) StopCoroutine(m_BellStop);
+            m_BellStop = StartCoroutine(StopBellsAfter(m_BellSeconds));
+        }
+
+        // The bell rings for a fixed time, then only the (visual) alert remains.
+        IEnumerator StopBellsAfter(float seconds)
+        {
+            yield return new WaitForSecondsRealtime(seconds);
+            foreach (var bell in m_AlarmBells) if (bell != null) bell.Stop();
+            m_BellStop = null;
         }
 
         public void StopAlarm()
         {
             if (!m_AlarmActive) return;
             m_AlarmActive = false;
+            if (m_BellStop != null) { StopCoroutine(m_BellStop); m_BellStop = null; }
             foreach (var bell in m_AlarmBells) if (bell != null) bell.Stop();
             FadeMusic(m_MusicBaseVolume);
             FadeAmbience(1f);

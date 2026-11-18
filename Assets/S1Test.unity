@@ -11943,6 +11943,7 @@ MonoBehaviour:
     controls: {fileID: 960361869}
     roomName: {fileID: 82850807}
     roomCode: {fileID: 1998423677}
+    playerName: {fileID: 0}
     feedback: {fileID: 1102258856}
     role: {fileID: 1599945509}
     ready: {fileID: 1669886967}
@@ -11958,6 +11959,7 @@ MonoBehaviour:
     controls: {fileID: 435982242}
     roomName: {fileID: 1989957204}
     roomCode: {fileID: 1625889330}
+    playerName: {fileID: 0}
     feedback: {fileID: 522288801}
     role: {fileID: 301633143}
     ready: {fileID: 1120069152}
@@ -17301,6 +17303,7 @@ MonoBehaviour:
   - {fileID: 903618420}
   - {fileID: 734079741}
   m_AmbienceFadeSeconds: 2.5
+  m_BellSeconds: 10
 --- !u!1 &278530425
 GameObject:
   m_ObjectHideFlags: 0
@@ -72137,6 +72140,7 @@ MonoBehaviour:
   walkCycleDistance: 0.65
   WalkAnimationSpeed: 0.65
   StandingHMDHeight: 1.65
+  uniformAvatarScale: 1
   CrouchStartThreshold: 0.15
   FullCrouchHeightDrop: 0.65
   MaxSpineBend: 18
@@ -108208,7 +108212,7 @@ MonoBehaviour:
   incident: {fileID: 11400000, guid: a95790fb60aa0344bb6f13ef08ddfd1b, type: 2}
   explorationSeconds: 60
   garageTravelSeconds: 4
-  departureSeconds: 1.8
+  departureSeconds: 5
   runtimeMissionDiagnostics: 
   lobbyOnlyRoots:
   - {fileID: 489032593}
@@ -142898,7 +142902,7 @@ PrefabInstance:
     - target: {fileID: 463831141400273028, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 242
       objectReference: {fileID: 0}
     - target: {fileID: 463831141400273028, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
@@ -143447,6 +143451,11 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7206800025304517162, guid: 77ac6b10722bcca4a8baf70e44d89e78,
+        type: 3}
+      propertyPath: m_RequestedTrackingOriginMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7236287184081664708, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_IsActive
@@ -143485,12 +143494,12 @@ PrefabInstance:
     - target: {fileID: 7565494415570717466, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7565494415570717466, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7565494415570717466, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
@@ -143500,22 +143509,22 @@ PrefabInstance:
     - target: {fileID: 7565494415570717466, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 7565494415570717466, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 7618137810064297409, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7618137810064297409, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7618137810064297409, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
@@ -143525,12 +143534,12 @@ PrefabInstance:
     - target: {fileID: 7618137810064297409, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 142
       objectReference: {fileID: 0}
     - target: {fileID: 7618137810064297409, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 7808827173378831257, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}

@@ -30,6 +30,10 @@ namespace CityNightPresentation.Fireground
         public float eyesCloseSeconds = 1.8f, eyesClosedHold = 1.5f, eyesOpenSeconds = 1.6f;
         [Range(3, 14)] public float cruiseSpeed = 8f;
         public float dashboardDistance = .72f, dashboardDrop = .16f, dashboardWidth = 1.05f;
+        [Tooltip("Show the debrief dashboard on the inside of the front windshield (truck local space).")]
+        public bool onWindshield = true;
+        public Vector3 windshieldCenter = new Vector3(0, 2.3f, 3.47f), windshieldNormal = new Vector3(0, .22f, .97f);
+        public float windshieldWidth = 1.0f;
 
         FiregroundOperation op;
         FireTruckMission mission;
@@ -233,12 +237,27 @@ namespace CityNightPresentation.Fireground
             go.AddComponent<CanvasScaler>().dynamicPixelsPerUnit = 3;
             var rt = (RectTransform)go.transform; rt.sizeDelta = new Vector2(1000, 560);
             go.transform.SetParent(truck, false);
-            // Centered between both seats, in front of the crew's eyes.
-            Vector3 eyes = truck.position + truck.up * 1.9f;
-            if (mission.driverSeat && mission.passengerSeat) eyes = (StationSeatPlacement.EyeTarget(mission.driverSeat, null) + StationSeatPlacement.EyeTarget(mission.passengerSeat, null)) * .5f;
-            go.transform.position = eyes + truck.forward * dashboardDistance - truck.up * dashboardDrop;
-            go.transform.rotation = Quaternion.LookRotation(truck.forward, truck.up);
-            float scale = dashboardWidth / 1000f; go.transform.localScale = Vector3.one * scale / Mathf.Max(.0001f, truck.lossyScale.x);
+            float width = dashboardWidth;
+            if (onWindshield)
+            {
+                // Laid flat against the inside of the front windshield, centred between both seats,
+                // following the glass slope (measured: inner glass ~z 3.51 at y 2.3, normal (0, .22, .97)).
+                go.transform.position = truck.TransformPoint(windshieldCenter);
+                go.transform.rotation = Quaternion.LookRotation(truck.TransformDirection(windshieldNormal.normalized), truck.up);
+                width = windshieldWidth;
+                // The passenger tablet sits in front of the glass; it has nothing left to show during the debrief.
+                var tablet = truck.Find("CabinMissionEquipment/Passenger_Tablet"); if (tablet) tablet.gameObject.SetActive(false);
+                var tabletMount = truck.Find("CabinMissionEquipment/TabletDashMount"); if (tabletMount) tabletMount.gameObject.SetActive(false);
+            }
+            else
+            {
+                // Centered between both seats, in front of the crew's eyes.
+                Vector3 eyes = truck.position + truck.up * 1.9f;
+                if (mission.driverSeat && mission.passengerSeat) eyes = (StationSeatPlacement.EyeTarget(mission.driverSeat, null) + StationSeatPlacement.EyeTarget(mission.passengerSeat, null)) * .5f;
+                go.transform.position = eyes + truck.forward * dashboardDistance - truck.up * dashboardDrop;
+                go.transform.rotation = Quaternion.LookRotation(truck.forward, truck.up);
+            }
+            float scale = width / 1000f; go.transform.localScale = Vector3.one * scale / Mathf.Max(.0001f, truck.lossyScale.x);
 
             Box(rt, "Panel", 0, 0, 1000, 560, Panel);
             Box(rt, "TopStripe", 0, 0, 1000, 8, Accent);

@@ -135,6 +135,10 @@ namespace FirefighterVR
         public float walkCycleDistance = .9f;
         [Range(.1f,1.5f)] public float WalkAnimationSpeed=.65f;
         [Min(.8f)] public float StandingHMDHeight=1.65f;
+        [Tooltip("Same avatar size for every player (local and remote). Off = scale each body by the user's measured eye height.")]
+        public bool uniformAvatarScale=true;
+        // Re-measure the standing eye height (e.g. after the headset was recentered while standing).
+        public void RequestStandingRecalibration(){if(remoteTracking||Seated)return;standingHeightCalibrated=false;calibrationUntil=Time.unscaledTime+1;}
         [UnityEngine.Serialization.FormerlySerializedAs("CrouchThreshold")]
         [Range(.05f,.3f)] public float CrouchStartThreshold=.15f;
         [Range(.3f,.9f)] public float FullCrouchHeightDrop=.65f;
@@ -340,7 +344,10 @@ namespace FirefighterVR
             // Recalibrate once when that first valid eye-height sample arrives, not on crouches.
             if(!remoteTracking&&!calibrationHasTrackedHeight&&headSource.localPosition.y>.2f)
             {calibrationHasTrackedHeight=true;calibrationUntil=Mathf.Max(calibrationUntil,Time.unscaledTime+1);}
-            if(remoteTracking)scale=remoteState.AvatarScale;
+            // Every crew member uses the same body size, so one player never looks bigger than the other
+            // (a per-user height scale also jumped after a headset recenter). Crouch still uses StandingHMDHeight.
+            if(uniformAvatarScale)scale=1;
+            else if(remoteTracking)scale=remoteState.AvatarScale;
             else if(!Seated&&Time.unscaledTime<=calibrationUntil)
                 scale=Mathf.Clamp((headSource.position.y-playerRoot.position.y)/(standingEye.y-standingSole),.75f,1.25f);
             // Calibrate once after tracking settles. A fixed 1.65 m default otherwise treats
@@ -348,7 +355,7 @@ namespace FirefighterVR
             if(!remoteTracking&&!Seated&&!standingHeightCalibrated&&calibrationHasTrackedHeight&&Time.unscaledTime>calibrationUntil)
                 CalibrateStandingHeight();
             SampleMovement(dt);
-            if(Seated){movementSpeed=0;scale=remoteTracking?remoteState.AvatarScale:1;}
+            if(Seated){movementSpeed=0;scale=remoteTracking&&!uniformAvatarScale?remoteState.AvatarScale:1;}
             placement.localScale=Vector3.one*scale;
             float headYaw=headSource.eulerAngles.y;
             float headTurn=Mathf.DeltaAngle(yaw,headYaw);

@@ -79,8 +79,38 @@ namespace FirefighterVR.Station
         public string InputStatus { get; private set; }="Waiting for an active XR runtime.";
         public StationRole LocalRole { get; private set; }
         public bool IsWindowsPcvrHost => Application.platform==RuntimePlatform.WindowsEditor||Application.platform==RuntimePlatform.WindowsPlayer;
+        // Headset recenter (holding the Meta button): the runtime moves the tracking origin. Floor tracking
+        // keeps the real floor height, and a seated player is put back on the seat's eye point, so the
+        // camera never ends up under the ground or outside the vehicle.
+        readonly List<XRInputSubsystem> inputSubsystems=new List<XRInputSubsystem>();
+        readonly List<XRInputSubsystem> recenterHooks=new List<XRInputSubsystem>();
+        bool recenterPending;
+        float recenterAt;
+        public int RecenterCount {get;private set;}
+        void HookRecenter()
+        {
+            inputSubsystems.Clear();SubsystemManager.GetSubsystems(inputSubsystems);
+            foreach(var s in inputSubsystems)if(s!=null&&!recenterHooks.Contains(s)){s.trackingOriginUpdated+=OnTrackingOriginUpdated;recenterHooks.Add(s);}
+        }
+        void OnTrackingOriginUpdated(XRInputSubsystem subsystem){recenterPending=true;recenterAt=Time.unscaledTime+.15f;}
+        void ApplyRecenter()
+        {
+            recenterPending=false;RecenterCount++;
+            if(!origin||!origin.Camera)return;
+            if(origin.RequestedTrackingOriginMode!=XROrigin.TrackingOriginMode.Floor)origin.RequestedTrackingOriginMode=XROrigin.TrackingOriginMode.Floor;
+            if(InSeatedLobby&&SeatedDispatchLobby.Instance){SeatedDispatchLobby.Instance.ResetSeatPlacement();return;}
+            bool seated=avatar&&avatar.Seated&&(StationSeated||VehicleSeated);
+            if(seated){StationSeatPlacement.PlaceAtCurrentSeat(origin,avatar);return;}
+            if(avatar)avatar.RequestStandingRecalibration();
+        }
+        void OnDestroy(){foreach(var s in recenterHooks)if(s!=null)s.trackingOriginUpdated-=OnTrackingOriginUpdated;recenterHooks.Clear();}
         void Awake()
         {
+            // Floor-relative tracking on both Quest and PCVR: the eye height comes from the real floor, and a
+            // Device-mode fallback still lifts the camera by CameraYOffset instead of leaving it at y = 0.
+            if(origin&&origin.RequestedTrackingOriginMode==XROrigin.TrackingOriginMode.NotSpecified)origin.RequestedTrackingOriginMode=XROrigin.TrackingOriginMode.Floor;
+            if(origin&&origin.CameraYOffset<1.2f)origin.CameraYOffset=1.36f;
+            HookRecenter();
             lobbyPosition=origin.transform.position;lobbyRotation=origin.transform.rotation;
             assistantMovement=(AssistantMovement)Mathf.Clamp(PlayerPrefs.GetInt("Firefighter.AssistantMovement",0),0,2);
             foreach(var p in origin.GetComponentsInChildren<LocomotionProvider>(true))originals[p]=p.enabled;
@@ -104,7 +134,8 @@ namespace FirefighterVR.Station
             if(connected&&state.Phase!=diagnosticPhase){diagnosticPhase=state.Phase;if(state.Phase==StationPhase.Fading)TransitionDiagnostics.Begin("multiplayer_station");TransitionDiagnostics.Mark("network_phase:"+state.Phase);}
             if(connected&&flow.MissionState.stage==CrewMissionStage.CityTransition&&diagnosticCityEpoch!=flow.MissionState.epoch){diagnosticCityEpoch=flow.MissionState.epoch;TransitionDiagnostics.Begin("multiplayer_city");}
             LocalRole=flow&&flow.SoloMissionActive?flow.SoloHumanRole:connected?state.RoleOf(flow.NetworkManager.LocalClientId):SeatedDispatchLobby.Instance?SeatedDispatchLobby.Instance.SelectedProfile:StationRole.None;
-            if(Time.unscaledTimeAsDouble>=nextInputCheck){nextInputCheck=Time.unscaledTimeAsDouble+.25;CheckInput();if(connected&&inputWasAvailable&&!InputAvailable&&state.IsReady(flow.NetworkManager.LocalClientId)&&state.Editable)flow.SetLocalReady(false);inputWasAvailable=InputAvailable;}
+            if(recenterPending&&Time.unscaledTime>=recenterAt)ApplyRecenter();
+            if(Time.unscaledTimeAsDouble>=nextInputCheck){nextInputCheck=Time.unscaledTimeAsDouble+.25;HookRecenter();CheckInput();if(connected&&inputWasAvailable&&!InputAvailable&&state.IsReady(flow.NetworkManager.LocalClientId)&&state.Editable)flow.SetLocalReady(false);inputWasAvailable=InputAvailable;}
             if(connected&&state.Phase==StationPhase.AwaitingSpawn&&(!placed||placedEpoch!=state.Epoch)&&spawnRoutine==null)spawnRoutine=StartCoroutine(PlaceInStation(flow,state));
             if(connected&&state.Phase==StationPhase.Blocked)RecoverBlockedTransition(flow);
             else{blockedRecoveryDone=false;blockedStationHidden=false;}

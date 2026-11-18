@@ -21,7 +21,10 @@ namespace CityNightPresentation.Fireground
         [Tooltip("+1: counter-clockwise (seen from the crank side) pays hose out.")]
         public float payoutDirection = 1;
 
-        float lastAngle, pending, nextSend, shownPayout = -1, ratchetLevel, lastShown;
+        [Tooltip("Controller push-back when the crank is turned the wrong way or at the end of travel.")]
+        [Range(0, 1)] public float resistanceAmplitude = .95f;
+        [Min(.02f)] public float resistancePulse = .09f;
+        float lastAngle, pending, nextSend, shownPayout = -1, ratchetLevel, lastShown, nextResist;
         bool hasAngle; float clickTravel;
 
         public override bool IsSelectableBy(IXRSelectInteractor interactor)
@@ -47,9 +50,22 @@ namespace CityNightPresentation.Fireground
             float angle = Mathf.Atan2(p.y, p.x);
             if (hasAngle)
             {
-                float step = Mathf.DeltaAngle(lastAngle * Mathf.Rad2Deg, angle * Mathf.Rad2Deg) * Mathf.Deg2Rad; pending += step * payoutDirection;
-                // Ratchet feel: one haptic click per ~20 degrees of crank travel.
-                clickTravel += Mathf.Abs(step); if (clickTravel > .35f && interactor is XRBaseInputInteractor input) { clickTravel = 0; input.SendHapticImpulse(.45f, .03f); }
+                float step = Mathf.DeltaAngle(lastAngle * Mathf.Rad2Deg, angle * Mathf.Rad2Deg) * Mathf.Deg2Rad, payStep = step * payoutDirection;
+                int direction = payStep > 0 ? 1 : payStep < 0 ? -1 : 0;
+                var input = interactor as XRBaseInputInteractor;
+                if (direction != 0 && operation.CrankBlocked(direction))
+                {
+                    // Wrong way (rewinding while deploying, paying out while rewinding) or end of travel:
+                    // the drum does not move and the controller pushes back with a strong, steady buzz.
+                    pending = 0; clickTravel = 0;
+                    if (Mathf.Abs(step) > .004f && input && Time.unscaledTime >= nextResist) { nextResist = Time.unscaledTime + resistancePulse * .8f; input.SendHapticImpulse(resistanceAmplitude, resistancePulse); }
+                }
+                else
+                {
+                    pending += payStep;
+                    // Ratchet feel: one haptic click per ~20 degrees of crank travel.
+                    clickTravel += Mathf.Abs(step); if (clickTravel > .35f && input) { clickTravel = 0; input.SendHapticImpulse(.45f, .03f); }
+                }
             }
             lastAngle = angle; hasAngle = true;
             if (Time.unscaledTime >= nextSend) Flush();

@@ -55,10 +55,46 @@ namespace CityNightPresentation
             foreach(var s in signals) if(s) s.SetClock(Clock);
         }
         void Start() { Initialize(); }
+        // People on the road (local camera + remote crew heads + bot crew): traffic brakes before reaching them,
+        // so a car never drives into / through a player standing on its lane.
+        [Tooltip("Cars stop this far (m) in front of a person standing in their lane.")]
+        [Min(.5f)] public float pedestrianStopGap = 2.5f;
+        readonly System.Collections.Generic.List<Vector3> pedestrians = new System.Collections.Generic.List<Vector3>();
+        XRMultiplayer.XRINetworkPlayer[] crew = new XRMultiplayer.XRINetworkPlayer[0];
+        FirefighterVR.StationBot.StationBotFollower[] bots = new FirefighterVR.StationBot.StationBotFollower[0];
+        float nextCrewSearch;
+        void CollectPedestrians()
+        {
+            if (Time.unscaledTime >= nextCrewSearch)
+            {
+                nextCrewSearch = Time.unscaledTime + 1;
+                crew = FindObjectsByType<XRMultiplayer.XRINetworkPlayer>(FindObjectsSortMode.None);
+                bots = FindObjectsByType<FirefighterVR.StationBot.StationBotFollower>(FindObjectsSortMode.None);
+            }
+            pedestrians.Clear();
+            if (viewer) pedestrians.Add(viewer.transform.position);
+            foreach (var p in crew) if (p && p.IsSpawned && !p.IsLocalPlayer && p.head) pedestrians.Add(p.head.position);
+            foreach (var b in bots) if (b && b.isActiveAndEnabled) pedestrians.Add(b.transform.position + Vector3.up * 1.6f);
+        }
+        float PedestrianFree(Vehicle v)
+        {
+            if (pedestrians.Count == 0) return float.PositiveInfinity;
+            v.path.Sample(v.distance, out var pos, out var dir); var right = Vector3.Cross(Vector3.up, dir).normalized;
+            float free = float.PositiveInfinity;
+            foreach (var head in pedestrians)
+            {
+                var delta = head - pos; if (delta.y < -.5f || delta.y > 3f) continue;
+                float along = Vector3.Dot(delta, dir); if (along <= 0 || along > 40) continue;
+                if (Mathf.Abs(Vector3.Dot(delta, right) - v.yieldOffset) > 1.7f) continue;
+                free = Mathf.Min(free, Mathf.Max(0, along - v.length * .5f - pedestrianStopGap));
+            }
+            return free;
+        }
         void Update()
         {
             if (!localSimulation) return;
             if (Time.unscaledTime > nextCameraCheck) { viewer = Camera.main; nextCameraCheck = Time.unscaledTime + 1; }
+            CollectPedestrians();
             accumulator += Mathf.Min(Time.deltaTime,.15f);
             float step=1f/Mathf.Max(10,simulationHz);
             int guard=0;
@@ -158,6 +194,7 @@ namespace CityNightPresentation
                     }
                     free=Mathf.Min(free,v.obstacleFree);
                 }
+                free=Mathf.Min(free,PedestrianFree(v));
                 float desired=v.externalHold?0:Mathf.Min(v.cruiseSpeed,v.path.speedLimit);
                 float yieldTarget=v.yieldRequested&&v.reserved==null?v.path.YieldClearance(v.distance):0;
                 float nextYield=Mathf.MoveTowards(v.yieldOffset,yieldTarget,dt*1.1f);

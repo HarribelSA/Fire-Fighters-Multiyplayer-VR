@@ -24,6 +24,9 @@ namespace FirefighterVR.Station
         public TMP_Text computerReport,tabletReport,objective;
         public UnityEngine.UI.Button acceptButton,exitChairButton;
         public StationMissionSeatAnchor[] seatTargets;
+        [Tooltip("How long the station alarm bell rings after the dispatch alert (seconds).")]
+        [Min(1)] public float alarmSoundSeconds=10;
+        bool alarmRinging;
         StationLocalRig rig;
         TeleportationProvider teleport;
         Transform localSeat;
@@ -120,6 +123,27 @@ namespace FirefighterVR.Station
             }
             if(fade)yield return fade.Reveal();busy=false;
         }
+        // Boarding the truck without teleporting onto the marker: stand at the truck door (the glowing
+        // approach point) for boardingHoldSeconds and the player is seated automatically.
+        [Tooltip("Stand at the truck door this long to board (seconds).")][Min(.5f)] public float boardingHoldSeconds=3;
+        [Tooltip("How close (m, horizontal) the head must be to the door approach point.")][Min(.3f)] public float boardingRadius=1.4f;
+        float boardingSince=-1;
+        StationSeatKind boardingKind;
+        public float BoardingProgress {get;private set;}
+        void UpdateProximityBoarding()
+        {
+            StationSeatKind kind;Transform door;
+            if(Eligible(StationSeatKind.AssistantTruck)){kind=StationSeatKind.AssistantTruck;door=passengerApproach;}
+            else if(Eligible(StationSeatKind.DriverTruck)){kind=StationSeatKind.DriverTruck;door=driverApproach;}
+            else{boardingSince=-1;BoardingProgress=0;return;}
+            if(!door||!rig||!rig.origin||!rig.origin.Camera||rig.StationSeated||rig.SeatTransition){boardingSince=-1;BoardingProgress=0;return;}
+            var offset=rig.origin.Camera.transform.position-door.position;offset.y=0;
+            if(offset.magnitude>boardingRadius){boardingSince=-1;BoardingProgress=0;return;}
+            if(boardingSince<0||boardingKind!=kind){boardingSince=Time.unscaledTime;boardingKind=kind;}
+            BoardingProgress=Mathf.Clamp01((Time.unscaledTime-boardingSince)/boardingHoldSeconds);
+            if(BoardingProgress<1)return;
+            boardingSince=-1;BoardingProgress=0;StartCoroutine(EnterSeat(kind));
+        }
         public void LeaveChair(){if(Eligible(StationSeatKind.LeaveChair))StartCoroutine(ExitChair());}
         IEnumerator ExitChair()
         {
@@ -137,17 +161,22 @@ namespace FirefighterVR.Station
             var flow=Flow;var state=flow&&flow.MissionSessionActive?flow.MissionState:default;
             bool mission=flow&&flow.MissionSessionActive&&state.stage!=CrewMissionStage.None;
             ConfirmSeatedDispatch();
+            UpdateProximityBoarding();
             if(mission&&state.stage==CrewMissionStage.MissionAccepted&&LocalRole==StationRole.Driver&&localSeat==dispatchSeat&&!busy)StartCoroutine(EnterSeat(StationSeatKind.DriverTruck));
             float fraction=mission?state.GarageFraction(flow.SharedTime,flow.garageTravelSeconds):0;
             if(garage&&Mathf.Abs(fraction-lastGarage)>.0001f){garage.Play("Door03_Open",0,fraction);garage.Update(0);lastGarage=fraction;}
             foreach(var c in curtainColliders)if(c)c.enabled=fraction<.999f;
             bool sounding=mission&&AlarmRequired(state.stage);
-            if(sounding&&playedAlarm!=state.alarmAt)
+            // The bell rings for alarmSoundSeconds from the shared alarm time (same on both peers);
+            // the flashing alarm lights keep running until departure.
+            bool ringing=sounding&&flow.SharedTime-state.alarmAt<alarmSoundSeconds;
+            if(ringing&&playedAlarm!=state.alarmAt)
             {
                 playedAlarm=state.alarmAt;
                 foreach(var audio in alarmAudio)if(audio&&audio.clip){audio.loop=true;audio.time=(float)((flow.SharedTime-state.alarmAt)%audio.clip.length);audio.Play();}
             }
-            if(!sounding&&alarmActive)foreach(var audio in alarmAudio)if(audio)audio.Stop();
+            if(!ringing&&(alarmActive||alarmRinging))foreach(var audio in alarmAudio)if(audio&&audio.isPlaying)audio.Stop();
+            alarmRinging=ringing;
             if(sounding||alarmActive)SetAlarmVisuals(sounding,sounding?flow.SharedTime-state.alarmAt:0);
             alarmActive=sounding;
             bool assistant=mission&&LocalRole==StationRole.Assistant;
@@ -163,7 +192,7 @@ namespace FirefighterVR.Station
             foreach(var target in seatTargets)if(target)target.SetVisible(Eligible(target.kind));
             string report=BuildReport(flow,state);
             if(computerReport)computerReport.text=report;if(tabletReport)tabletReport.text=report;
-            if(objective)objective.text=Objective(state,flow)+(rig&&rig.SeatedComfortWarning.Length>0?"\n"+rig.SeatedComfortWarning:"");
+            if(objective)objective.text=Objective(state,flow)+(BoardingProgress>0?"\nBOARDING IN "+Mathf.Max(1,Mathf.CeilToInt((1-BoardingProgress)*boardingHoldSeconds))+" s · STAY AT THE DOOR":"")+(rig&&rig.SeatedComfortWarning.Length>0?"\n"+rig.SeatedComfortWarning:"");
             if(acceptButton)acceptButton.interactable=mission&&LocalRole==StationRole.Driver&&localSeat==dispatchSeat&&state.CanAccept;
             if(exitChairButton)exitChairButton.gameObject.SetActive(mission&&Eligible(StationSeatKind.LeaveChair));
             UpdateAvatar();
@@ -178,8 +207,8 @@ namespace FirefighterVR.Station
                 case CrewMissionStage.EmergencyAlarm:return "EMERGENCY DISPATCH\nDRIVER: SEATED DISPATCH · ASSISTANT: TAKE TABLET";
                 case CrewMissionStage.DispatchReview:return s.tabletPresented?"DRIVER: REVIEW AND ACCEPT MISSION":"ASSISTANT: PRESENT TABLET TO THE SEATED DRIVER";
                 case CrewMissionStage.MissionAccepted:return "DRIVER: AUTOMATIC SEATED TRANSFER TO TRUCK";
-                case CrewMissionStage.DriverInTruck:return s.CanBoardAssistant(f.SharedTime,f.garageTravelSeconds)?"ASSISTANT: BOARD THE PASSENGER SEAT":"ASSISTANT: PRESS GREEN · WAIT FOR GARAGE TO OPEN";
-                case CrewMissionStage.Departure:return "CREW SEATED · DEPARTURE STAND BY";
+                case CrewMissionStage.DriverInTruck:return s.CanBoardAssistant(f.SharedTime,f.garageTravelSeconds)?"ASSISTANT: WALK TO THE PASSENGER DOOR · STAY 3 s TO BOARD":"ASSISTANT: PRESS GREEN · WAIT FOR GARAGE TO OPEN";
+                case CrewMissionStage.Departure:return "CREW SEATED · DEPARTURE IN "+Mathf.Max(0,Mathf.CeilToInt((float)(s.deadline-(f?f.SharedTime:0))))+" s";
                 case CrewMissionStage.CityTransition:return "PREPARING CITY · REMAIN SEATED";
                 default:return "STATION EXPLORATION";
             }

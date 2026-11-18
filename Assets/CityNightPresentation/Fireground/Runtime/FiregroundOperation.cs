@@ -246,10 +246,24 @@ namespace CityNightPresentation.Fireground
         [Rpc(SendTo.Authority, InvokePermission = RpcInvokePermission.Everyone)]
         void CrankRpc(float radians, RpcParams p = default)
         { if (Authority && float.IsFinite(radians) && Permit(p.Receive.SenderClientId, StationRole.Driver)) ApplyCrank(Mathf.Clamp(radians, -Mathf.PI, Mathf.PI)); }
+        // The reel only turns the way the job needs: while deploying (Operation) it pays hose out, during
+        // recovery it only rewinds. The wrong way is felt as resistance on the controller (HoseReel).
+        public static int CrankDirectionFor(FiregroundPhase phase) => phase == FiregroundPhase.Operation ? 1 : phase == FiregroundPhase.Recovery ? -1 : 0;
+        public int AllowedCrankDirection => CrankDirectionFor(Current.phase);
+        // True when the reel cannot move any further in this direction (empty drum / fully rewound / taut line).
+        public bool CrankBlocked(int direction)
+        {
+            var s = Current; int allowed = CrankDirectionFor(s.phase);
+            if (direction == 0 || allowed == 0 || direction != allowed) return true;
+            if (direction > 0) return s.payout >= maxPayout - .01f;
+            float minimum = s.nozzleDocked && !s.Held ? StowedPayout : NozzleDistance() + (s.Held ? .8f : .3f);
+            return s.payout <= minimum + .01f;
+        }
         void ApplyCrank(float radians)
         {
             var s = local; if (!HandsOn(s)) return;
             float delta = radians / (2 * Mathf.PI) * payoutPerTurn, target = s.payout;
+            int allowed = CrankDirectionFor(s.phase); if (allowed != 0 && delta * allowed < 0) return;
             if (delta > 0) target = Mathf.Min(maxPayout, s.payout + delta);
             else
             {

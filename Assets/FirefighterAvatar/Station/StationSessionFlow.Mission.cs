@@ -47,7 +47,8 @@ namespace FirefighterVR.Station
     public sealed partial class StationSessionFlow
     {
         public StationIncidentDefinition incident;
-        [Min(1)] public float explorationSeconds=60,garageTravelSeconds=4,departureSeconds=1.8f;
+        // departureSeconds: grace time after the whole crew is seated before the city mission loads.
+        [Min(1)] public float explorationSeconds=60,garageTravelSeconds=4,departureSeconds=5;
         public readonly NetworkVariable<CrewMissionState> CrewMission=new NetworkVariable<CrewMissionState>(default,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
         double lastTabletPacket;
         bool cityLoadComplete;
