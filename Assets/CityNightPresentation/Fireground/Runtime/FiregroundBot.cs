@@ -19,7 +19,7 @@ namespace CityNightPresentation.Fireground
 
         StationBotFollower bot;
         StationRole role;
-        bool unseated, debriefSeated;
+        bool unseated, debriefSeated, hoseHintShown;
         readonly List<Vector3> path = new List<Vector3>(8);
         int pathIndex, zoneIndex = -1, pathMode;
         Quaternion aim = Quaternion.identity; bool aimed;
@@ -63,9 +63,16 @@ namespace CityNightPresentation.Fireground
         {
             if (op) op.BotPartnerActive = false;
             if (bot && unseated) { bot.ExternalControl = false; bot.StopReach(); }
-            unseated = false; debriefSeated = false; path.Clear(); zoneIndex = -1;
+            unseated = false; debriefSeated = false; hoseHintShown = false; path.Clear(); zoneIndex = -1;
         }
-        void Status(string text) => op.BotStatus = text;
+        void Status(string text)
+        {
+            // Logged only when it changes ("Attacking ... %" updates are not logged every percent).
+            string key = text.Split('·')[0].Trim();
+            if (key != lastStatusKey) { lastStatusKey = key; Debug.Log("[FiregroundBot] " + text); }
+            op.BotStatus = text;
+        }
+        string lastStatusKey = "";
 
         // ---------------- movement ----------------
         bool WalkTo(Vector3 target, float dt, float stop = .12f, bool leashed = false)
@@ -126,7 +133,14 @@ namespace CityNightPresentation.Fireground
                 {
                     if (s.Held) { Status("Nozzle held by another firefighter"); return; }
                     // The reel locks once the nozzle is in hand: wait until the pump operator has paid out the hose.
-                    if (op.reelLockedWhileHeld && s.nozzleDocked && s.payout < op.maxPayout - .5f) { bot.SetMotion("Idle", .55f); Status("Waiting for the hose · turn the reel 3 times clockwise"); return; }
+                    if (op.reelLockedWhileHeld && s.nozzleDocked && s.payout < op.maxPayout - .5f)
+                    {
+                        // Walk to the nozzle bracket and wait there, and tell the human pump operator what is needed.
+                        Status("Waiting for the hose · turn the reel 3 times clockwise");
+                        if (!hoseHintShown) { hoseHintShown = true; FiregroundOperation.Notify("PUMP OPERATOR: turn the reel crank 3 times CLOCKWISE so your partner can take the nozzle"); }
+                        if (WalkTo(DockStand, dt, .15f)) { bot.Face(op.nozzleDock.position, dt); bot.SetMotion("Idle", .55f); }
+                        return;
+                    }
                     Vector3 nozzle = op.nozzle.transform.position;
                     Vector3 stand = s.nozzleDocked ? DockStand : op.GroundBelow(nozzle + Vector3.ProjectOnPlane(bot.transform.position - nozzle, Vector3.up).normalized * .45f);
                     Status("Collecting nozzle");

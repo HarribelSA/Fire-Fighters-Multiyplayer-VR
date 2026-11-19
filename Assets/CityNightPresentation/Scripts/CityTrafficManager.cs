@@ -76,6 +76,28 @@ namespace CityNightPresentation
             foreach (var p in crew) if (p && p.IsSpawned && !p.IsLocalPlayer && p.head) pedestrians.Add(p.head.position);
             foreach (var b in bots) if (b && b.isActiveAndEnabled) pedestrians.Add(b.transform.position + Vector3.up * 1.6f);
         }
+        // The fire truck (often parked in a lane at the incident): cars whose lane runs into its body stop
+        // truckStopGap metres before it instead of driving into it.
+        [Min(1)] public float truckStopGap = 4f;
+        BoxCollider truckBody;
+        float TruckFree(Vehicle v)
+        {
+            if (!emergencyVehicle) return float.PositiveInfinity;
+            if (!truckBody) truckBody = emergencyVehicle.GetComponent<BoxCollider>();
+            v.path.Sample(v.distance, out var pos, out var dir); var right = Vector3.Cross(Vector3.up, dir).normalized;
+            Vector3 c, e; Transform t = emergencyVehicle;
+            if (truckBody) { c = truckBody.center; e = truckBody.size * .5f; t = truckBody.transform; } else { c = new Vector3(0, 1.5f, -.5f); e = new Vector3(1.3f, 1.5f, 4.5f); }
+            float minA = float.PositiveInfinity, maxA = float.NegativeInfinity, minS = float.PositiveInfinity, maxS = float.NegativeInfinity;
+            for (int i = 0; i < 4; i++)
+            {
+                var corner = t.TransformPoint(c + new Vector3((i & 1) == 0 ? -e.x : e.x, 0, (i & 2) == 0 ? -e.z : e.z)) - pos;
+                float a = Vector3.Dot(corner, dir), s = Vector3.Dot(corner, right) - v.yieldOffset;
+                minA = Mathf.Min(minA, a); maxA = Mathf.Max(maxA, a); minS = Mathf.Min(minS, s); maxS = Mathf.Max(maxS, s);
+            }
+            const float halfCar = 1.15f;
+            if (maxS < -halfCar || minS > halfCar || maxA < -v.length * .5f || minA > 45) return float.PositiveInfinity;
+            return Mathf.Max(0, minA - v.length * .5f - truckStopGap);
+        }
         float PedestrianFree(Vehicle v)
         {
             if (pedestrians.Count == 0) return float.PositiveInfinity;
@@ -195,6 +217,7 @@ namespace CityNightPresentation
                     free=Mathf.Min(free,v.obstacleFree);
                 }
                 free=Mathf.Min(free,PedestrianFree(v));
+                free=Mathf.Min(free,TruckFree(v));
                 float desired=v.externalHold?0:Mathf.Min(v.cruiseSpeed,v.path.speedLimit);
                 float yieldTarget=v.yieldRequested&&v.reserved==null?v.path.YieldClearance(v.distance):0;
                 float nextYield=Mathf.MoveTowards(v.yieldOffset,yieldTarget,dt*1.1f);
