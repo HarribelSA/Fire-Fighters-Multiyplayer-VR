@@ -57,15 +57,36 @@ namespace CityNightPresentation.Mission
         {
             if(!runtimeActions)return;
             var devices=new System.Collections.Generic.List<InputDevice>();
-            foreach(var d in InputSystem.devices)if(d.enabled&&((d.description.product??"").Contains("G29")||(allowKeyboardTesting&&d is Keyboard)))devices.Add(d);
+            foreach(var d in InputSystem.devices)
+            {
+                bool g29=(d.description.product??"").Contains("G29");
+                if(g29&&!d.enabled)InputSystem.EnableDevice(d); // never leave the wheel disabled (window focus)
+                if(d.enabled&&(g29||(allowKeyboardTesting&&d is Keyboard)))devices.Add(d);
+            }
             runtimeActions.devices=devices.ToArray();
-            hasDrivingDevice=devices.Count>0;
+            bool had=hasDrivingDevice;hasDrivingDevice=devices.Count>0;
+            if(had!=hasDrivingDevice)Debug.Log(hasDrivingDevice?"[Truck] G29 connected: driving input active.":"[Truck] G29 not available: the truck cannot be driven.",this);
         }
         void DeviceChanged(InputDevice device,InputDeviceChange change){RefreshDevices();}
+        // Writes the reason once whenever the Driver's control state changes (diagnostics in Player.log).
+        string lastBlock="";
+        void LogDrivingBlock(bool allowed)
+        {
+            string reason;
+            if(allowed)reason="ok";
+            else if(!hasDrivingDevice)reason="no G29 device";
+            else if(!mission.CrewReady)reason="crew not ready (waiting for seats / city)";
+            else if(mission.HasArrived)reason="already arrived";
+            else if(mission.HasFailed)reason="mission stopped";
+            else{var flow=FirefighterVR.Station.StationSessionFlow.Instance;var rig=flow?flow.localRig:null;reason=rig&&!rig.InputAvailable?"headset input not ready: "+rig.InputStatus:"not allowed";}
+            if(reason==lastBlock)return;lastBlock=reason;
+            Debug.Log(reason=="ok"?"[Truck] Driver has control of the truck.":"[Truck] Driver cannot drive: "+reason,this);
+        }
         void OnEnable(){InputSystem.onDeviceChange+=DeviceChanged;RefreshDevices();}
         void Update()
         {
             bool allowed=mission&&mission.LocalDriverMayControl&&hasDrivingDevice;
+            if(mission&&mission.LocalRole==FirefighterVR.Station.StationRole.Driver)LogDrivingBlock(allowed);
             if(runtimeActions&&inputEnabled!=allowed){inputEnabled=allowed;if(allowed)runtimeActions.Enable();else runtimeActions.Disable();}
             if(allowed&&runtimeActions)
             {
