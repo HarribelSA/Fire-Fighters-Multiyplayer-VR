@@ -20,8 +20,33 @@ The Driver uses a Windows PC VR headset with a Logitech G29 steering wheel. The 
 
 ---
 
+## Download
+
+The ready-to-run Windows build (Driver station) is published on the [Releases page](https://github.com/HarribelSA/Fire-Fighters-Multiyplayer-VR/releases). No Unity installation is needed.
+
+| Version | Platform | File | Size | Source commit |
+|---|---|---|---|---|
+| **v1.0.0** (2026-11-20) | Windows 10/11, 64-bit, PC VR | [FireFighters-Windows.zip](https://github.com/HarribelSA/Fire-Fighters-Multiyplayer-VR/releases/download/v1.0.0/FireFighters-Windows.zip) | about 950 MB (2.5 GB extracted) | `b35ae7c` |
+
+**How to run**
+
+1. Download `FireFighters-Windows.zip` and extract it to a folder (for example `C:\FireFighters`).
+2. Connect the PC VR headset (for example Meta Quest through Link or Air Link) and the Logitech G29 wheel and pedals.
+3. Run `FireFighters.exe`. If Windows SmartScreen appears, choose *More info > Run anyway*.
+4. Enter your name in the lobby, then start a solo mission with the AI partner or create a room and share the room code.
+
+**Notes**
+
+- An internet connection is required for online sessions, voice chat and mission statistics.
+- The G29 wheel is required to drive the truck; without it the Driver cannot move the vehicle.
+- To play with a second trainee on Meta Quest 3, the Quest APK must be built from the same commit as the Windows build (see [Building the Simulation](#building-the-simulation)); builds from different commits cannot join the same session.
+- The ESP32 emergency lamp is optional. It is detected on `COM5` by default; another port can be set with the launch argument `-esp32Port=COMx`.
+
+---
+
 ## Table of Contents
 
+- [Download](#download)
 - [Overview](#overview)
 - [Mission Flow](#mission-flow)
 - [Crew Roles](#crew-roles)
