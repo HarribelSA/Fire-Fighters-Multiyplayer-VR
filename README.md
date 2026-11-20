@@ -6,17 +6,17 @@ The Driver uses a Windows PC VR headset with a Logitech G29 steering wheel. The 
 
 ---
 
-## Demo Video
+## Simulator Trailer
 
 <!--
-  To add the demo video:
+  To add the trailer:
   1. Open this README on GitHub and click the pencil (Edit) icon.
-  2. Drag and drop the .mp4 file (up to 100 MB) onto the line below this comment.
+  2. Delete the "Trailer coming soon" line and drag Simulator-Trailer.mp4 onto the empty line.
   3. GitHub uploads it and inserts a link; the video then plays directly on the README page.
   4. Commit the change.
 -->
 
-*Demo video coming soon.*
+*Trailer coming soon.*
 
 ---
 
@@ -46,6 +46,7 @@ The ready-to-run Windows build (Driver station) is published on the [Releases pa
 
 ## Table of Contents
 
+- [Simulator Trailer](#simulator-trailer)
 - [Download](#download)
 - [Overview](#overview)
 - [Mission Flow](#mission-flow)
