@@ -18,7 +18,7 @@ The ready-to-run Windows build (Driver station) is published on the [Releases pa
 
 | Version | Platform | File | Size | Source commit |
 |---|---|---|---|---|
-| **v1.0.0** (2026-11-20) | Windows 10/11, 64-bit, PC VR | [FireFighters-Windows.zip](https://github.com/HarribelSA/Fire-Fighters-Multiyplayer-VR/releases/download/v1.0.0/FireFighters-Windows.zip) | about 950 MB (2.5 GB extracted) | `b35ae7c` |
+| **v1.0.0** (2026-11-20) | Windows 10/11, 64-bit, PC VR | [FireFighters-Windows.zip](https://github.com/HarribelSA/Fire-Fighters-Multiyplayer-VR/releases/download/v1.0.0/FireFighters-Windows.zip) | about 950 MB (2.5 GB extracted) | `bab4486` |
 
 **How to run**
 
