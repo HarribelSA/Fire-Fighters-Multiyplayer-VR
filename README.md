@@ -1,28 +1,14 @@
+# Fire Fighters Multiplayer VR
 
+## Simulator Trailer
 
 https://github.com/user-attachments/assets/85a52547-79ba-4d1d-9487-b459625277a5
 
-
-
-# Fire Fighters Multiplayer VR
+---
 
 A cooperative virtual-reality firefighting training simulation for two trainees. A Driver and an Assistant respond to an emergency together: from the dispatch alert at the fire station, through an emergency drive across a night-time city, to extinguishing a residential fire and reviewing the crew's performance on a mission debrief.
 
 The Driver uses a Windows PC VR headset with a Logitech G29 steering wheel. The Assistant uses a standalone Meta Quest 3. Both trainees share the same session over the internet.
-
----
-
-## Simulator Trailer
-
-<!--
-  To add the trailer:
-  1. Open this README on GitHub and click the pencil (Edit) icon.
-  2. Delete the "Trailer coming soon" line and drag Simulator-Trailer.mp4 onto the empty line.
-  3. GitHub uploads it and inserts a link; the video then plays directly on the README page.
-  4. Commit the change.
--->
-
-*Trailer coming soon.*
 
 ---
 
